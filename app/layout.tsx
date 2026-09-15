@@ -7,9 +7,17 @@ import { MetaPixel } from "@/components/integrations/meta-pixel";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-display", display: "swap" });
+const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+const fallbackSiteUrl = vercelHost ? `https://${vercelHost}` : "http://localhost:3000";
+let siteUrl = fallbackSiteUrl;
+try {
+  siteUrl = new URL(process.env.NEXT_PUBLIC_SITE_URL?.trim() || fallbackSiteUrl).toString();
+} catch {
+  // A malformed deployment variable should not prevent the site from building.
+}
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "VITAL FORCE Tunisie | Complément alimentaire naturel",
     template: "%s | VITAL FORCE"

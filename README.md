@@ -29,6 +29,7 @@ Then open `http://localhost:3000`.
 Copy `.env.example` to `.env` and edit values:
 
 - `DATABASE_URL`: SQLite locally. PostgreSQL can replace it later by switching Prisma provider and connection string.
+- `NEXT_PUBLIC_SITE_URL`: public URL for metadata. If empty on Vercel, the deployment URL is used.
 - `NEXT_PUBLIC_META_PIXEL_ID`: enables Meta Pixel in the browser.
 - `META_CONVERSIONS_API_TOKEN`, `META_DATASET_ID`, `META_TEST_EVENT_CODE`: enable the server-side Meta Conversions API endpoint.
 - `DEFAULT_DELIVERY_COMPANY`: default shipping adapter key.
@@ -50,6 +51,7 @@ Copy `.env.example` to `.env` and edit values:
 - `/admin/settings`: editable business settings structure
 
 The admin area and its write APIs are not authenticated yet. Keep this project private and local until authentication and real payment/shipping credentials are configured.
+SQLite is local-only; a Vercel deployment also needs a persistent database before orders and admin data can work reliably.
 
 ## Commerce Notes
 
