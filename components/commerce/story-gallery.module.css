@@ -1,0 +1,171 @@
+.section {
+  background: #111;
+  color: #fff;
+  padding: 78px 0 86px;
+  overflow: hidden;
+}
+
+.heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 34px;
+}
+
+.eyebrow {
+  color: #e3c56c;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+}
+
+.heading h2 {
+  margin-top: 14px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(34px, 4vw, 54px);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.heading h2 em { color: #e3c56c; font-weight: 400; }
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #e3c56c;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.track {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  width: min(1180px, calc(100% - 32px));
+  margin-inline: auto;
+}
+
+.frame {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  aspect-ratio: .82;
+  overflow: hidden;
+  background: #232323;
+}
+
+.imageWrap { position: absolute; inset: 0; overflow: hidden; }
+.imageWrap::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(#0009, #0000 38%, #0000 57%, #000b);
+}
+
+.image {
+  object-fit: cover;
+  animation: drift 13s ease-in-out infinite alternate;
+  transform-origin: center center;
+}
+
+.origins { object-position: 69% center; }
+.blend { object-position: 68% center; animation-delay: -4s; }
+.stage { object-position: 68% center; animation-delay: -8s; }
+
+.caption {
+  position: absolute;
+  z-index: 2;
+  left: 22px;
+  right: 22px;
+  bottom: 22px;
+  text-shadow: 0 2px 12px #000;
+}
+
+.number {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #e3c56c;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.number i { width: 18px; height: 1px; background: currentColor; }
+
+.caption h3 {
+  max-width: 300px;
+  margin-top: 9px;
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(24px, 2.5vw, 34px);
+  font-weight: 400;
+  line-height: 1.16;
+}
+
+.caption p {
+  max-width: 290px;
+  margin-top: 9px;
+  color: #f7f7f7;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.mobileControls { display: none; }
+
+@keyframes drift {
+  from { transform: scale(1.02) translateX(-1%); }
+  to { transform: scale(1.1) translateX(1%); }
+}
+
+@media (max-width: 700px) {
+  .section { padding: 62px 0 60px; }
+  .heading { display: block; margin-bottom: 26px; }
+  .heading h2 { font-size: 38px; }
+  .link { margin-top: 18px; }
+  .track {
+    display: flex;
+    gap: 8px;
+    width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 16px;
+    padding-inline: 16px;
+    scrollbar-width: none;
+  }
+  .track::-webkit-scrollbar { display: none; }
+  .frame {
+    flex: 0 0 min(85vw, 420px);
+    scroll-snap-align: start;
+    aspect-ratio: .83;
+  }
+  .caption h3 { font-size: 28px; }
+  .mobileControls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: min(1180px, calc(100% - 32px));
+    margin: 18px auto 0;
+    color: #e3c56c;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .mobileControls > div { display: flex; gap: 8px; }
+  .mobileControls button {
+    display: grid;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border: 1px solid #e3c56c80;
+    color: #fff;
+  }
+  .mobileControls button:disabled { opacity: .35; cursor: default; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image { animation: none; transform: none; }
+  .track { scroll-behavior: auto; }
+}

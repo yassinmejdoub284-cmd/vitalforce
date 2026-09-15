@@ -1,0 +1,15 @@
+node_modules
+.next
+.next-vital-qa
+out
+dist
+.env
+.env.*
+!.env.example
+.env.local
+*.db
+*.db-journal
+.sites-runtime
+outputs/
+work/
+*.tsbuildinfo
