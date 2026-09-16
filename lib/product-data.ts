@@ -2,6 +2,7 @@ export type Ingredient = {
   name: string;
   label: string;
   benefit: string;
+  advantage: string;
   color: string;
   image: string;
 };
@@ -27,13 +28,13 @@ export type Product = {
 };
 
 export const vitalForceIngredients: Ingredient[] = [
-  { name: "Ashwagandha", label: "Racine", benefit: "Une racine au cœur de notre mélange botanique.", color: "#caa06a", image: "/images/v2/ashwagandha.webp" },
-  { name: "Curcuma", label: "Rhizome", benefit: "Un rhizome à la couleur orange intense.", color: "#f08a22", image: "/images/v2/curcuma.webp" },
-  { name: "Ginseng rouge", label: "Racine", benefit: "Une racine caractéristique de la formule.", color: "#b46f3f", image: "/images/v2/ginseng_rouge.webp" },
-  { name: "Maca noire", label: "Racine", benefit: "Une racine sombre, à la chair claire.", color: "#221f1e", image: "/images/v2/maca_noire.webp" },
-  { name: "Fenugrec", label: "Graines", benefit: "De petites graines aux nuances dorées.", color: "#d7a116", image: "/images/v2/fenugrec.webp" },
-  { name: "Gingembre", label: "Rhizome", benefit: "Un rhizome à la chair jaune et fibreuse.", color: "#e8b96b", image: "/images/v2/gingembre.webp" },
-  { name: "Poivre noir", label: "Grains", benefit: "La touche épicée de notre sélection botanique.", color: "#2b211f", image: "/images/v2/poivre_noir.webp" }
+  { name: "Ashwagandha", label: "Racine", benefit: "Une racine au cœur de notre mélange botanique.", advantage: "Appréciée depuis longtemps dans les traditions botaniques, cette racine apporte une note terreuse et douce à la formule. Son intérêt tient à sa place singulière dans un assemblage de plantes, sans que cela préjuge de l'effet du produit fini.", color: "#caa06a", image: "/images/v2/ashwagandha.webp" },
+  { name: "Curcuma", label: "Rhizome", benefit: "Un rhizome à la couleur orange intense.", advantage: "Le curcuma se distingue par sa couleur naturellement dorée et ses curcuminoïdes. Il donne du caractère au mélange et s'associe aux autres racines pour créer un profil botanique chaleureux.", color: "#f08a22", image: "/images/v2/curcuma.webp" },
+  { name: "Ginseng rouge", label: "Racine", benefit: "Une racine caractéristique de la formule.", advantage: "Cette racine emblématique occupe une place importante dans les traditions asiatiques. Son profil légèrement amer et boisé apporte de la profondeur à notre sélection de plantes.", color: "#b46f3f", image: "/images/v2/ginseng_rouge.webp" },
+  { name: "Maca noire", label: "Racine", benefit: "Une racine sombre, à la chair claire.", advantage: "Originaire des hauts plateaux andins, la maca noire est choisie pour son identité végétale et sa saveur douce, légèrement maltée. Elle complète l'équilibre des racines présentes dans la formule.", color: "#221f1e", image: "/images/v2/maca_noire.webp" },
+  { name: "Fenugrec", label: "Graines", benefit: "De petites graines aux nuances dorées.", advantage: "Les graines de fenugrec apportent une note aromatique ronde, légèrement épicée. Utilisées aussi en cuisine, elles enrichissent la diversité des saveurs de ce mélange botanique.", color: "#d7a116", image: "/images/v2/fenugrec.webp" },
+  { name: "Gingembre", label: "Rhizome", benefit: "Un rhizome à la chair jaune et fibreuse.", advantage: "Reconnaissable à son goût vif et chaleureux, le gingembre donne du relief à la préparation. Son arôme caractéristique crée un contraste avec les notes plus douces des autres ingrédients.", color: "#e8b96b", image: "/images/v2/gingembre.webp" },
+  { name: "Poivre noir", label: "Grains", benefit: "La touche épicée de notre sélection botanique.", advantage: "Quelques grains suffisent à apporter une pointe de chaleur et de profondeur aromatique. Le poivre noir signe la finition épicée de l'assemblage, sans dominer ses autres plantes.", color: "#2b211f", image: "/images/v2/poivre_noir.webp" }
 ];
 
 const orangeProduct: Product = {

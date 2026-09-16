@@ -2,6 +2,7 @@ import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { ProductPurchase } from "@/components/commerce/product-purchase";
 import { IngredientGrid } from "@/components/commerce/ingredient-grid";
+import { UsageGuide } from "@/components/commerce/usage-guide";
 import { getProductBySlug, products } from "@/lib/product-data";
 import { prisma } from "@/lib/prisma";
 
@@ -34,21 +35,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <main>
       <ProductPurchase initialProduct={product} variants={variants} />
-      <section className="container-shell grid gap-10 border-t border-forest-900/10 py-12 md:grid-cols-2">
-        <div>
-          <h2 className="font-display text-3xl">Mode d'utilisation</h2>
-          <div className="mt-6 divide-y divide-forest-900/10">
-            {product.usage.map((item) => <p key={item} className="py-3 text-sm leading-6">{item}</p>)}
-          </div>
-          <p className="mt-5 text-sm text-forest-900/65">{product.conservation}</p>
-        </div>
-        <div>
-          <h2 className="font-display text-3xl">Précautions</h2>
-          <div className="mt-6 divide-y divide-forest-900/10">
-            {product.warnings.map((warning) => <p key={warning} className="py-3 text-sm leading-6">{warning}</p>)}
-          </div>
-        </div>
-      </section>
+      <UsageGuide product={product} showPrecautions />
       {product.flavor === "Orange" && <section className="container-shell border-t border-forest-900/10 py-12">
         <h2 className="font-display text-3xl">Étiquette originale</h2>
         <Image src={product.image} alt={`Étiquette ${product.name}`} width={1200} height={400} className="mt-6 w-full border border-forest-900/10" />
