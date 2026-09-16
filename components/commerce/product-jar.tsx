@@ -6,7 +6,7 @@ export function ProductJar({ flavor, large = false }: { flavor: string; large?: 
   return (
     <div className={`${styles.jar} ${large ? styles.large : ""} ${styles[variant] ?? ""}`} role="img" aria-label={`Pot VITAL FORCE goût ${flavor}`}>
       <div className={styles.lid} />
-      {variant === "orange" ? (
+      {variant === "orange" || variant === "menthe" ? (
         <div className={styles.originalBody} />
       ) : (
         <div className={styles.variantBody}>

@@ -22,9 +22,12 @@
 .large .originalBody,
 .large .variantBody { height: 260px; }
 .originalBody {
-  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/label-originale.png');
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-orange.png');
   background-size: 100% 100%,300% 100%;
   background-position: center;
+}
+.menthe .originalBody {
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-menthe.png');
 }
 .variantBody {
   display: flex;

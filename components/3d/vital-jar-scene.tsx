@@ -28,9 +28,9 @@ function createFlavorLabel(logo: THREE.Texture, flavor: string) {
 }
 
 function JarModel({ interactive=false, still=false, flavor="Orange", angle=0 }: {interactive?:boolean; still?:boolean; flavor?:string; angle?:number}) {
- const label=useTexture("/images/v2/label-originale.png");
+ const label=useTexture(flavor==="Menthe"?"/images/v2/etiquette-menthe.png":"/images/v2/etiquette-orange.png");
  const logo=useTexture("/images/v2/logo.png");
- const flavorLabel=useMemo(()=>flavor==="Orange"?null:createFlavorLabel(logo,flavor),[flavor,logo]);
+ const flavorLabel=useMemo(()=>flavor==="Citron"?createFlavorLabel(logo,flavor):null,[flavor,logo]);
  useEffect(()=>()=>{flavorLabel?.dispose()},[flavorLabel]);
  const group=useRef<THREE.Group>(null);
  label.colorSpace=THREE.SRGBColorSpace;

@@ -83,7 +83,7 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
         <div className="md:hidden"><ProductJar flavor={product.flavor} large /></div>
       </div>
       <div className="mt-3 flex items-center justify-between gap-4 text-xs text-forest-900/65">
-        <span>{product.flavor === "Orange" ? "Étiquette originale" : "Visuel de présentation"}</span>
+        <span>{product.flavor === "Citron" ? "Visuel de présentation — étiquette à venir" : "Étiquette du goût " + product.flavor.toLowerCase()}</span>
         <Link href={`/viewer?slug=${product.slug}`} className="inline-flex items-center gap-2 font-semibold text-forest-900"><RotateCcw size={16} /> Vue 3D</Link>
       </div>
     </div>

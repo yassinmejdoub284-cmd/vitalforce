@@ -36,8 +36,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     <main>
       <ProductPurchase initialProduct={product} variants={variants} />
       <UsageGuide product={product} showPrecautions />
-      {product.flavor === "Orange" && <section className="container-shell border-t border-forest-900/10 py-12">
-        <h2 className="font-display text-3xl">Étiquette originale</h2>
+      {product.flavor !== "Citron" && <section className="container-shell border-t border-forest-900/10 py-12">
+        <h2 className="font-display text-3xl">Étiquette {product.flavor.toLowerCase()}</h2>
         <Image src={product.image} alt={`Étiquette ${product.name}`} width={1200} height={400} className="mt-6 w-full border border-forest-900/10" />
       </section>}
       <IngredientGrid />

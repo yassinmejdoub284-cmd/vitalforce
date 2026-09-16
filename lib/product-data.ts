@@ -48,7 +48,7 @@ const orangeProduct: Product = {
     stock: 84,
     netWeight: "400 g",
     flavor: "Orange",
-    image: "/images/v2/label-originale.png",
+    image: "/images/v2/etiquette-orange.png",
     shortDescription:
       "Mélange botanique VITAL FORCE aux sept ingrédients de la formule, en version goût orange.",
     highlights: ["100% ingrédients naturels", "Goût orange", "Format 400 g", "Distribution Tunisie"],
@@ -94,7 +94,7 @@ export const products: Product[] = [
     sku: "VF-MENTHE-400",
     stock: 60,
     flavor: "Menthe",
-    image: "/images/v2/logo.png",
+    image: "/images/v2/etiquette-menthe.png",
     shortDescription: "Le mélange botanique VITAL FORCE aux sept ingrédients de la formule, en version goût menthe.",
     highlights: ["Sept ingrédients botaniques", "Goût menthe", "Format 400 g", "Distribution Tunisie"]
   },
