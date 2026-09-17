@@ -3,6 +3,7 @@ export type Ingredient = {
   label: string;
   benefit: string;
   advantage: string;
+  advantageAr: string;
   color: string;
   image: string;
 };
@@ -28,13 +29,13 @@ export type Product = {
 };
 
 export const vitalForceIngredients: Ingredient[] = [
-  { name: "Ashwagandha", label: "Racine", benefit: "Une racine au cœur de notre mélange botanique.", advantage: "Appréciée depuis longtemps dans les traditions botaniques, cette racine apporte une note terreuse et douce à la formule. Son intérêt tient à sa place singulière dans un assemblage de plantes, sans que cela préjuge de l'effet du produit fini.", color: "#caa06a", image: "/images/v2/ashwagandha.webp" },
-  { name: "Curcuma", label: "Rhizome", benefit: "Un rhizome à la couleur orange intense.", advantage: "Le curcuma se distingue par sa couleur naturellement dorée et ses curcuminoïdes. Il donne du caractère au mélange et s'associe aux autres racines pour créer un profil botanique chaleureux.", color: "#f08a22", image: "/images/v2/curcuma.webp" },
-  { name: "Ginseng rouge", label: "Racine", benefit: "Une racine caractéristique de la formule.", advantage: "Cette racine emblématique occupe une place importante dans les traditions asiatiques. Son profil légèrement amer et boisé apporte de la profondeur à notre sélection de plantes.", color: "#b46f3f", image: "/images/v2/ginseng_rouge.webp" },
-  { name: "Maca noire", label: "Racine", benefit: "Une racine sombre, à la chair claire.", advantage: "Originaire des hauts plateaux andins, la maca noire est choisie pour son identité végétale et sa saveur douce, légèrement maltée. Elle complète l'équilibre des racines présentes dans la formule.", color: "#221f1e", image: "/images/v2/maca_noire.webp" },
-  { name: "Fenugrec", label: "Graines", benefit: "De petites graines aux nuances dorées.", advantage: "Les graines de fenugrec apportent une note aromatique ronde, légèrement épicée. Utilisées aussi en cuisine, elles enrichissent la diversité des saveurs de ce mélange botanique.", color: "#d7a116", image: "/images/v2/fenugrec.webp" },
-  { name: "Gingembre", label: "Rhizome", benefit: "Un rhizome à la chair jaune et fibreuse.", advantage: "Reconnaissable à son goût vif et chaleureux, le gingembre donne du relief à la préparation. Son arôme caractéristique crée un contraste avec les notes plus douces des autres ingrédients.", color: "#e8b96b", image: "/images/v2/gingembre.webp" },
-  { name: "Poivre noir", label: "Grains", benefit: "La touche épicée de notre sélection botanique.", advantage: "Quelques grains suffisent à apporter une pointe de chaleur et de profondeur aromatique. Le poivre noir signe la finition épicée de l'assemblage, sans dominer ses autres plantes.", color: "#2b211f", image: "/images/v2/poivre_noir.webp" }
+  { name: "Ashwagandha", label: "Racine", benefit: "Une racine au cœur de notre mélange botanique.", advantage: "L'ashwagandha est étudiée pour son intérêt potentiel dans la gestion du stress et la qualité du sommeil. Certaines préparations ont donné des résultats encourageants dans des essais cliniques.", advantageAr: "تُدرس الأشواغاندا لما قد تقدّمه في التعامل مع التوتر وتحسين جودة النوم. وقد أظهرت بعض مستحضراتها نتائج مشجّعة في دراسات سريرية.", color: "#caa06a", image: "/images/v2/ashwagandha.webp" },
+  { name: "Curcuma", label: "Rhizome", benefit: "Un rhizome à la couleur orange intense.", advantage: "Le curcuma apporte des curcuminoïdes, étudiés pour leur activité antioxydante. Certaines préparations font aussi l'objet de recherches prometteuses sur le confort articulaire.", advantageAr: "يوفّر الكركم مركّبات الكركمينويد التي تُدرس لنشاطها المضاد للأكسدة. وتُبحث بعض مستحضراته أيضاً لدورها المحتمل في راحة المفاصل.", color: "#f08a22", image: "/images/v2/curcuma.webp" },
+  { name: "Ginseng rouge", label: "Racine", benefit: "Une racine caractéristique de la formule.", advantage: "Le ginseng rouge est étudié pour son intérêt potentiel sur la fatigue générale et certaines capacités d'attention. Ses ginsénosides sont au cœur des recherches sur cette plante.", advantageAr: "يُدرس الجينسنغ الأحمر لما قد يقدّمه في ما يتعلّق بالتعب العام وبعض جوانب الانتباه. وتُعدّ مركّبات الجينسينوسيد محور الأبحاث حول هذا النبات.", color: "#b46f3f", image: "/images/v2/ginseng_rouge.webp" },
+  { name: "Maca noire", label: "Racine", benefit: "Une racine sombre, à la chair claire.", advantage: "La maca noire suscite l'intérêt pour la vitalité et le bien-être ressentis. Des essais préliminaires sur ses extraits ont notamment étudié l'énergie et l'humeur rapportées par les participants.", advantageAr: "تحظى الماكا السوداء باهتمام في الأبحاث المتعلّقة بالإحساس بالنشاط والعافية. وقد تناولت دراسات أولية لمستخلصاتها الطاقة والمزاج كما وصفهما المشاركون.", color: "#221f1e", image: "/images/v2/maca_noire.webp" },
+  { name: "Fenugrec", label: "Graines", benefit: "De petites graines aux nuances dorées.", advantage: "Les graines de fenugrec contiennent des fibres. Celles-ci ont été étudiées pour leur contribution possible à la sensation de satiété après un repas.", advantageAr: "تحتوي بذور الحلبة على ألياف دُرست لدورها المحتمل في الإحساس بالشبع بعد تناول الطعام.", color: "#d7a116", image: "/images/v2/fenugrec.webp" },
+  { name: "Gingembre", label: "Rhizome", benefit: "Un rhizome à la chair jaune et fibreuse.", advantage: "Le gingembre est étudié pour le confort digestif. Certaines préparations ont montré un intérêt dans la recherche sur plusieurs formes de nausées.", advantageAr: "يُدرس الزنجبيل لارتباطه بالراحة الهضمية. وقد أظهرت بعض مستحضراته نتائج مشجّعة في الأبحاث حول أنواع معيّنة من الغثيان.", color: "#e8b96b", image: "/images/v2/gingembre.webp" },
+  { name: "Poivre noir", label: "Grains", benefit: "La touche épicée de notre sélection botanique.", advantage: "Le poivre noir contient de la pipérine. Associée au curcuma dans certaines préparations étudiées, elle peut favoriser l'absorption de la curcumine.", advantageAr: "يحتوي الفلفل الأسود على البيبيرين. وعند مزجه بالكركم في بعض المستحضرات المدروسة، قد يساعد على امتصاص الكركمين.", color: "#2b211f", image: "/images/v2/poivre_noir.webp" }
 ];
 
 const orangeProduct: Product = {
@@ -80,7 +81,7 @@ export const products: Product[] = [
     sku: "VF-CITRON-400",
     stock: 60,
     flavor: "Citron",
-    image: "/images/v2/logo.png",
+    image: "/images/v2/etiquette-citron-maquette.png",
     shortDescription: "Le mélange botanique VITAL FORCE aux sept ingrédients de la formule, en version goût citron.",
     highlights: ["Sept ingrédients botaniques", "Goût citron", "Format 400 g", "Distribution Tunisie"]
   },

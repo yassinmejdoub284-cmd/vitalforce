@@ -7,7 +7,7 @@ export const metadata = {
 export default function CheckoutPage() {
   return (
     <main className="container-shell py-14">
-      <CheckoutForm />
+      <CheckoutForm checkoutAvailable={!process.env.VERCEL} />
     </main>
   );
 }

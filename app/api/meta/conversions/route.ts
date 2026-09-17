@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
+  if (process.env.VERCEL) return NextResponse.json({ error: "Conversions serveur indisponibles tant que la validation des commandes n'est pas configurée." }, { status: 503 });
   const token = process.env.META_CONVERSIONS_API_TOKEN;
   const datasetId = process.env.META_DATASET_ID;
   const body = await request.json().catch(() => null);

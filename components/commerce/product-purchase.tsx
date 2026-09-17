@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { HandCoins, Loader2, Minus, Plus, RotateCcw } from "lucide-react";
 import { useEffect, useState } from "react";
-import { VitalJarScene } from "@/components/3d/scene-loader";
 import { ProductJar } from "@/components/commerce/product-jar";
 import { Button } from "@/components/ui/button";
 import { getDeliveryQuotes, type DeliveryCompany, type DeliverySettings } from "@/lib/delivery";
@@ -12,7 +11,7 @@ import { trackMetaEvent } from "@/lib/meta";
 import type { Product } from "@/lib/product-data";
 import { formatTnd } from "@/lib/utils";
 
-export function ProductPurchase({ initialProduct, variants }: { initialProduct: Product; variants: Product[] }) {
+export function ProductPurchase({ initialProduct, variants, checkoutAvailable }: { initialProduct: Product; variants: Product[]; checkoutAvailable: boolean }) {
   const router = useRouter();
   const [product, setProduct] = useState(initialProduct);
   const [quantity, setQuantity] = useState(1);
@@ -34,11 +33,11 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
   function selectFlavor(variant: Product) {
     setProduct(variant);
     setQuantity(1);
-    window.history.replaceState(null, "", `/products/${variant.slug}`);
+    router.push(`/products/${variant.slug}`, { scroll: false });
   }
 
   async function submit(formData: FormData) {
-    if (loading) return;
+    if (loading || !checkoutAvailable) return;
     setLoading(true);
     setError("");
     try {
@@ -79,11 +78,10 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
   return <section className="container-shell grid gap-8 py-8 lg:grid-cols-[minmax(0,1fr)_minmax(380px,.9fr)] lg:gap-14 lg:py-12">
     <div className="min-w-0">
       <div className="grid min-h-[370px] place-items-center bg-[#f0f0ef] md:min-h-[590px]">
-        <div className="hidden h-[540px] w-full md:block"><VitalJarScene viewer flavor={product.flavor} /></div>
-        <div className="md:hidden"><ProductJar flavor={product.flavor} large /></div>
+        <ProductJar flavor={product.flavor} large />
       </div>
       <div className="mt-3 flex items-center justify-between gap-4 text-xs text-forest-900/65">
-        <span>{product.flavor === "Citron" ? "Visuel de présentation — étiquette à venir" : "Étiquette du goût " + product.flavor.toLowerCase()}</span>
+        <span>{product.flavor === "Citron" ? "Maquette illustrative du goût citron" : "Étiquette du goût " + product.flavor.toLowerCase()}</span>
         <Link href={`/viewer?slug=${product.slug}`} className="inline-flex items-center gap-2 font-semibold text-forest-900"><RotateCcw size={16} /> Vue 3D</Link>
       </div>
     </div>
@@ -112,8 +110,8 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
         {product.stock < 1 && <p className="mt-2 text-sm font-semibold text-red-700">Indisponible pour le moment.</p>}
       </fieldset>
 
-      <div className="mt-8 border-t border-forest-900/10 pt-7">
-        <h2 className="text-lg font-bold">Vos coordonnées</h2>
+      <fieldset disabled={!checkoutAvailable} className="mt-8 border-t border-forest-900/10 pt-7 disabled:opacity-55">
+        <legend className="text-lg font-bold">Vos coordonnées</legend>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           <label className="grid gap-1.5 text-sm font-semibold">Nom complet<input name="customerName" required minLength={3} autoComplete="name" className="min-h-11 border border-forest-900/15 bg-white px-3" /></label>
           <label className="grid gap-1.5 text-sm font-semibold">Téléphone<input name="phone" required minLength={8} type="tel" autoComplete="tel" placeholder="+216 ..." className="min-h-11 border border-forest-900/15 bg-white px-3" /></label>
@@ -121,11 +119,11 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
           <label className="grid gap-1.5 text-sm font-semibold">Adresse<input name="address" required minLength={8} autoComplete="street-address" className="min-h-11 border border-forest-900/15 bg-white px-3" /></label>
         </div>
         <label className="mt-3 grid gap-1.5 text-sm font-semibold">Note <span className="font-normal text-forest-900/55">(facultatif)</span><textarea name="note" rows={2} className="border border-forest-900/15 bg-white px-3 py-2" /></label>
-      </div>
+      </fieldset>
 
       <div className="mt-7 border-t border-forest-900/10 pt-6">
         <label className="grid gap-2 text-sm font-bold">Livraison
-          <select value={deliveryCompany} onChange={(event) => setDeliveryCompany(event.target.value as DeliveryCompany)} className="min-h-11 border border-forest-900/15 bg-white px-3 text-sm font-normal">
+          <select disabled={!checkoutAvailable} value={deliveryCompany} onChange={(event) => setDeliveryCompany(event.target.value as DeliveryCompany)} className="min-h-11 border border-forest-900/15 bg-white px-3 text-sm font-normal disabled:opacity-55">
             {quotes.map((item) => <option key={item.company} value={item.company}>{item.label} · {item.fee === 0 ? "Offerte" : formatTnd(item.fee)}</option>)}
           </select>
         </label>
@@ -138,8 +136,9 @@ export function ProductPurchase({ initialProduct, variants }: { initialProduct: 
         <div className="mt-2 flex justify-between"><span>Livraison</span><span>{quote.fee === 0 ? "Offerte" : formatTnd(quote.fee)}</span></div>
         <div className="mt-4 flex justify-between text-xl font-bold"><span>Total</span><span>{formatTnd(total)}</span></div>
       </div>
+      {!checkoutAvailable && <p role="status" className="mt-5 border-l-4 border-gold-500 bg-gold-100/40 p-4 text-sm leading-6">La commande en ligne est temporairement indisponible. Aucun paiement ni demande n’est enregistré pour le moment.</p>}
       {error && <p role="alert" className="mt-4 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p>}
-      <Button disabled={loading || product.stock < 1} className="mt-6 w-full">{loading && <Loader2 size={18} className="animate-spin" />} Confirmer la commande</Button>
+      <Button disabled={!checkoutAvailable || loading || product.stock < 1} className="mt-6 w-full">{loading && <Loader2 size={18} className="animate-spin" />} Confirmer la commande</Button>
       <p className="mt-4 text-xs leading-5 text-forest-900/60">Complément alimentaire. Ne remplace pas une alimentation variée et équilibrée.</p>
     </form>
   </section>;

@@ -9,7 +9,7 @@ import { getDeliveryQuotes, type DeliveryCompany, type DeliverySettings } from "
 import { trackMetaEvent } from "@/lib/meta";
 import { formatTnd } from "@/lib/utils";
 
-export function CheckoutForm() {
+export function CheckoutForm({ checkoutAvailable }: { checkoutAvailable: boolean }) {
   const router = useRouter();
   const { items, clear } = useCart();
   const [paymentMethod, setPaymentMethod] = useState<"cod" | "mock_card">("cod");
@@ -30,6 +30,7 @@ export function CheckoutForm() {
   }, []);
 
   async function submit(formData: FormData) {
+    if (!checkoutAvailable) return;
     setLoading(true);
     setError("");
     const payload = {
@@ -69,15 +70,17 @@ export function CheckoutForm() {
     <form action={submit} className="grid gap-8 lg:grid-cols-[1fr_380px]">
       <section className="glass rounded-[28px] p-5 md:p-8">
         <h1 className="font-display text-3xl font-bold">Finaliser la commande</h1>
+        {!checkoutAvailable && <p role="status" className="mt-4 border-l-4 border-gold-500 bg-gold-100/40 p-4 text-sm">La commande en ligne est temporairement indisponible. Vos coordonnées ne seront pas envoyées.</p>}
         <p className="mt-2 text-forest-900/65">Cash on delivery disponible en Tunisie. Le paiement carte est simulé pour préparer une future intégration.</p>
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <fieldset disabled={!checkoutAvailable} className="mt-8 grid gap-4 disabled:opacity-55 md:grid-cols-2">
           <label className="grid gap-2 text-sm font-semibold">Nom complet<input name="customerName" required className="rounded-2xl border border-forest-900/15 bg-white px-4 py-3" /></label>
           <label className="grid gap-2 text-sm font-semibold">Téléphone<input name="phone" required className="rounded-2xl border border-forest-900/15 bg-white px-4 py-3" placeholder="+216 ..." /></label>
           <label className="grid gap-2 text-sm font-semibold">Email<input name="email" type="email" className="rounded-2xl border border-forest-900/15 bg-white px-4 py-3" /></label>
           <label className="grid gap-2 text-sm font-semibold">Ville<input name="city" required className="rounded-2xl border border-forest-900/15 bg-white px-4 py-3" placeholder="Sfax, Tunis..." /></label>
           <label className="grid gap-2 text-sm font-semibold md:col-span-2">Adresse<textarea name="address" required className="min-h-24 rounded-2xl border border-forest-900/15 bg-white px-4 py-3" /></label>
           <label className="grid gap-2 text-sm font-semibold md:col-span-2">Note<textarea name="note" className="min-h-20 rounded-2xl border border-forest-900/15 bg-white px-4 py-3" /></label>
-        </div>
+        </fieldset>
+        <fieldset disabled={!checkoutAvailable} className="disabled:opacity-55">
         <div className="mt-8 grid gap-3 md:grid-cols-2">
           <button type="button" onClick={() => setPaymentMethod("cod")} className={`focus-ring rounded-2xl border p-4 text-left ${paymentMethod === "cod" ? "border-gold-500 bg-gold-100/40" : "border-forest-900/12 bg-white"}`}>
             <HandCoins size={22} />
@@ -101,6 +104,7 @@ export function CheckoutForm() {
             ))}
           </div>
         </div>
+        </fieldset>
         {error && <p className="mt-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
       </section>
       <aside className="h-fit rounded-[28px] bg-forest-950 p-5 text-white shadow-green">
@@ -118,7 +122,7 @@ export function CheckoutForm() {
           <div className="flex justify-between"><span>{selectedQuote.label}</span><span>{deliveryFee === 0 ? "Offerte" : formatTnd(deliveryFee)}</span></div>
           <div className="flex justify-between text-xl font-bold"><span>Total</span><span>{formatTnd(total)}</span></div>
         </div>
-        <Button disabled={items.length === 0 || loading} className="mt-6 w-full bg-gold-300 text-forest-950 hover:bg-gold-100">
+        <Button disabled={!checkoutAvailable || items.length === 0 || loading} className="mt-6 w-full bg-gold-300 text-forest-950 hover:bg-gold-100">
           {loading && <Loader2 className="animate-spin" size={18} />}
           Confirmer la commande
         </Button>

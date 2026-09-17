@@ -3,11 +3,13 @@ import { prisma } from "@/lib/prisma";
 import { productSchema } from "@/lib/validations";
 
 export async function GET() {
+  if (process.env.VERCEL) return NextResponse.json({ error: "Administration indisponible sans base persistante." }, { status: 503 });
   const products = await prisma.product.findMany({ orderBy: { createdAt: "desc" } });
   return NextResponse.json({ products });
 }
 
 export async function POST(request: Request) {
+  if (process.env.VERCEL) return NextResponse.json({ error: "Administration indisponible sans base persistante." }, { status: 503 });
   const payload = productSchema.safeParse(await request.json());
   if (!payload.success) {
     return NextResponse.json({ error: "Données produit invalides.", issues: payload.error.flatten() }, { status: 400 });

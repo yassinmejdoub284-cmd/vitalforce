@@ -52,6 +52,8 @@ Copy `.env.example` to `.env` and edit values:
 
 The admin area and its write APIs are not authenticated yet. Keep this project private and local until authentication and real payment/shipping credentials are configured.
 SQLite is local-only; a Vercel deployment also needs a persistent database before orders and admin data can work reliably.
+On Vercel, the storefront remains browsable from the bundled catalogue, but checkout and admin APIs deliberately return unavailable instead of accepting an order that cannot be saved. The admin UI is hidden. Configure a persistent database and authentication before enabling those features in production.
+The Citron label is an illustrative adaptation of the supplied Orange label, not an approved production label. Verify all legal copy, composition, approvals and claims against the official packaging before release. Ingredient advantages appear in French and Arabic; ingredient photos are generated illustrations.
 
 ## Commerce Notes
 
@@ -67,7 +69,7 @@ Payment and delivery integrations are intentionally adapter-based so Stripe, Pay
 
 ## Health And Compliance Notes
 
-The customer-facing copy avoids unsupported medical claims. VITAL FORCE is described as a food supplement and includes label-based dosage, precautions, and conservation notes:
+The customer-facing copy distinguishes preliminary research on individual ingredients from demonstrated effects of the finished formula. Ingredient advantages are presented in French and Arabic with reference links. VITAL FORCE is described as a food supplement and includes label-based dosage, precautions, and conservation notes:
 
 - Do not exceed the recommended daily dose.
 - Food supplements do not replace a varied, balanced diet.

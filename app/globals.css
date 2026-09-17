@@ -108,6 +108,7 @@ textarea {
 .hero-giant{position:absolute;left:11%;top:100px;font-family:Georgia,serif;font-size:clamp(100px,17vw,250px);letter-spacing:-.08em;opacity:.055;pointer-events:none}
 .hero-halo{position:absolute;width:410px;height:410px;left:25%;top:12px;border:1px solid #d4af3724;border-radius:50%;box-shadow:0 0 0 40px #ffffff04,0 0 0 80px #ffffff03}
 .hero-jar{position:absolute;left:13%;right:7%;top:4px;height:445px;z-index:2;filter:drop-shadow(0 30px 20px #00000066)}
+.hero-jar-static{display:grid;place-items:center}
 .jar-scene{width:100%;height:100%;min-height:420px;position:relative}
 .jar-fallback{width:220px;margin:45px auto;filter:drop-shadow(0 20px 15px #0004)}.jar-fallback-lid{height:35px;background:repeating-linear-gradient(90deg,#e9e7d7 0 3px,#c9cbbc 3px 4px);border-radius:12px 12px 3px 3px}.jar-fallback-body{height:245px;background-image:linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/label-originale.png');background-size:100% 100%,300% 100%;background-position:center;border-radius:5px 5px 22px 22px}
 .floating-ingredient{position:absolute;z-index:3;width:112px;height:129px;background:#fafafa;border:1px solid #e4e4e4;border-radius:20px;padding:10px;color:#252525;box-shadow:0 16px 24px #00000026;animation:ingredient-float 6s ease-in-out var(--delay) infinite;transition:box-shadow .25s,border-color .25s}
@@ -140,6 +141,8 @@ textarea {
 .ingredient-photo{aspect-ratio:1.18;height:auto;background:#f1f2f1;border-radius:6px;position:relative;display:flex;align-items:center;justify-content:center}
 .ingredient-photo>span{position:absolute;bottom:12px;left:12px;font-size:9px;color:#606060}
 .ingredient-photo img{width:88%;height:88%;object-fit:contain;transition:transform .3s}.ingredient-tile:hover img{transform:translateY(-8px) rotate(-4deg)}
+.ingredient-advantage-ar{font-family:Tahoma,Arial,sans-serif;font-size:14px;line-height:1.9;color:#464c48;margin-top:12px;max-width:43ch}
+.ingredient-sources{display:flex;flex-wrap:wrap;gap:8px 15px;align-items:center;margin-top:18px;font-size:11px;color:#626262}.ingredient-sources a{text-decoration:underline;text-underline-offset:3px}
 .ingredient-tile .ingredient-kind{font-size:10px;font-weight:700;text-transform:uppercase;color:#8b6a2f;margin-top:17px}.ingredient-tile h3{font-family:var(--font-display),Georgia,serif;font-size:25px;font-weight:400;margin-top:6px}.ingredient-tile .ingredient-advantage{font-size:13px;color:#4f504e;line-height:1.75;margin-top:10px;max-width:43ch}.ingredient-note{font-size:11px;line-height:1.65;color:#606060;margin-top:36px;max-width:78ch}
 .collection-section{padding:50px 0 75px;border-top:1px solid #25252522}.editorial-link{display:flex;align-items:center;gap:15px;font-size:12px;border-bottom:1px solid #999999;padding-bottom:8px}
 .usage-guide{padding-top:68px;padding-bottom:82px;border-top:1px solid #25252522;scroll-margin-top:90px}

@@ -5,6 +5,7 @@ import { IngredientGrid } from "@/components/commerce/ingredient-grid";
 import { ProductCard } from "@/components/commerce/product-card";
 import { StoryGallery } from "@/components/commerce/story-gallery";
 import { UsageGuide } from "@/components/commerce/usage-guide";
+import { ProductFaq } from "@/components/commerce/product-faq";
 import { products } from "@/lib/product-data";
 export default function HomePage() {
   const featured=products[0];
@@ -15,5 +16,6 @@ export default function HomePage() {
     <IngredientGrid/>
     <section className="container-shell collection-section"><div className="section-heading"><div><p className="eyebrow">LA COLLECTION</p><h2>Trois goûts. Un rituel.</h2></div><Link href="/products" className="editorial-link">Toute la collection <ArrowUpRight size={20}/></Link></div><div className="grid gap-6 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
     <UsageGuide product={featured} showPrecautions />
+    <ProductFaq />
   </main>;
 }

@@ -5,6 +5,7 @@ import { checkoutSchema } from "@/lib/validations";
 import { createShipmentReference, getDeliveryQuotes } from "@/lib/delivery";
 
 export async function GET() {
+  if (process.env.VERCEL) return NextResponse.json({ error: "Administration indisponible sans base persistante." }, { status: 503 });
   const orders = await prisma.order.findMany({
     include: { items: true },
     orderBy: { createdAt: "desc" }
@@ -13,6 +14,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  if (process.env.VERCEL) return NextResponse.json({ error: "La commande en ligne est indisponible tant qu'une base de données persistante n'est pas configurée." }, { status: 503 });
   const payload = checkoutSchema.safeParse(await request.json());
   if (!payload.success) {
     return NextResponse.json({ error: "Veuillez vérifier les informations de commande.", issues: payload.error.flatten() }, { status: 400 });

@@ -29,6 +29,9 @@
 .menthe .originalBody {
   background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-menthe.png');
 }
+.citron .originalBody {
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-citron-maquette.png');
+}
 .variantBody {
   display: flex;
   flex-direction: column;
