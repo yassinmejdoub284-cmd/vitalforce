@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import "./storefront.css";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { MetaPixel } from "@/components/integrations/meta-pixel";
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#111111",
+  themeColor: "#0b4f32",
   colorScheme: "light"
 };
 

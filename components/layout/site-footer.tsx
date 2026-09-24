@@ -13,10 +13,10 @@ export function SiteFooter() {
     }).catch(() => {});
   }, []);
   return (
-    <footer className="mt-24 border-t border-forest-900/10 bg-forest-950 text-white">
+    <footer className="site-footer mt-24 bg-forest-950 text-white">
       <div className="container-shell grid gap-10 py-12 md:grid-cols-[1.3fr_1fr_1fr]">
         <div>
-          <Image src="/images/v2/logo.png" alt="VITAL FORCE" width={240} height={162} className="h-24 w-auto object-contain" />
+          <Image src="/images/v2/logo.png" alt="VITAL FORCE" width={210} height={142} className="h-20 w-auto object-contain" />
           <p className="mt-4 max-w-md text-sm leading-6 text-white/70">
             VITAL FORCE réunit sept ingrédients botaniques. Découvrez les goûts orange, citron et menthe, la formule et les précautions d’emploi.
           </p>

@@ -22,15 +22,15 @@
 .large .originalBody,
 .large .variantBody { height: 260px; }
 .originalBody {
-  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-orange.png');
-  background-size: 100% 100%,300% 100%;
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-orange-front.png');
+  background-size: 100% 100%,100% 100%;
   background-position: center;
 }
 .menthe .originalBody {
-  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-menthe.png');
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-menthe-front.png');
 }
 .citron .originalBody {
-  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-citron-maquette.png');
+  background-image: linear-gradient(90deg,#0004,transparent 25%,transparent 70%,#0005),url('/images/v2/etiquette-citron-front.png');
 }
 .variantBody {
   display: flex;

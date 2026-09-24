@@ -1,5 +1,5 @@
 .section {
-  background: #111;
+  background: #073d29;
   color: #fff;
   padding: 78px 0 86px;
   overflow: hidden;
@@ -62,7 +62,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(#0009, #0000 38%, #0000 57%, #000b);
+  background: linear-gradient(#062b20aa, #0000 38%, #0000 57%, #041b14d9);
 }
 
 .image {

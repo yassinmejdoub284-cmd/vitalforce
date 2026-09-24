@@ -1,31 +1,56 @@
-"use client";
-import { useEffect, useState } from "react";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
-import { VitalJarScene } from "@/components/3d/scene-loader";
-import { ProductJar } from "@/components/commerce/product-jar";
-import { IngredientOrbit } from "@/components/commerce/ingredient-orbit";
-import { AddToCart } from "@/components/cart/add-to-cart";
-import { products, vitalForceIngredients } from "@/lib/product-data";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Check, ShieldCheck, Truck } from "lucide-react";
 import { formatTnd } from "@/lib/utils";
+import { products } from "@/lib/product-data";
+
 export function BotanicalHero() {
-  const [selected, setSelected] = useState(1);
-  const [show3D, setShow3D] = useState(false);
-  useEffect(() => {
-    const media = window.matchMedia("(min-width: 701px) and (prefers-reduced-motion: no-preference)");
-    const update = () => setShow3D(media.matches);
-    update();
-    media.addEventListener("change", update);
-    return () => media.removeEventListener("change", update);
-  }, []);
-  const ingredient = vitalForceIngredients[selected];
-  return <section className="botanical-hero" aria-labelledby="hero-title">
-    <div className="hero-topline"><span>LA NATURE, DANS VOTRE RITUEL.</span><span>FORMULE 01 / ORANGE</span></div>
-    <div className="hero-editorial"><span className="eyebrow">VITAL FORCE • 7 PLANTES</span><h1 id="hero-title">La force <br/><em>de la nature</em></h1><p>Un mélange botanique. <br/>Un goût d’orange. <br/>Votre nouveau rituel.</p><a href="#ingredients" className="hero-text-link">Explorer la formule <ArrowUpRight size={17}/></a></div>
-    <div className="hero-stage"><div className="hero-halo" aria-hidden="true"/><span className="hero-giant" aria-hidden="true">VITAL</span><div className={`hero-jar ${show3D ? "" : "hero-jar-static"}`}>{show3D ? <VitalJarScene /> : <ProductJar flavor="Orange" large />}</div>
-      <IngredientOrbit selected={selected} onSelect={setSelected}/>
-      <div className="hero-ingredient-caption" aria-live="off"><span>ZOOM BOTANIQUE / {String(selected+1).padStart(2,"0")}</span><strong>{ingredient.name}</strong><p>{ingredient.benefit}</p></div>
+  const product = products[0];
+
+  return <>
+    <section className="shop-hero" aria-labelledby="hero-title">
+      <Image src="/images/hero-botanical-background.png" alt="" fill priority sizes="100vw" className="shop-hero-image" />
+      <div className="shop-hero-shade" aria-hidden="true" />
+      <div className="hero-product" role="img" aria-label="Pot VITAL FORCE Orange 400 g">
+        <div className="hero-product-lid" aria-hidden="true" />
+        <div className="hero-product-body">
+          <Image
+            src="/images/v2/etiquette-orange-front.png"
+            alt="Étiquette VITAL FORCE Orange 400 g"
+            width={724}
+            height={724}
+            priority
+            unoptimized
+            sizes="(max-width: 700px) 300px, 430px"
+            className="hero-product-label"
+          />
+        </div>
+      </div>
+      <div className="container-shell shop-hero-inner">
+        <div className="shop-hero-copy">
+          <p className="shop-kicker">VITAL FORCE · 400 G · 7 INGRÉDIENTS</p>
+          <h1 id="hero-title">VITAL FORCE</h1>
+          <p className="shop-hero-tagline">La force de la nature.</p>
+          <p className="shop-hero-description">Un mélange botanique à intégrer simplement à votre rituel quotidien, disponible en trois goûts.</p>
+          <div className="shop-hero-offer"><strong>{formatTnd(product.price)}</strong><span>le pot de 400 g</span></div>
+          <div className="shop-hero-actions">
+            <Link href={`/products/${product.slug}`} className="shop-primary-action">Commander maintenant <ArrowRight size={18} /></Link>
+            <Link href="#ingredients" className="shop-secondary-action">Voir les 7 ingrédients</Link>
+          </div>
+          <ul className="shop-hero-points" aria-label="Informations essentielles">
+            <li><Check size={16} /> Paiement à la livraison</li>
+            <li><Check size={16} /> Livraison en Tunisie</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    <div className="commerce-proof-bar" aria-label="Les engagements VITAL FORCE">
+      <div className="container-shell commerce-proof-grid">
+        <div><span className="proof-icon"><ShieldCheck size={21} /></span><p><strong>Formule transparente</strong><small>Composition et précautions accessibles</small></p></div>
+        <div><span className="proof-icon proof-number">7</span><p><strong>Ingrédients botaniques</strong><small>Racines, rhizomes et graines</small></p></div>
+        <div><span className="proof-icon"><Truck size={21} /></span><p><strong>Livraison locale</strong><small>Choix du transporteur au paiement</small></p></div>
+        <div><span className="proof-icon proof-number">3</span><p><strong>Goûts disponibles</strong><small>Orange, Citron et Menthe</small></p></div>
+      </div>
     </div>
-    <div className="hero-buy"><div><span>LE MÉLANGE SIGNATURE</span><h2>VITAL FORCE <small>400 g</small></h2></div><div className="hero-price">{formatTnd(products[0].price)}<span>Goût orange</span></div><AddToCart product={products[0]} className="hero-add"/></div>
-    <a href="#ingredients" className="hero-scroll" aria-label="Découvrir les ingrédients"><ArrowDown size={18}/></a>
-  </section>;
+  </>;
 }

@@ -29,13 +29,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <main>
       <ProductPurchase key={product.id} initialProduct={product} variants={variants} checkoutAvailable={checkoutAvailable} />
-      <UsageGuide product={product} showPrecautions />
-      <section className="container-shell border-t border-forest-900/10 py-12">
-        <h2 className="font-display text-3xl">Étiquette {product.flavor.toLowerCase()}</h2>
-        {product.flavor === "Citron" && <p className="mt-2 text-sm text-forest-900/65">Maquette illustrative du goût citron, à valider avec l’étiquette officielle avant toute impression.</p>}
-        <Image src={product.image} alt={`Étiquette ${product.name}`} width={1200} height={400} className="mt-6 w-full border border-forest-900/10" />
-      </section>
       <IngredientGrid />
+      <UsageGuide product={product} showPrecautions />
+      <section className="container-shell label-section">
+        <details className="label-disclosure">
+          <summary><span><small>COMPOSITION ET PRÉCAUTIONS</small><strong>Consulter l’étiquette complète · {product.flavor}</strong></span><b aria-hidden="true">+</b></summary>
+          <p>Consultez l’étiquette complète du goût {product.flavor.toLowerCase()} pour la composition, le mode d’utilisation et les précautions d’emploi.</p>
+          <Image src={product.image} alt={`Étiquette ${product.name}`} width={1200} height={400} className="label-full-image" />
+        </details>
+      </section>
       <ProductFaq />
     </main>
   );

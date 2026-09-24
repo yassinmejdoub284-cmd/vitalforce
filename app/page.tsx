@@ -11,11 +11,11 @@ export default function HomePage() {
   const featured=products[0];
   return <main>
     <BotanicalHero/>
-    <div className="botanical-strip"><span>7 INGRÉDIENTS BOTANIQUES</span><i>✳</i><span>GOÛT ORANGE</span><i>✳</i><span>FORMAT 400 G</span><i>✳</i><span>VITAL FORCE</span></div>
+    <section className="container-shell collection-section" id="collection"><div className="section-heading"><div><p className="eyebrow">CHOISISSEZ VOTRE GOÛT</p><h2>Un rituel, trois façons<br/><em>de l’adopter.</em></h2></div><Link href="/products" className="editorial-link">Voir la boutique <ArrowUpRight size={20}/></Link></div><div className="grid gap-5 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
     <StoryGallery/>
     <IngredientGrid/>
-    <section className="container-shell collection-section"><div className="section-heading"><div><p className="eyebrow">LA COLLECTION</p><h2>Trois goûts. Un rituel.</h2></div><Link href="/products" className="editorial-link">Toute la collection <ArrowUpRight size={20}/></Link></div><div className="grid gap-6 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
     <UsageGuide product={featured} showPrecautions />
     <ProductFaq />
+    <Link href={`/products/${featured.slug}`} className="mobile-buy-bar"><span><small>VITAL FORCE 400 g</small><strong>{featured.price} DT</strong></span><b>Commander <ArrowUpRight size={16}/></b></Link>
   </main>;
 }
