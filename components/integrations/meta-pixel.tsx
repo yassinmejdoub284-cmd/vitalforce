@@ -10,7 +10,15 @@ function MetaPageView() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    trackMetaEvent("PageView");
+    let sent = false;
+    function sendPageView() {
+      if (!window.fbq || sent) return;
+      trackMetaEvent("PageView");
+      sent = true;
+    }
+    sendPageView();
+    window.addEventListener("vital-meta-ready", sendPageView);
+    return () => window.removeEventListener("vital-meta-ready", sendPageView);
   }, [pathname, searchParams]);
 
   return null;
@@ -22,7 +30,7 @@ export function MetaPixel() {
 
   return (
     <>
-      <Script id="meta-pixel" strategy="afterInteractive">
+      <Script id="meta-pixel" strategy="afterInteractive" onReady={() => { window.dispatchEvent(new Event("vital-meta-ready")); }}>
         {`
           !function(f,b,e,v,n,t,s)
           {if(f.fbq)return;n=f.fbq=function(){n.callMethod?

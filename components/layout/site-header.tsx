@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 const links = [
   { href: "/products", label: "Boutique" },
   { href: "/#ingredients", label: "Ingrédients" },
-  { href: "/#rituel", label: "Mode d’emploi" }
+  { href: "/lp", label: "اكتشف روتينك" }
 ];
 
 export function SiteHeader() {
