@@ -43,7 +43,7 @@ const orangeProduct: Product = {
     slug: "vital-force-400g-orange",
     name: "VITAL FORCE Orange 400 g",
     subtitle: "Mélange de plantes naturelles - Goût orange",
-    price: 165,
+    price: 163,
     compareAtPrice: 189,
     sku: "VF-ORANGE-400",
     stock: 84,

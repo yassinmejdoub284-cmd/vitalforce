@@ -11,13 +11,14 @@ export function readCampaign(search: string): CampaignAttribution {
 
 export function buildWhatsAppOrder(input: {
   angle: string; flavor: string; quantity: number; unitPrice: number;
-  name?: string; phone?: string; city?: string; campaign: CampaignAttribution;
+  deliveryFee?: number; name?: string; phone?: string; city?: string; campaign: CampaignAttribution;
 }) {
   const lines = ["السلام عليكم، نحب نطلب VITAL FORCE", `النكهة: ${input.flavor}`, `الكمية: ${input.quantity}`, `سعر العبوة: ${input.unitPrice} د.ت`, `مجموع المنتجات: ${input.unitPrice * input.quantity} د.ت (دون التوصيل)`];
+  if (input.deliveryFee !== undefined) lines.push(`التوصيل العادي: ${input.deliveryFee === 0 ? "مجاني" : `${input.deliveryFee} د.ت`}`, `المجموع بالتوصيل: ${input.unitPrice * input.quantity + input.deliveryFee} د.ت`);
   if (input.name?.trim()) lines.push(`الاسم: ${input.name.trim()}`);
   if (input.phone?.trim()) lines.push(`الهاتف: ${input.phone.trim()}`);
   if (input.city?.trim()) lines.push(`المدينة: ${input.city.trim()}`);
-  lines.push("يرجى تأكيد التوفر ومصاريف التوصيل.", `صفحة الطلب: ${input.angle}`);
+  lines.push("يرجى تأكيد التوفر والعنوان والتوصيل.", `صفحة الطلب: ${input.angle}`);
   for (const key of campaignKeys) if (input.campaign[key]) lines.push(`${key}: ${input.campaign[key]}`);
   return `https://wa.me/21627200603?text=${encodeURIComponent(lines.join("\n"))}`;
 }

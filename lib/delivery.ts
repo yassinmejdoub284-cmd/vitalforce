@@ -20,7 +20,7 @@ export function getDeliveryQuotes(subtotal: number, settings: DeliverySettings =
   return (Object.keys(companies) as DeliveryCompany[]).map((company) => ({
     company,
     ...companies[company],
-    fee: subtotal >= settings.freeShippingThreshold ? 0 : company === "local_courier" ? settings.deliveryFee : companies[company].fee
+    fee: company === "local_courier" ? 7 : company === "pickup" ? 0 : subtotal >= settings.freeShippingThreshold ? 0 : companies[company].fee
   }));
 }
 

@@ -14,6 +14,10 @@ export function LandingOrder({ angle, angleName }: { angle: string; angleName: s
   const [selected, setSelected] = useState(products[0]);
   const [quantity, setQuantity] = useState(1);
   const [campaign, setCampaign] = useState<CampaignAttribution>({});
+  const subtotal = selected.price * quantity;
+  const deliveryFee = 7;
+  const total = subtotal + deliveryFee;
+
   const [opened, setOpened] = useState(false);
   const tracked = useRef(new Set<string>());
 
@@ -35,12 +39,12 @@ export function LandingOrder({ angle, angleName }: { angle: string; angleName: s
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const url = buildWhatsAppOrder({
-      angle, flavor: flavors[selected.flavor], quantity, unitPrice: selected.price, campaign,
+      angle, flavor: flavors[selected.flavor], quantity, unitPrice: selected.price, deliveryFee, campaign,
       name: String(data.get("name") ?? "").slice(0, 80),
       phone: String(data.get("phone") ?? "").slice(0, 24),
       city: String(data.get("city") ?? "").slice(0, 80)
     });
-    window.fbq?.("track", "InitiateCheckout", { content_ids: [selected.id], content_type: "product", currency: "TND", value: selected.price * quantity, num_items: quantity, landing_angle: angle });
+    window.fbq?.("track", "InitiateCheckout", { content_ids: [selected.id], content_type: "product", currency: "TND", value: total, num_items: quantity, landing_angle: angle });
     window.fbq?.("trackCustom", "WhatsAppOrderIntent", { landing_angle: angle, flavor: selected.flavor, quantity, ...campaign });
     // This is an intent event, never a Purchase: WhatsApp opening is not a confirmed sale.
     setOpened(true);
@@ -53,9 +57,12 @@ export function LandingOrder({ angle, angleName }: { angle: string; angleName: s
       <span className="lp-order-context">{angleName}</span><h3>نحضّرولك طلبك.</h3><p>اختار، افتح الرسالة وأرسلها على واتساب.</p>
       <fieldset><legend>١. اختار النكهة</legend><div className="lp-flavor-buttons">{products.map(product => <button key={product.id} type="button" aria-pressed={product.id === selected.id} onClick={() => { setSelected(product); setOpened(false); }}><span className={`lp-flavor-dot lp-flavor-${product.flavor.toLowerCase()}`} />{flavors[product.flavor]}{product.id === selected.id && <Check size={14} />}</button>)}</div></fieldset>
       <fieldset><legend>٢. حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button type="button" disabled={quantity >= 10} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
-      <fieldset><legend>٣. معلوماتك <small>(اختيارية لتجهيز الرسالة)</small></legend><div className="lp-fields"><label>الاسم<input name="name" maxLength={80} autoComplete="name" placeholder="اسمك" /></label><label>الهاتف<input name="phone" type="tel" dir="ltr" maxLength={24} autoComplete="tel" placeholder="+216" /></label><label className="lp-field-full">المدينة<input name="city" maxLength={80} autoComplete="address-level2" placeholder="وين تحبّ يوصلك الطلب؟" /></label></div></fieldset>
-      <div className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(selected.price * quantity)}</strong></div><p className="lp-delivery-note">مصاريف التوصيل والتوفر يتأكّدوا مع الفريق قبل تثبيت الطلب.</p>
+      <details className="lp-optional-details"><summary>زيد معلوماتك لتجهيز الرسالة <small>(اختياري)</small></summary><fieldset><legend className="lp-visually-hidden">معلوماتك الاختيارية</legend><div className="lp-fields"><label>الاسم<input name="name" maxLength={80} autoComplete="name" placeholder="اسمك" /></label><label>الهاتف<input name="phone" type="tel" dir="ltr" maxLength={24} autoComplete="tel" placeholder="+216" /></label><label className="lp-field-full">المدينة<input name="city" maxLength={80} autoComplete="address-level2" placeholder="وين تحبّ يوصلك الطلب؟" /></label></div></fieldset></details>
+      <div className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(selected.price * quantity)}</strong></div><div className="lp-shipping-row"><span>التوصيل العادي</span><strong>{money(deliveryFee)}</strong></div>
+      <div className="lp-final-total" aria-live="polite"><span>المجموع بالتوصيل</span><strong>{money(total)}</strong></div>
+      <p className="lp-delivery-note">التوصيل ٧ د.ت للطلب. الفريق يؤكّد التوفر والعنوان والتوصيل قبل تثبيت الطلب.</p>
       <button type="submit" className="lp-whatsapp"><MessageCircle size={21} /> نكمّل طلبي على واتساب</button>
+      <p className="lp-order-next">تفتح رسالة جاهزة، تبعثها، وفريقنا يأكّد معاك الطلب والعنوان. الدفع عند الاستلام.</p>
       <p className="lp-order-privacy">المعلومات تُضاف إلى رسالة واتساب فقط. لا يتمّ إرسالها قبل أن تضغط «إرسال» داخل واتساب.</p>
       {opened && <p className="lp-order-status" role="status">تمّ تجهيز رسالتك. أرسلها داخل واتساب لتتواصل مع الفريق؛ طلبك لم يُؤكّد بعد.</p>}
     </form>
