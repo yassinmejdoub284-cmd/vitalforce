@@ -14,33 +14,17 @@ const ingredientFacts = [
   "بعض مستحضراته دُرست لأنواع من الغثيان.",
   "يحتوي على البيبيرين."
 ];
-const campaignHooks: Record<string, string> = {
-  sport: "تمرّن بعزيمة. واعتنِ باستشفائك.",
-  "daily-energy": "ابدأ نهارك بلحظة عناية ليك.",
-  calm: "خفّف الإيقاع. واعمل مساحة لنفسك.",
-  focus: "اعمل مساحة لتركيزك.",
-  digestion: "اختيار واعٍ، وروتين على مهلك.",
-  intimacy: "لحظة لكما. واهتمام يبدأ من نفسك.",
-  sleep: "خصّص وقتاً للراحة والتوازن.",
-  movement: "تحبّ ترجع الحركة عادة يومية؟",
-  botanical: "تحبّ تعرف شنوّة في مشروبك؟"
-};
 
 export function CampaignLanding({ page }: { page: LandingPage }) {
-  const isSport = page.slug === "sport";
-  const motivationImages: Record<string, string> = {
-    sport: "movement", "daily-energy": "focus", calm: "sleep", focus: "daily-energy",
-    digestion: "botanical", intimacy: "calm", sleep: "calm", movement: "sport", botanical: "daily-energy"
-  };
   const target = page.informational ? "#ingredients" : "#order";
   const cta = page.informational ? "اكتشف المكوّنات" : "اختار نكهتك واطلب";
   const faq = [
     [page.question, page.answer],
     ["شنوّة الفرق بين النكهات؟", "نفس المزيج بثلاث نكهات: برتقال، ليمون ونعناع. راجع ملصق كل نكهة للتفاصيل."],
-    isSport ? ["وين نلقى معلومات المنتج الكاملة؟", "افتح «شوف الملصق الكامل» في قسم الطلب: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة."] : ["شكون يلزمو ينتبه قبل الاستعمال؟", "حسب الملصق: غير منصوح به للحامل والمرضع وللأطفال دون 13 سنة وفي حالة فرط نشاط الغدة الدرقية. إذا تتناول أدوية، لديك مرض مزمن أو اضطراب في الغدة الدرقية، استشر مختصاً صحياً قبل الاستعمال."],
+    ["وين نلقى معلومات المنتج الكاملة؟", `افتح «شوف الملصق الكامل» في ${page.informational ? "قسم معلومات المنتج" : "قسم الطلب"}: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة.`],
     ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية وافتح رسالة واتساب الجاهزة. أرسلها بنفسك؛ الفريق يؤكّد التوفر والعنوان والتوصيل بـ7 د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
   ];
-  return <main className={`lp-page lp-visual-page${isSport ? " lp-sport-conversion" : ""}`} style={{ "--lp-accent": page.color } as React.CSSProperties}>
+  return <main className="lp-page lp-visual-page lp-campaign-conversion" style={{ "--lp-accent": page.color } as React.CSSProperties}>
     <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</div>
     <header className="lp-header lp-shell">
       <Link href="/lp" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
@@ -48,51 +32,41 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
     </header>
     <section className={`lp-visual-hero lp-shell${page.visualImage ? " lp-has-poster" : ""}`} aria-labelledby="lp-title">
       <div className="lp-campaign-art">
-        <h1 id="lp-title" className={page.visualImage ? "lp-visually-hidden" : "lp-art-headline"}>{campaignHooks[page.slug]}</h1>
+        <h1 id="lp-title" className={page.visualImage ? "lp-visually-hidden" : "lp-art-headline"}>{page.title} {page.accent}</h1>
         <Image src={page.visualImage ?? page.image} alt={page.imageAlt} width={page.visualImage ? 1024 : 1280} height={page.visualImage ? 1536 : 853} preload sizes="(max-width: 800px) 100vw, 55vw" className={page.visualImage ? "lp-campaign-poster" : "lp-campaign-photo"} />
       </div>
       <div className="lp-visual-offer">
         <p className="lp-kicker">{page.name}</p>
-        <h2 dir="ltr">{isSport ? <>VITAL <em>FORCE</em></> : <>VITAL<br /><em>FORCE</em></>}</h2>
-        <p className="lp-visual-tagline">{isSport ? <>{page.title}<br />{page.accent}</> : <>7 مكوّنات نباتية.<br />روتين بسيط بطعمك.</>}</p>
-        {isSport && <p className="lp-sport-description">{page.description}</p>}
+        <h2 dir="ltr">VITAL <em>FORCE</em></h2>
+        <p className="lp-visual-tagline">{page.title}<br />{page.accent}</p>
+        <p className="lp-campaign-description">{page.description}</p>
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
           <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
         </>}
-        {isSport && <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · لحظة عناية ضمن روتينك الرياضي</span></div>}
+        <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>
         <p className="lp-visual-evidence">{page.benefitCaption ?? "7 مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
         <a href={target} className="lp-primary">{cta}<ArrowDownLeft size={20} /></a>
         <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : "الدفع عند الاستلام · 170 د.ت بالتوصيل لعبوة واحدة"}</p>
       </div>
     </section>
     {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>7 د.ت للطلب</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
-    {page.benefits && <section className="lp-sport-benefits lp-shell" aria-labelledby="sport-benefits-title">
-      <p className="lp-kicker">من المكوّن، لفهم الروتين الرياضي</p><h2 id="sport-benefits-title">شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟</h2>
-      <p className="lp-sport-benefits-intro">أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها.</p>
-      <div className="lp-sport-benefit-grid">{page.benefits.map((benefit, index) => <article key={benefit.title}>
+    {page.benefits && <section className="lp-angle-benefits lp-shell" aria-labelledby="angle-benefits-title">
+      <p className="lp-kicker">من المكوّن، لفهم روتينك</p><h2 id="angle-benefits-title">{page.benefitsTitle ?? "شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟"}</h2>
+      <p className="lp-angle-benefits-intro">{page.benefitsIntro ?? "أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها."}</p>
+      <div className="lp-angle-benefit-grid">{page.benefits.map((benefit, index) => <article key={benefit.title}>
         <span className="lp-benefit-number" aria-hidden="true">0{index + 1}</span><h3>{benefit.title}</h3><p className="lp-benefit-ingredient">{benefit.ingredient}</p><p>{benefit.body}</p>
-        <a href={benefit.reference} target="_blank" rel="noopener noreferrer">اكتشف البحث<ArrowUpLeft size={16} aria-hidden="true" /></a>
+        <a href={benefit.reference} target="_blank" rel="noopener noreferrer">اكتشف المرجع<ArrowUpLeft size={16} aria-hidden="true" /></a>
       </article>)}</div>
     </section>}
     <section className="lp-motivation lp-shell" aria-labelledby="motivation-title">
-      <div className="lp-motivation-photo"><Image src={`/images/landing/${isSport ? "sport" : motivationImages[page.slug]}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
+      <div className="lp-motivation-photo"><Image src={`/images/landing/${page.slug}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
       <div><p className="lp-kicker">روتين يتماشى مع حياتك</p><h2 id="motivation-title">{page.storyTitle}</h2><p>{page.story}</p><ul>{page.habits.map(habit => <li key={habit}><Check size={18} aria-hidden="true" />{habit}</li>)}</ul><a href={target} className="lp-text-link">{cta}<ArrowDownLeft size={18} /></a></div>
     </section>
-    {!page.informational && !isSport && <section className="lp-preparation lp-shell" aria-labelledby="preparation-title">
-      <p className="lp-kicker">من العلبة لروتينك</p><h2 id="preparation-title">تحضير واضح. نكهة على ذوقك.</h2>
-      <div className="lp-preparation-grid">{[
-        ["usage-dose-scoop.jpg", "1", "حدّد الجرعة", isSport ? "للرياضي: 10 غ يومياً حسب الملصق. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة." : "حسب الملصق: 5 غ يومياً لغير الرياضي و10 غ للرياضي. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة."],
-        ["usage-mix-scoop.jpg", "2", "زيد مشروبك", "اخلط في 200 مل ماء، عصير أو مشروبك المفضّل."],
-        ["usage-ready-scoop.jpg", "3", "اخلط واستعمل", "حسب الملصق: في الصباح، من الأفضل بعد الأكل. ما تتجاوزش الجرعة الموصى بها."]
-      ].map(([image, number, title, text]) => <article key={number}><Image src={`/images/${image}`} alt={`صورة توضيحية: ${title}`} width={1448} height={1086} sizes="(max-width: 600px) 100vw, 33vw" /><div><span>{number}</span><h3>{title}</h3><p>{text}</p></div></article>)}</div>
-      <p className="lp-preparation-note">صور توضيحية مولّدة؛ اتبع تعليمات الملصق. العرض يخصّ العبوة؛ أدوات التحضير الظاهرة ليست ضمن العرض.</p>
-      <a href="#order" className="lp-text-link">اختار بين البرتقال، الليمون والنعناع<ArrowDownLeft size={18} /></a>
-    </section>}
     <section className="lp-ingredients-section lp-visual-ingredients" id="ingredients">
       <div className="lp-shell">
         <div className="lp-section-heading"><div><p className="lp-kicker">من الصورة للمكوّن</p><h2>شنوّة فيه؟</h2></div><p>تعرّف على المكوّنات المرتبطة بهذه الزاوية.</p></div>
-        <div className="lp-ingredient-grid">{page.featured.map(index => <article key={index} className="lp-ingredient-card">
+        <div className={`lp-ingredient-grid${page.featured.length === 1 ? " lp-single-ingredient" : ""}`}>{page.featured.map(index => <article key={index} className="lp-ingredient-card">
           <div><Image src={vitalForceIngredients[index].image} alt={arabicIngredientNames[index]} width={360} height={360} sizes="(max-width: 600px) 75vw, 30vw" /></div>
           <h3>{arabicIngredientNames[index]}</h3><p>{page.ingredientSummaries?.[index] ?? ingredientFacts[index]}</p>
           <details className="lp-ingredient-detail"><summary>الأبحاث والملاءمة</summary><p>{page.ingredientNotes?.[index] ?? vitalForceIngredients[index].advantageAr}</p><a href={page.references?.[index] ?? ingredientReferences[index]} target="_blank" rel="noopener noreferrer">اقرأ المرجع<ArrowUpLeft size={14} /></a></details>
@@ -102,6 +76,10 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       </div>
     </section>
     {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} />}
+    {page.informational && <section className="lp-product-labels lp-shell" id="product-info" aria-labelledby="product-labels-title">
+      <p className="lp-kicker">معلومات المنتج</p><h2 id="product-labels-title">اكتشف الملصق الكامل لكل نكهة.</h2>
+      {products.map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : "نعناع"}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}
+    </section>}
     <section className="lp-faq lp-shell" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
     <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p><a href="tel:+21627200603" dir="ltr">+216 27 200 603</a><span>صفاقس، تونس · صور توضيحية مولّدة</span></div></footer>
     <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : `${products[0].price} د.ت`}</strong><span>{page.informational ? "7 مكوّنات نباتية" : "+ 7 د.ت توصيل"}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>

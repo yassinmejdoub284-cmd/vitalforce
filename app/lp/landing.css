@@ -325,27 +325,27 @@
   .lp-ingredient-detail { font-size: 10px; }
   .lp-visual-evidence { font-size: 10px; }
 }
-/* Sport: explain the routine and its value before the ingredient research. */
-.lp-sport-benefits { padding-block: 48px 24px; }
-.lp-sport-benefits > h2 { max-width: 800px; font-size: clamp(25px, 3vw, 36px); font-weight: 800; line-height: 1.7; }
-.lp-sport-benefits-intro { max-width: 780px; margin-top: 14px !important; color: #475e51; line-height: 1.9; font-size: 14px; }
-.lp-sport-benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
-.lp-sport-benefit-grid article { min-width: 0; padding: 25px; border: 1px solid var(--lp-line); border-radius: 10px; background: #fffdf8; }
+/* Each angle introduces its routine before the ingredient research. */
+.lp-angle-benefits { padding-block: 48px 24px; }
+.lp-angle-benefits > h2 { max-width: 800px; font-size: clamp(25px, 3vw, 36px); font-weight: 800; line-height: 1.7; }
+.lp-angle-benefits-intro { max-width: 780px; margin-top: 14px !important; color: #475e51; line-height: 1.9; font-size: 14px; }
+.lp-angle-benefit-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin-top: 30px; }
+.lp-angle-benefit-grid article { min-width: 0; padding: 25px; border: 1px solid var(--lp-line); border-radius: 10px; background: #fffdf8; }
 .lp-benefit-number { font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; color: #9a8a4e; }
-.lp-sport-benefit-grid h3 { margin-top: 13px !important; font-size: 23px; font-weight: 800; line-height: 1.7; }
-.lp-sport-benefit-grid .lp-benefit-ingredient { font-size: 12px; font-weight: 700; color: #6a7754; margin-block: 7px 14px !important; }
-.lp-sport-benefit-grid p:not(.lp-benefit-ingredient) { font-size: 13px; color: #475e51; line-height: 2; }
-.lp-sport-benefit-grid a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 12px; font-size: 12px; color: #244d37; text-decoration: underline; text-underline-offset: 5px; }
-@media (max-width: 800px) { .lp-sport-benefit-grid { grid-template-columns: 1fr; gap: 15px; } .lp-sport-benefits { padding-block: 32px 10px; } }
-@media (max-width: 600px) { .lp-sport-benefit-grid article { padding: 20px; } .lp-sport-benefits-intro { font-size: 13px; } }
-.lp-sport-conversion .lp-art-headline { font-size: 25px; }
-.lp-sport-conversion .lp-visual-offer > h2 { font-size: 32px; letter-spacing: -.03em; }
-.lp-sport-conversion .lp-visual-tagline { font-size: clamp(28px, 3vw, 42px); line-height: 1.6; margin-top: 18px !important; }
-.lp-sport-description { font-size: 15px; color: #475e51; margin-top: 14px !important; }
+.lp-angle-benefit-grid h3 { margin-top: 13px !important; font-size: 23px; font-weight: 800; line-height: 1.7; }
+.lp-angle-benefit-grid .lp-benefit-ingredient { font-size: 12px; font-weight: 700; color: #6a7754; margin-block: 7px 14px !important; }
+.lp-angle-benefit-grid p:not(.lp-benefit-ingredient) { font-size: 13px; color: #475e51; line-height: 2; }
+.lp-angle-benefit-grid a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin-top: 12px; font-size: 12px; color: #244d37; text-decoration: underline; text-underline-offset: 5px; }
+@media (max-width: 800px) { .lp-angle-benefit-grid { grid-template-columns: 1fr; gap: 15px; } .lp-angle-benefits { padding-block: 32px 10px; } }
+@media (max-width: 600px) { .lp-angle-benefit-grid article { padding: 20px; } .lp-angle-benefits-intro { font-size: 13px; } }
+.lp-campaign-conversion .lp-art-headline { font-size: 25px; }
+.lp-campaign-conversion .lp-visual-offer > h2 { font-size: 32px; letter-spacing: -.03em; }
+.lp-campaign-conversion .lp-visual-tagline { font-size: clamp(28px, 3vw, 42px); line-height: 1.6; margin-top: 18px !important; }
+.lp-campaign-description { font-size: 15px; color: #475e51; margin-top: 14px !important; }
 .lp-value-strip { display: grid; gap: 3px; padding: 13px 16px; background: #eef1e3; border-inline-start: 3px solid #9a8a4e; margin-bottom: 18px; border-radius: 4px; }
 .lp-value-strip strong { font-size: 19px; }
 .lp-value-strip span { font-size: 12px; color: #475e51; }
-.lp-sport-conversion .lp-micro { font-size: 12px; }
+.lp-campaign-conversion .lp-micro { font-size: 12px; }
 .lp-preparation { padding-block: 48px; }
 .lp-preparation h2 { font-size: clamp(25px, 3vw, 36px); font-weight: 800; margin-bottom: 24px !important; }
 .lp-preparation-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
@@ -356,8 +356,8 @@
 .lp-preparation-grid h3 { font-size: 20px; font-weight: 700; }
 .lp-preparation-grid p { font-size: 13px; color: #475e51; margin-top: 7px !important; }
 .lp-preparation-note { margin-top: 16px !important; font-size: 12px; color: #475e51; }
-.lp-sport-conversion .lp-visual-ingredients { margin-top: 0; }
-.lp-sport-conversion .lp-ingredient-card > div { aspect-ratio: 1.7; }
+.lp-campaign-conversion .lp-visual-ingredients { margin-top: 0; }
+.lp-campaign-conversion .lp-ingredient-card > div { aspect-ratio: 1.7; }
 .lp-optional-details { margin-top: 24px; border-block: 1px solid var(--lp-line); padding-block: 12px; }
 .lp-optional-details summary { cursor: pointer; min-height: 44px; font-size: 13px; font-weight: 700; }
 .lp-optional-details summary small { font-weight: 400; }
@@ -368,14 +368,14 @@
 .lp-order-form .lp-delivery-note, .lp-order-form .lp-order-next { font-size: 12px; color: #475e51; }
 .lp-order-form .lp-order-privacy { font-size: 11px; }
 @media (max-width: 800px) {
-  .lp-sport-conversion .lp-visual-hero { gap: 18px; }
-  .lp-sport-conversion .lp-campaign-art { display: flex; flex-direction: column; }
-  .lp-sport-conversion .lp-art-headline { font-size: 21px; margin-bottom: 12px !important; }
-  .lp-sport-conversion .lp-campaign-photo { aspect-ratio: 1.65; }
-  .lp-sport-conversion .lp-visual-offer > h2 { display: none; }
-  .lp-sport-conversion .lp-visual-tagline { font-size: 28px; margin-top: 0 !important; }
-  .lp-sport-conversion .lp-ingredient-pills { margin-top: 12px; }
-  .lp-sport-conversion .lp-hero-offer { margin-block: 15px; }
+  .lp-campaign-conversion .lp-visual-hero { gap: 18px; }
+  .lp-campaign-conversion .lp-campaign-art { display: flex; flex-direction: column; }
+  .lp-campaign-conversion .lp-art-headline { font-size: 21px; margin-bottom: 12px !important; }
+  .lp-campaign-conversion .lp-campaign-photo { aspect-ratio: 1.65; }
+  .lp-campaign-conversion .lp-visual-offer > h2 { display: none; }
+  .lp-campaign-conversion .lp-visual-tagline { font-size: 28px; margin-top: 0 !important; }
+  .lp-campaign-conversion .lp-ingredient-pills { margin-top: 12px; }
+  .lp-campaign-conversion .lp-hero-offer { margin-block: 15px; }
   .lp-mobile-buy span { font-size: 11px; }
   .lp-preparation { padding-block: 32px; }
 }
@@ -386,22 +386,22 @@
   .lp-preparation-grid article > div { padding: 14px; }
   .lp-preparation-grid h3 { font-size: 18px; }
   .lp-preparation-grid p { font-size: 12px; }
-  .lp-sport-description { font-size: 13px; }
+  .lp-campaign-description { font-size: 13px; }
   .lp-value-strip span { font-size: 11px; }
-  .lp-sport-conversion .lp-micro { font-size: 11px; }
-  .lp-sport-conversion .lp-ingredient-card > div { aspect-ratio: 1.4; }
+  .lp-campaign-conversion .lp-micro { font-size: 11px; }
+  .lp-campaign-conversion .lp-ingredient-card > div { aspect-ratio: 1.4; }
   .lp-order-form { scroll-margin-bottom: 120px; }
   .vf-landing input:focus { scroll-margin-bottom: 140px; }
 }
 /* Landscape lifestyle photography keeps the jar and people inside the frame. */
 .lp-visual-page .lp-campaign-photo { aspect-ratio: 3 / 2; object-fit: contain; }
 .lp-visual-page .lp-visual-offer > h2 { font-size: clamp(32px, 4vw, 54px); line-height: 1.05; }
-.lp-sport-conversion .lp-visual-offer > h2 { font-size: 32px; }
+.lp-campaign-conversion .lp-visual-offer > h2 { font-size: 32px; }
 @media (max-width: 800px) {
   .lp-visual-page .lp-campaign-photo { aspect-ratio: 3 / 2; }
   .lp-visual-page .lp-visual-offer > h2 { display: none; }
 }
-/* Pair the product with concrete everyday habits, then show how to prepare it. */
+/* Pair each campaign with its matching everyday habits. */
 .lp-motivation { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; padding-block: 48px 16px; }
 .lp-motivation-photo { position: relative; overflow: hidden; border-radius: 10px; }
 .lp-motivation-photo img { width: 100%; height: auto; }
@@ -415,3 +415,9 @@
   .lp-motivation { grid-template-columns: 1fr; gap: 22px; padding-block: 32px 10px; }
   .lp-motivation p:not(.lp-kicker), .lp-motivation li { font-size: 13px; }
 }
+
+.lp-product-labels { padding-block: 40px; }
+.lp-product-labels h2 { font-size: clamp(24px, 3vw, 34px); font-weight: 800; line-height: 1.7; }
+.lp-product-labels .lp-label { max-width: 100%; margin-block: 16px; }
+.lp-product-labels .lp-label img { width: 100%; height: auto; }
+.lp-visual-page .lp-ingredient-grid.lp-single-ingredient { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
