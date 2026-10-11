@@ -25,3 +25,11 @@ Final prompt:
 ## Validation before publication
 
 ESLint, TypeScript and the production build passed. The build required a scratch-only Node shim for a restricted-runtime `uv_resident_set_memory` error; the shim is not part of the repository or deployment. Generated HTML was checked for all nine routes, the artwork in the homepage and directory, one main heading on the sports page, three ingredient research cards, unchanged product label access and absence of sports preparation/dose marketing sections. The WebP file was decoded and verified.
+
+## Western digit update
+
+All storefront and campaign copy now uses Western digits 0–9. Both campaign formatters use French Tunisian formatting with the explicit `latn` numbering system, as does the storefront currency formatter. The sports asset is now `public/images/landing/sport-recovery-v4.webp` (1024 × 1536), edited with the built-in imagegen tool to replace the banner digit with 7.
+
+Final edit prompt:
+
+> Use case: text-localization. Edit target: the supplied existing portrait Vital Force sports advertisement. Make exactly one localized typography change: replace the Eastern Arabic numeral ٧ in the bottom beige banner with the Western/Latin digit 7. The full banner must read exactly «7 مكوّنات نباتية في روتينك الرياضي». Keep the Arabic sentence reading right-to-left, with the 7 at its right start, same dark green weight and typographic scale. Preserve every other element: the same athlete in both poses, face, hair, clothing, gym, diagonal gold transition, exact product jar and label, orange drink, water, food, Vital Force logos, all other Arabic headings and bottom icons/captions, colors, lighting and layout. Retain exact 1024x1536 portrait aspect. Do not add new text or graphics, do not alter packaging. Only change the one digit ٧ to 7.

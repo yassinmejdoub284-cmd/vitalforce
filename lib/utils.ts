@@ -8,6 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatTnd(value: number) {
   return new Intl.NumberFormat("fr-TN", {
     style: "currency",
+    numberingSystem: "latn",
     currency: "TND",
     minimumFractionDigits: 3
   }).format(value);

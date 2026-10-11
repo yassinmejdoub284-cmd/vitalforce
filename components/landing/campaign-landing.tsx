@@ -37,8 +37,8 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
   const faq = [
     [page.question, page.answer],
     ["شنوّة الفرق بين النكهات؟", "نفس المزيج بثلاث نكهات: برتقال، ليمون ونعناع. راجع ملصق كل نكهة للتفاصيل."],
-    isSport ? ["وين نلقى معلومات المنتج الكاملة؟", "افتح «شوف الملصق الكامل» في قسم الطلب: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة."] : ["شكون يلزمو ينتبه قبل الاستعمال؟", "حسب الملصق: غير منصوح به للحامل والمرضع وللأطفال دون ١٣ سنة وفي حالة فرط نشاط الغدة الدرقية. إذا تتناول أدوية، لديك مرض مزمن أو اضطراب في الغدة الدرقية، استشر مختصاً صحياً قبل الاستعمال."],
-    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية وافتح رسالة واتساب الجاهزة. أرسلها بنفسك؛ الفريق يؤكّد التوفر والعنوان والتوصيل بـ٧ د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
+    isSport ? ["وين نلقى معلومات المنتج الكاملة؟", "افتح «شوف الملصق الكامل» في قسم الطلب: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة."] : ["شكون يلزمو ينتبه قبل الاستعمال؟", "حسب الملصق: غير منصوح به للحامل والمرضع وللأطفال دون 13 سنة وفي حالة فرط نشاط الغدة الدرقية. إذا تتناول أدوية، لديك مرض مزمن أو اضطراب في الغدة الدرقية، استشر مختصاً صحياً قبل الاستعمال."],
+    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية وافتح رسالة واتساب الجاهزة. أرسلها بنفسك؛ الفريق يؤكّد التوفر والعنوان والتوصيل بـ7 د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
   ];
   return <main className={`lp-page lp-visual-page${isSport ? " lp-sport-conversion" : ""}`} style={{ "--lp-accent": page.color } as React.CSSProperties}>
     <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</div>
@@ -54,19 +54,19 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       <div className="lp-visual-offer">
         <p className="lp-kicker">{page.name}</p>
         <h2 dir="ltr">{isSport ? <>VITAL <em>FORCE</em></> : <>VITAL<br /><em>FORCE</em></>}</h2>
-        <p className="lp-visual-tagline">{isSport ? <>{page.title}<br />{page.accent}</> : <>٧ مكوّنات نباتية.<br />روتين بسيط بطعمك.</>}</p>
+        <p className="lp-visual-tagline">{isSport ? <>{page.title}<br />{page.accent}</> : <>7 مكوّنات نباتية.<br />روتين بسيط بطعمك.</>}</p>
         {isSport && <p className="lp-sport-description">{page.description}</p>}
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
-          <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>٤٠٠ غ · التوصيل ٧ د.ت<br />برتقال · ليمون · نعناع</span></div>
+          <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
         </>}
-        {isSport && <div className="lp-value-strip"><strong>٧ مكوّنات نباتية</strong><span>٤٠٠ غ · ثلاث نكهات · لحظة عناية ضمن روتينك الرياضي</span></div>}
-        <p className="lp-visual-evidence">{page.benefitCaption ?? "٧ مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
+        {isSport && <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · لحظة عناية ضمن روتينك الرياضي</span></div>}
+        <p className="lp-visual-evidence">{page.benefitCaption ?? "7 مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
         <a href={target} className="lp-primary">{cta}<ArrowDownLeft size={20} /></a>
-        <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : "الدفع عند الاستلام · ١٧٠ د.ت بالتوصيل لعبوة واحدة"}</p>
+        <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : "الدفع عند الاستلام · 170 د.ت بالتوصيل لعبوة واحدة"}</p>
       </div>
     </section>
-    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>٧ مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>٧ د.ت للطلب</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>7 د.ت للطلب</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
     {page.benefits && <section className="lp-sport-benefits lp-shell" aria-labelledby="sport-benefits-title">
       <p className="lp-kicker">من المكوّن، لفهم الروتين الرياضي</p><h2 id="sport-benefits-title">شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟</h2>
       <p className="lp-sport-benefits-intro">أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها.</p>
@@ -82,9 +82,9 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
     {!page.informational && !isSport && <section className="lp-preparation lp-shell" aria-labelledby="preparation-title">
       <p className="lp-kicker">من العلبة لروتينك</p><h2 id="preparation-title">تحضير واضح. نكهة على ذوقك.</h2>
       <div className="lp-preparation-grid">{[
-        ["usage-dose-scoop.jpg", "١", "حدّد الجرعة", isSport ? "للرياضي: ١٠ غ يومياً حسب الملصق. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة." : "حسب الملصق: ٥ غ يومياً لغير الرياضي و١٠ غ للرياضي. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة."],
-        ["usage-mix-scoop.jpg", "٢", "زيد مشروبك", "اخلط في ٢٠٠ مل ماء، عصير أو مشروبك المفضّل."],
-        ["usage-ready-scoop.jpg", "٣", "اخلط واستعمل", "حسب الملصق: في الصباح، من الأفضل بعد الأكل. ما تتجاوزش الجرعة الموصى بها."]
+        ["usage-dose-scoop.jpg", "1", "حدّد الجرعة", isSport ? "للرياضي: 10 غ يومياً حسب الملصق. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة." : "حسب الملصق: 5 غ يومياً لغير الرياضي و10 غ للرياضي. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة."],
+        ["usage-mix-scoop.jpg", "2", "زيد مشروبك", "اخلط في 200 مل ماء، عصير أو مشروبك المفضّل."],
+        ["usage-ready-scoop.jpg", "3", "اخلط واستعمل", "حسب الملصق: في الصباح، من الأفضل بعد الأكل. ما تتجاوزش الجرعة الموصى بها."]
       ].map(([image, number, title, text]) => <article key={number}><Image src={`/images/${image}`} alt={`صورة توضيحية: ${title}`} width={1448} height={1086} sizes="(max-width: 600px) 100vw, 33vw" /><div><span>{number}</span><h3>{title}</h3><p>{text}</p></div></article>)}</div>
       <p className="lp-preparation-note">صور توضيحية مولّدة؛ اتبع تعليمات الملصق. العرض يخصّ العبوة؛ أدوات التحضير الظاهرة ليست ضمن العرض.</p>
       <a href="#order" className="lp-text-link">اختار بين البرتقال، الليمون والنعناع<ArrowDownLeft size={18} /></a>
@@ -103,7 +103,7 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
     </section>
     {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} />}
     <section className="lp-faq lp-shell" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من ٧ مكوّنات نباتية · عبوة ٤٠٠ غ</p><a href="tel:+21627200603" dir="ltr">+216 27 200 603</a><span>صفاقس، تونس · صور توضيحية مولّدة</span></div></footer>
-    <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : `${products[0].price} د.ت`}</strong><span>{page.informational ? "٧ مكوّنات نباتية" : "+ ٧ د.ت توصيل"}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
+    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p><a href="tel:+21627200603" dir="ltr">+216 27 200 603</a><span>صفاقس، تونس · صور توضيحية مولّدة</span></div></footer>
+    <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : `${products[0].price} د.ت`}</strong><span>{page.informational ? "7 مكوّنات نباتية" : "+ 7 د.ت توصيل"}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
   </main>;
 }
