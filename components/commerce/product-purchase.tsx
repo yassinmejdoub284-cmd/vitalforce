@@ -10,6 +10,7 @@ import { getDeliveryQuotes, type DeliveryCompany, type DeliverySettings } from "
 import { trackMetaEvent } from "@/lib/meta";
 import type { Product } from "@/lib/product-data";
 import { formatTnd } from "@/lib/utils";
+import { DiscountBadge } from "@/components/commerce/discount-badge";
 
 export function ProductPurchase({ initialProduct, variants, checkoutAvailable }: { initialProduct: Product; variants: Product[]; checkoutAvailable: boolean }) {
   const router = useRouter();
@@ -96,7 +97,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
       <h1>VITAL FORCE <span>{product.flavor}</span></h1>
       <p className="product-lead">Mélange botanique aux sept ingrédients de la formule.</p>
       <div className="product-rating-line"><span><Check size={14}/> Disponible</span><i/> <span>Livraison en Tunisie</span></div>
-      <div className="product-price-line"><strong>{formatTnd(product.price)}</strong>{product.compareAtPrice && <del>{formatTnd(product.compareAtPrice)}</del>}<small>Prix du pot · 400 g</small></div>
+      <div className="product-price-line"><strong>{formatTnd(product.price)}</strong><DiscountBadge percent={product.discountPercent} />{product.compareAtPrice && <del>{formatTnd(product.compareAtPrice)}</del>}<small>{product.discountPercent ? "Prix après réduction" : "Prix du pot"} · 400 g</small></div>
 
       <fieldset className="product-option-group">
         <legend className="text-sm font-bold">Goût</legend>

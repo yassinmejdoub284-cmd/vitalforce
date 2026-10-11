@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Truck } from "lucide-react";
 import { formatTnd } from "@/lib/utils";
 import { products } from "@/lib/product-data";
+import { DiscountBadge } from "@/components/commerce/discount-badge";
 
 export function BotanicalHero() {
   const product = products[0];
@@ -11,36 +12,39 @@ export function BotanicalHero() {
     <section className="shop-hero" aria-labelledby="hero-title">
       <Image src="/images/hero-botanical-background.png" alt="" fill priority sizes="100vw" className="shop-hero-image" />
       <div className="shop-hero-shade" aria-hidden="true" />
-      <div className="hero-product" role="img" aria-label="Pot VITAL FORCE Orange 400 g">
-        <div className="hero-product-lid" aria-hidden="true" />
-        <div className="hero-product-body">
-          <Image
-            src="/images/v2/etiquette-orange-front.png"
-            alt="Étiquette VITAL FORCE Orange 400 g"
-            width={724}
-            height={724}
-            priority
-            unoptimized
-            sizes="(max-width: 700px) 300px, 430px"
-            className="hero-product-label"
-          />
-        </div>
-      </div>
       <div className="container-shell shop-hero-inner">
         <div className="shop-hero-copy">
           <p className="shop-kicker">VITAL FORCE · 400 G · 7 INGRÉDIENTS</p>
           <h1 id="hero-title">VITAL FORCE</h1>
           <p className="shop-hero-tagline">La force de la nature.</p>
           <p className="shop-hero-description">Un mélange botanique à intégrer simplement à votre rituel quotidien, disponible en trois goûts.</p>
-          <div className="shop-hero-offer"><strong>{formatTnd(product.price)}</strong><span>le pot de 400 g</span></div>
+          <div className="shop-hero-promotion"><DiscountBadge percent={product.discountPercent} /></div>
+          <div className="shop-hero-offer"><strong>{formatTnd(product.price)}</strong><span>{product.discountPercent ? "après réduction · pot de 400 g" : "le pot de 400 g"}</span></div>
           <div className="shop-hero-actions">
             <Link href={`/products/${product.slug}`} className="shop-primary-action">Commander maintenant <ArrowRight size={18} /></Link>
             <Link href="#ingredients" className="shop-secondary-action">Voir les 7 ingrédients</Link>
           </div>
-          <ul className="shop-hero-points" aria-label="Informations essentielles">
-            <li><Check size={16} /> Paiement à la livraison</li>
-            <li><Check size={16} /> Livraison en Tunisie</li>
-          </ul>
+        </div>
+      </div>
+      <div className="hero-product-area">
+        <ul className="shop-hero-points" aria-label="Paiement et livraison">
+          <li><Check size={19} aria-hidden="true" /><span><strong>Paiement à la livraison</strong><small lang="ar" dir="rtl">الدفع عند الاستلام</small></span></li>
+          <li><Truck size={19} aria-hidden="true" /><span><strong>Livraison partout en Tunisie</strong><small lang="ar" dir="rtl">التوصيل لكامل تونس</small></span></li>
+        </ul>
+        <div className="hero-product" role="img" aria-label="Pot VITAL FORCE Orange 400 g">
+          <div className="hero-product-lid" aria-hidden="true" />
+          <div className="hero-product-body">
+            <Image
+              src="/images/v2/etiquette-orange-front.png"
+              alt="Étiquette VITAL FORCE Orange 400 g"
+              width={724}
+              height={724}
+              preload
+              unoptimized
+              sizes="(max-width: 700px) 300px, 430px"
+              className="hero-product-label"
+            />
+          </div>
         </div>
       </div>
     </section>

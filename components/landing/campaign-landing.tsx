@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpLeft, Check, Leaf, ShieldCheck, Truck } from "lucide-react";
 import { LandingOrder } from "./landing-order";
+import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { arabicIngredientNames, ingredientReferences, type LandingPage } from "@/lib/landing-pages";
 import { products, vitalForceIngredients } from "@/lib/product-data";
 
@@ -42,6 +43,7 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
         <p className="lp-campaign-description">{page.description}</p>
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
+          <DiscountBadge percent={products[0].discountPercent} lang="ar" />
           <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
         </>}
         <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>

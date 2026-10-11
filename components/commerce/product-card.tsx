@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import type { Product } from "@/lib/product-data";
 import { formatTnd } from "@/lib/utils";
 import { ProductJar } from "@/components/commerce/product-jar";
+import { DiscountBadge } from "@/components/commerce/discount-badge";
 
 export function ProductCard({ product }: { product: Product }) {
   return (
@@ -17,6 +18,7 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="flex items-center justify-between gap-3"><Badge>{product.flavor}</Badge><span className="product-stock"><Check size={13}/> En stock</span></div>
         <h2>{product.name}</h2>
         <p>{product.subtitle}</p>
+        <div className="product-card-promotion"><DiscountBadge percent={product.discountPercent} /></div>
         <div className="product-card-price">
           <div>
             <p>{formatTnd(product.price)}</p>
