@@ -15,7 +15,7 @@ const ingredientFacts = [
   "يحتوي على البيبيرين."
 ];
 const campaignHooks: Record<string, string> = {
-  sport: "روتينك الرياضي يستحقّ اهتمامك.",
+  sport: "تمرّن بعزيمة. واعتنِ باستشفائك.",
   "daily-energy": "ابدأ نهارك بلحظة عناية ليك.",
   calm: "خفّف الإيقاع. واعمل مساحة لنفسك.",
   focus: "اعمل مساحة لتركيزك.",
@@ -35,10 +35,9 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
   const target = page.informational ? "#ingredients" : "#order";
   const cta = page.informational ? "اكتشف المكوّنات" : "اختار نكهتك واطلب";
   const faq = [
-    [isSport ? "شنوّة VITAL FORCE وشنوّة دوره؟" : page.question, isSport ? "مكمّل غذائي نباتي يدخل في روتين غذائي ورياضي متوازن. موش بروتين لبناء العضلات، وما يضمنش زيادة الأداء الرياضي. ما يعوّضش التغذية المتوازنة أو التدريب." : page.answer],
-    ...(isSport ? [["قدّاش تدوم العبوة؟", "عبوة ٤٠٠ غ تعطي حوالي ٤٠ استعمال بجرعة ١٠ غ يومياً حسب تعليمات الاستعمال للرياضي. اتبع الملصق ولا تتجاوز الجرعة الموصى بها."]] : []),
+    [page.question, page.answer],
     ["شنوّة الفرق بين النكهات؟", "نفس المزيج بثلاث نكهات: برتقال، ليمون ونعناع. راجع ملصق كل نكهة للتفاصيل."],
-    ["شكون يلزمو ينتبه قبل الاستعمال؟", "حسب الملصق: غير منصوح به للحامل والمرضع وللأطفال دون ١٣ سنة وفي حالة فرط نشاط الغدة الدرقية. إذا تتناول أدوية، لديك مرض مزمن أو اضطراب في الغدة الدرقية، استشر مختصاً صحياً قبل الاستعمال."],
+    isSport ? ["وين نلقى معلومات المنتج الكاملة؟", "افتح «شوف الملصق الكامل» في قسم الطلب: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة."] : ["شكون يلزمو ينتبه قبل الاستعمال؟", "حسب الملصق: غير منصوح به للحامل والمرضع وللأطفال دون ١٣ سنة وفي حالة فرط نشاط الغدة الدرقية. إذا تتناول أدوية، لديك مرض مزمن أو اضطراب في الغدة الدرقية، استشر مختصاً صحياً قبل الاستعمال."],
     ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية وافتح رسالة واتساب الجاهزة. أرسلها بنفسك؛ الفريق يؤكّد التوفر والعنوان والتوصيل بـ٧ د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
   ];
   return <main className={`lp-page lp-visual-page${isSport ? " lp-sport-conversion" : ""}`} style={{ "--lp-accent": page.color } as React.CSSProperties}>
@@ -55,24 +54,32 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       <div className="lp-visual-offer">
         <p className="lp-kicker">{page.name}</p>
         <h2 dir="ltr">{isSport ? <>VITAL <em>FORCE</em></> : <>VITAL<br /><em>FORCE</em></>}</h2>
-        <p className="lp-visual-tagline">{isSport ? <>خلّي العناية بروحك<br />جزء من روتينك.</> : <>٧ مكوّنات نباتية.<br />روتين بسيط بطعمك.</>}</p>
-        {isSport && <p className="lp-sport-description">مكمّل غذائي يجمع ٧ مكوّنات نباتية في مزيج واحد، بثلاث نكهات تختار منها.</p>}
+        <p className="lp-visual-tagline">{isSport ? <>{page.title}<br />{page.accent}</> : <>٧ مكوّنات نباتية.<br />روتين بسيط بطعمك.</>}</p>
+        {isSport && <p className="lp-sport-description">{page.description}</p>}
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
           <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>٤٠٠ غ · التوصيل ٧ د.ت<br />برتقال · ليمون · نعناع</span></div>
         </>}
-        {isSport && <div className="lp-value-strip"><strong>حوالي ٤٠ استعمال</strong><span>{(products[0].price / 40).toFixed(2)} د.ت للاستعمال · بجرعة ١٠ غ حسب الملصق</span></div>}
+        {isSport && <div className="lp-value-strip"><strong>٧ مكوّنات نباتية</strong><span>٤٠٠ غ · ثلاث نكهات · لحظة عناية ضمن روتينك الرياضي</span></div>}
         <p className="lp-visual-evidence">{page.benefitCaption ?? "٧ مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
         <a href={target} className="lp-primary">{cta}<ArrowDownLeft size={20} /></a>
         <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : "الدفع عند الاستلام · ١٧٠ د.ت بالتوصيل لعبوة واحدة"}</p>
       </div>
     </section>
     {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>٧ مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>٧ د.ت للطلب</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {page.benefits && <section className="lp-sport-benefits lp-shell" aria-labelledby="sport-benefits-title">
+      <p className="lp-kicker">من المكوّن، لفهم الروتين الرياضي</p><h2 id="sport-benefits-title">شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟</h2>
+      <p className="lp-sport-benefits-intro">أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها.</p>
+      <div className="lp-sport-benefit-grid">{page.benefits.map((benefit, index) => <article key={benefit.title}>
+        <span className="lp-benefit-number" aria-hidden="true">0{index + 1}</span><h3>{benefit.title}</h3><p className="lp-benefit-ingredient">{benefit.ingredient}</p><p>{benefit.body}</p>
+        <a href={benefit.reference} target="_blank" rel="noopener noreferrer">اكتشف البحث<ArrowUpLeft size={16} aria-hidden="true" /></a>
+      </article>)}</div>
+    </section>}
     <section className="lp-motivation lp-shell" aria-labelledby="motivation-title">
-      <div className="lp-motivation-photo"><Image src={`/images/landing/${motivationImages[page.slug]}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
+      <div className="lp-motivation-photo"><Image src={`/images/landing/${isSport ? "sport" : motivationImages[page.slug]}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
       <div><p className="lp-kicker">روتين يتماشى مع حياتك</p><h2 id="motivation-title">{page.storyTitle}</h2><p>{page.story}</p><ul>{page.habits.map(habit => <li key={habit}><Check size={18} aria-hidden="true" />{habit}</li>)}</ul><a href={target} className="lp-text-link">{cta}<ArrowDownLeft size={18} /></a></div>
     </section>
-    {!page.informational && <section className="lp-preparation lp-shell" aria-labelledby="preparation-title">
+    {!page.informational && !isSport && <section className="lp-preparation lp-shell" aria-labelledby="preparation-title">
       <p className="lp-kicker">من العلبة لروتينك</p><h2 id="preparation-title">تحضير واضح. نكهة على ذوقك.</h2>
       <div className="lp-preparation-grid">{[
         ["usage-dose-scoop.jpg", "١", "حدّد الجرعة", isSport ? "للرياضي: ١٠ غ يومياً حسب الملصق. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة." : "حسب الملصق: ٥ غ يومياً لغير الرياضي و١٠ غ للرياضي. قيس بالوزن؛ حجم الملعقة وحده ما يحدّدش الجرعة."],
