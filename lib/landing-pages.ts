@@ -32,7 +32,7 @@ export const landingPages: LandingPage[] = [
     slug: "sport", name: "الاستشفاء العضلي والقوّة في التمرين", eyebrow: "للّي يخدم على قوّته، تحمّله واستشفائه",
     title: "تمرّن بعزيمة.", accent: "واعتنِ باستشفائك.",
     description: "طاقتك، تحمّلك واستشفاؤك جزء من نفس الروتين. اكتشف الأشواغاندا، الجنسنغ الأحمر والكركم ضمن مكوّنات VITAL FORCE السبعة، وخلّي العناية بنفسك حاضرة مع التدريب، التغذية والراحة.",
-    image: "/images/landing/sport-recovery-v4.webp", visualImage: "/images/landing/sport-recovery-v4.webp", imageAlt: "مشهد توضيحي لنفس الرياضي منهكاً بعد حصة قوية ثم مستعداً لحصة جديدة ضمن روتين التغذية والراحة، مع عبوة VITAL FORCE", color: "#b7d9a7",
+    image: "/images/landing/sport-recovery-olive-v5.webp", visualImage: "/images/landing/sport-recovery-olive-v5.webp", imageAlt: "مشهد توضيحي لنفس الرياضي منهكاً بعد حصة قوية ثم مستعداً لحصة جديدة ضمن روتين التغذية والراحة، مع عبوة VITAL FORCE", color: "#b7d9a7",
     benefitCaption: "التمرين قوّة. والاستشفاء روتين.",
     storyTitle: "الحصة تكمل. العناية بعضلاتك تتواصل.",
     story: "كل حصة عندها مجهودها، وكل تقدّم يستحقّ عناية. بين التدريب، التغذية المتوازنة والراحة، خصّص مكاناً لروتينك النباتي مع VITAL FORCE. الأشواغاندا والكركم والجنسنغ الأحمر يجمعوا اهتمامات الأبحاث بالقوّة، التحمّل، الاستشفاء والتعب العام، في تركيبة من 7 مكوّنات نباتية.",
@@ -99,8 +99,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/be-active-for-your-mental-health/"
       }
     ],
-    "image": "/images/landing/daily-energy-campaign-v3.webp",
-    "visualImage": "/images/landing/daily-energy-campaign-v3.webp",
+    "image": "/images/landing/daily-energy-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/daily-energy-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — النشاط اليومي مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك.",
     "ingredientNotes": {
@@ -163,8 +163,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/how-to-fall-asleep-faster-and-sleep-better/"
       }
     ],
-    "image": "/images/landing/calm-campaign-v3.webp",
-    "visualImage": "/images/landing/calm-campaign-v3.webp",
+    "image": "/images/landing/calm-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/calm-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الهدوء والتوازن مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك.",
     "ingredientNotes": {
@@ -227,8 +227,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/be-active-for-your-mental-health/"
       }
     ],
-    "image": "/images/landing/focus-campaign-v3.webp",
-    "visualImage": "/images/landing/focus-campaign-v3.webp",
+    "image": "/images/landing/focus-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/focus-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — التركيز والانتباه مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك.",
     "ingredientNotes": {
@@ -306,8 +306,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nccih.nih.gov/health/turmeric"
       }
     ],
-    "image": "/images/landing/digestion-campaign-v3.webp",
-    "visualImage": "/images/landing/digestion-campaign-v3.webp",
+    "image": "/images/landing/digestion-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/digestion-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الهضم وراحة المعدة مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك."
   },
@@ -381,7 +381,7 @@ export const landingPages: LandingPage[] = [
     "name": "الراحة والتوازن",
     "eyebrow": "لحظة للراحة، كل نهار",
     "title": "تحبّ ترتاح أكثر؟",
-    "accent": "الراحة تبدأ بروتين.",
+    "accent": "ليلة هادئة تبدأ بروتين.",
     "description": "موعد منتظم للراحة، وقت هادئ وعادات نهارية متوازنة. اكتشف أبحاث مستحضرات الأشواغاندا، وتعرّف على التركيبة الكاملة لـVITAL FORCE.",
     "color": "#c8cde0",
     "benefitCaption": "اكتشف أبحاث مكوّن منفرد وعادات الراحة اليومية.",
@@ -429,9 +429,9 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/be-active-for-your-mental-health/"
       }
     ],
-    "image": "/images/landing/sleep-campaign-v3.webp",
-    "visualImage": "/images/landing/sleep-campaign-v3.webp",
-    "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الراحة والتوازن مع VITAL FORCE"
+    "image": "/images/landing/sleep-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/sleep-campaign-olive-v4.webp",
+    "imageAlt": "مشاهد توضيحية لنفس المرأة البالغة في الفراش أثناء الاستعداد للنوم وأثناء نوم هادئ، مع عبوة ومشروب زيتوني في لوحة عناية نهارية منفصلة"
   },
   {
     "slug": "movement",
@@ -477,8 +477,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/be-active-for-your-mental-health/"
       }
     ],
-    "image": "/images/landing/movement-campaign-v3.webp",
-    "visualImage": "/images/landing/movement-campaign-v3.webp",
+    "image": "/images/landing/movement-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/movement-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الحركة اليومية مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك.",
     "ingredientNotes": {
@@ -546,8 +546,8 @@ export const landingPages: LandingPage[] = [
         "reference": "/images/v2/etiquette-orange.png"
       }
     ],
-    "image": "/images/landing/botanical-campaign-v3.webp",
-    "visualImage": "/images/landing/botanical-campaign-v3.webp",
+    "image": "/images/landing/botanical-campaign-olive-v4.webp",
+    "visualImage": "/images/landing/botanical-campaign-olive-v4.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الروتين النباتي مع VITAL FORCE",
     "ingredientNotes": {
       "0": "الأشواغاندا تحتوي على الويثانوليدات. في تجربة على مستخلص معيّن لدى بالغين تحت ضغط يومي، سُجّل تحسّن في مقياس التوتر وجودة النوم. هذه نتائج المستحضر المحدّد الذي استُعمل في التجربة.",
