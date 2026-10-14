@@ -18,6 +18,7 @@ export type LandingPage = {
   informational?: boolean;
   ingredientNotes?: Partial<Record<number, string>>;
   visualImage?: string;
+  lifestyleImage?: string;
   ingredientSummaries?: Partial<Record<number, string>>;
   references?: Partial<Record<number, string>>;
   benefitCaption?: string;
@@ -314,8 +315,8 @@ export const landingPages: LandingPage[] = [
     "slug": "intimacy",
     "name": "العلاقة الزوجية والعافية",
     "eyebrow": "وقت لكما، واهتمام يبدأ من نفسك",
-    "title": "زحمة النهار تبعّد المسافة؟",
-    "accent": "اهتمّ بنفسك. وقرّب المسافة بينكما.",
+    "title": "قوة الطبيعة،",
+    "accent": "لحيوية متجدّدة وحياة زوجية أجمل",
     "description": "خصّص وقتاً لعافيتك ولحظاتكما المشتركة. اكتشف الأشواغاندا والحلبة والماكا السوداء ضمن VITAL FORCE، وأبحاث مستحضرات هذه النباتات في العافية الجنسية ومستويات التستوستيرون.",
     "color": "#e6c4ba",
     "benefitCaption": "مكوّنات دُرست لدورها في دعم مستويات التستوستيرون.",
@@ -369,9 +370,10 @@ export const landingPages: LandingPage[] = [
         "reference": "https://pubmed.ncbi.nlm.nih.gov/12472620/"
       }
     ],
-    "image": "/images/landing/intimacy-campaign-v3.webp",
-    "visualImage": "/images/landing/intimacy-campaign-v3.webp",
-    "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — العلاقة الزوجية والعافية مع VITAL FORCE",
+    "image": "/images/landing/intimacy-campaign-v4.webp",
+    "visualImage": "/images/landing/intimacy-campaign-v4.webp",
+    "lifestyleImage": "/images/landing/intimacy-embrace-v3.webp",
+    "imageAlt": "صورة توضيحية لزوجين بالغين شابين يتعانقان بابتسامة — VITAL FORCE، قوة الطبيعة، لحيوية متجدّدة وحياة زوجية أجمل",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك."
   },
   {

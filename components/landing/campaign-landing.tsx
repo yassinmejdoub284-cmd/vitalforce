@@ -62,7 +62,7 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       </article>)}</div>
     </section>}
     <section className="lp-motivation lp-shell" aria-labelledby="motivation-title">
-      <div className="lp-motivation-photo"><Image src={`/images/landing/${page.slug}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
+      <div className="lp-motivation-photo"><Image src={page.lifestyleImage ?? `/images/landing/${page.slug}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
       <div><p className="lp-kicker">روتين يتماشى مع حياتك</p><h2 id="motivation-title">{page.storyTitle}</h2><p>{page.story}</p><ul>{page.habits.map(habit => <li key={habit}><Check size={18} aria-hidden="true" />{habit}</li>)}</ul><a href={target} className="lp-text-link">{cta}<ArrowDownLeft size={18} /></a></div>
     </section>
     <section className="lp-ingredients-section lp-visual-ingredients" id="ingredients">

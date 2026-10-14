@@ -40,6 +40,8 @@ export const vitalForceIngredients: Ingredient[] = [
   { name: "Poivre noir", nameAr: "الفلفل الأسود", label: "Grains", benefit: "La touche épicée de notre sélection botanique.", advantage: "Le poivre noir contient de la pipérine. Associée au curcuma dans certaines préparations étudiées, elle peut favoriser l'absorption de la curcumine.", advantageAr: "يحتوي الفلفل الأسود على البيبيرين. وعند مزجه بالكركم في بعض المستحضرات المدروسة، قد يساعد على امتصاص الكركمين.", color: "#2b211f", image: "/images/v2/poivre_noir.webp" }
 ];
 
+export const vitalForceDosage = { scoopGrams: 5, sportScoops: 2, nonSportScoops: 1 } as const;
+
 const orangeProduct: Product = {
     id: "vf-400-orange",
     slug: "vital-force-400g-orange",
@@ -56,8 +58,8 @@ const orangeProduct: Product = {
       "Mélange botanique VITAL FORCE aux sept ingrédients de la formule, en version goût orange.",
     highlights: ["100% ingrédients naturels", "Goût orange", "Format 400 g", "Distribution Tunisie"],
     usage: [
-      "Sportif: 10 g par jour.",
-      "Non sportif: 5 g par jour.",
+      `Sportif: ${vitalForceDosage.sportScoops} scoops de ${vitalForceDosage.scoopGrams} g, soit ${vitalForceDosage.sportScoops * vitalForceDosage.scoopGrams} g par jour.`,
+      `Non sportif: ${vitalForceDosage.nonSportScoops} scoop de ${vitalForceDosage.scoopGrams} g, soit ${vitalForceDosage.nonSportScoops * vitalForceDosage.scoopGrams} g par jour.`,
       "Mélanger dans 200 ml d'eau, de jus ou de votre boisson préférée.",
       "À prendre le matin, de préférence après les repas."
     ],
