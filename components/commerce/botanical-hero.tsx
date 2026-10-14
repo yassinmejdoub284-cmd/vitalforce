@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Truck } from "lucide-react";
-import { formatTnd } from "@/lib/utils";
+import { formatOfferPrice } from "@/lib/utils";
 import { products } from "@/lib/product-data";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
@@ -20,8 +20,8 @@ export function BotanicalHero() {
           <h1 id="hero-title">VITAL FORCE</h1>
           <p className="shop-hero-tagline">La force de la nature.</p>
           <p className="shop-hero-description">Un mélange botanique à intégrer simplement à votre rituel quotidien, disponible en trois goûts.</p>
-          <div className="shop-hero-promotion"><DiscountBadge percent={product.discountPercent} /></div>
-          <div className="shop-hero-offer"><strong>{formatTnd(product.price)}</strong><span>{product.discountPercent ? "après réduction · pot de 400 g" : "le pot de 400 g"}</span></div>
+          <div className="shop-hero-promotion">{product.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}<DiscountBadge percent={product.discountPercent} /></div>
+          <div className="shop-hero-offer"><strong>{formatOfferPrice(product.price)}</strong><span>{product.discountPercent ? "après réduction · pot de 400 g" : "le pot de 400 g"}</span></div>
           <div className="shop-hero-actions">
             <Link href={`/products/${product.slug}`} className="shop-primary-action">Commander maintenant <ArrowRight size={18} /></Link>
             <Link href="#ingredients" className="shop-secondary-action">Voir les 7 ingrédients</Link>

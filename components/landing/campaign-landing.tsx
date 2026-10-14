@@ -1,3 +1,4 @@
+import { formatOfferPrice } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpLeft, Check, Leaf, ShieldCheck, Truck } from "lucide-react";
@@ -45,8 +46,8 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
         <p className="lp-campaign-description">{page.description}</p>
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
-          <DiscountBadge percent={products[0].discountPercent} lang="ar" />
-          <div className="lp-hero-offer"><strong>{products[0].price}<small>د.ت</small></strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
+          <div className="lp-hero-promotion">{products[0].compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(products[0].compareAtPrice)}</del>}<DiscountBadge percent={products[0].discountPercent} lang="ar" /></div>
+          <div className="lp-hero-offer"><strong dir="ltr">{formatOfferPrice(products[0].price)}</strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
         </>}
         <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>
         <p className="lp-visual-evidence">{page.benefitCaption ?? "7 مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>

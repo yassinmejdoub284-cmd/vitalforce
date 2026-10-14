@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { Check, MessageCircle, Minus, Plus } from "lucide-react";
 import { ProductJar } from "@/components/commerce/product-jar";
 import { buildWhatsAppOrder, readCampaign, type CampaignAttribution } from "@/lib/landing-attribution";
+import { formatOfferPrice } from "@/lib/utils";
 import { products } from "@/lib/product-data";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 
@@ -56,7 +57,7 @@ export function LandingOrder({ angle, angleName }: { angle: string; angleName: s
     <div className="lp-order-product"><p className="lp-kicker">ابدأ بطعمك المفضّل</p><h2>روتينك.<br /><em>نكهتك. اختيارك.</em></h2><div className="lp-order-jar"><ProductJar flavor={selected.flavor} large /></div><span className="lp-order-weight">400 غ / 7 مكوّنات نباتية</span><details className="lp-label"><summary>شوف الملصق الكامل · {flavors[selected.flavor]}</summary><Image src={selected.image} alt={`ملصق VITAL FORCE ${flavors[selected.flavor]}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 50vw" /></details></div>
     <form className="lp-order-form" onSubmit={submit}>
       <span className="lp-order-context">{angleName}</span><h3>نحضّرولك طلبك.</h3><p>اختار، افتح الرسالة وأرسلها على واتساب.</p>
-      <p className="lp-order-promotion"><DiscountBadge percent={selected.discountPercent} lang="ar" /> <span>{money(selected.price)} بعد التخفيض / عبوة</span></p>
+      <p className="lp-order-promotion">{selected.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(selected.compareAtPrice)}</del>}<DiscountBadge percent={selected.discountPercent} lang="ar" /> <span>{formatOfferPrice(selected.price)} بعد التخفيض / عبوة</span></p>
       <fieldset><legend>1. اختار النكهة</legend><div className="lp-flavor-buttons">{products.map(product => <button key={product.id} type="button" aria-pressed={product.id === selected.id} onClick={() => { setSelected(product); setOpened(false); }}><span className={`lp-flavor-dot lp-flavor-${product.flavor.toLowerCase()}`} />{flavors[product.flavor]}{product.id === selected.id && <Check size={14} />}</button>)}</div></fieldset>
       <fieldset><legend>2. حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button type="button" disabled={quantity >= 10} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
       <details className="lp-optional-details"><summary>زيد معلوماتك لتجهيز الرسالة <small>(اختياري)</small></summary><fieldset><legend className="lp-visually-hidden">معلوماتك الاختيارية</legend><div className="lp-fields"><label>الاسم<input name="name" maxLength={80} autoComplete="name" placeholder="اسمك" /></label><label>الهاتف<input name="phone" type="tel" dir="ltr" maxLength={24} autoComplete="tel" placeholder="+216" /></label><label className="lp-field-full">المدينة<input name="city" maxLength={80} autoComplete="address-level2" placeholder="وين تحبّ يوصلك الطلب؟" /></label></div></fieldset></details>

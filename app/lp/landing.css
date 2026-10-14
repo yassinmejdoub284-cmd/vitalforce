@@ -421,3 +421,5 @@
 .lp-product-labels .lp-label { max-width: 100%; margin-block: 16px; }
 .lp-product-labels .lp-label img { width: 100%; height: auto; }
 .lp-visual-page .lp-ingredient-grid.lp-single-ingredient { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
+
+.lp-hero-promotion { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }

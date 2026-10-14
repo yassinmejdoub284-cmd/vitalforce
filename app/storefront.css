@@ -334,3 +334,6 @@ body { background: var(--vf-white); color: var(--vf-ink); }
   .ingredient-gallery { grid-template-columns: 1fr; }
   .ingredient-photo { aspect-ratio: 1.25; }
 }
+
+.offer-original-price { font-size: 14px; font-weight: 400; color: #708075; white-space: nowrap; text-decoration: line-through; }
+.shop-hero-promotion { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }

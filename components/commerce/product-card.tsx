@@ -3,7 +3,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { AddToCart } from "@/components/cart/add-to-cart";
 import { Badge } from "@/components/ui/badge";
 import type { Product } from "@/lib/product-data";
-import { formatTnd } from "@/lib/utils";
+import { formatOfferPrice } from "@/lib/utils";
 import { ProductJar } from "@/components/commerce/product-jar";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 
@@ -21,8 +21,8 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="product-card-promotion"><DiscountBadge percent={product.discountPercent} /></div>
         <div className="product-card-price">
           <div>
-            <p>{formatTnd(product.price)}</p>
-            {product.compareAtPrice && <p className="text-sm text-forest-900/45 line-through">{formatTnd(product.compareAtPrice)}</p>}
+            <p>{formatOfferPrice(product.price)}</p>
+            {product.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}
           </div>
           <Link href={`/products/${product.slug}`} className="product-view-link" aria-label={`Voir ${product.name}`}>
             Voir <ArrowRight size={17}/>

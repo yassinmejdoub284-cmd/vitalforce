@@ -6,7 +6,7 @@ import { useState } from "react";
 import { VitalJarScene } from "@/components/3d/scene-loader";
 import { AddToCart } from "@/components/cart/add-to-cart";
 import type { Product } from "@/lib/product-data";
-import { formatTnd } from "@/lib/utils";
+import { formatOfferPrice } from "@/lib/utils";
 
 const angles = [
   { label: "Face", value: 0 },
@@ -39,7 +39,7 @@ export function ProductViewer({ product }: { product: Product }) {
         <aside className="self-start">
           <p className="text-xs font-bold uppercase tracking-[0.12em] text-gold-700">GOÛT {product.flavor.toUpperCase()}</p>
           <h1 className="mt-3 font-display text-4xl">{product.name}</h1>
-          <p className="mt-5 text-3xl font-bold">{formatTnd(product.price)}</p>
+          <p className="mt-5 text-3xl font-bold">{product.compareAtPrice && <del className="offer-original-price mr-3" dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}{formatOfferPrice(product.price)}</p>
           <p className="mt-5 text-sm leading-7 text-forest-900/70">{product.shortDescription}</p>
           <AddToCart product={product} className="mt-8 w-full" />
           <p className="mt-5 text-xs leading-5 text-forest-900/60">Complément alimentaire. Respecter les indications et précautions de l’étiquette.</p>

@@ -14,6 +14,10 @@ export function formatTnd(value: number) {
   }).format(value);
 }
 
+export function formatOfferPrice(value: number) {
+  return `${Number.isInteger(value) ? value : value.toFixed(3)} DT`;
+}
+
 export function slugify(value: string) {
   return value
     .toLowerCase()
