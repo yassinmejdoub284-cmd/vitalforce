@@ -6,6 +6,7 @@ import { ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { useRef, useState } from "react";
 import styles from "./story-gallery.module.css";
+import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 
 const frames = [
   {
@@ -80,6 +81,7 @@ export function StoryGallery() {
           >
             <div className={styles.imageWrap}>
               <Image src={frame.image} alt={frame.alt} fill sizes="(max-width: 700px) 85vw, (max-width: 1200px) 33vw, 390px" className={`${styles.image} ${frame.imageClass}`} />
+              <PhotoBrandMark />
             </div>
             <figcaption className={styles.caption}>
               <span className={styles.number}>0{index + 1} <i /> {frame.kicker}</span>

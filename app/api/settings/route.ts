@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { settingsSchema } from "@/lib/validations";
+import { businessContact } from "@/lib/business";
 
 export async function GET() {
-  if (process.env.VERCEL) return NextResponse.json({ settings: { deliveryFee: 7, freeShippingThreshold: 180 } });
+  if (process.env.VERCEL) return NextResponse.json({ settings: { deliveryFee: 7, freeShippingThreshold: 180, phone: businessContact.phone, address: businessContact.address } });
   const settings = await prisma.siteSetting.upsert({ where: { id: "site" }, update: {}, create: {} });
   return NextResponse.json({ settings });
 }

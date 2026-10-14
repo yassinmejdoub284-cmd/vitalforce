@@ -4,12 +4,16 @@ import Image from "next/image";
 import Link from "next/link";
 import { Leaf, MapPin, Phone } from "lucide-react";
 import { useEffect, useState } from "react";
+import { businessContact } from "@/lib/business";
 
 export function SiteFooter() {
-  const [business, setBusiness] = useState({ phone: "+216 27 200 603", address: "Sfax, Tunisie" });
+  const [business, setBusiness] = useState({ phone: businessContact.phone, address: businessContact.address });
   useEffect(() => {
     fetch("/api/settings").then((response) => response.json()).then((data) => {
-      if (data.settings) setBusiness({ phone: data.settings.phone, address: data.settings.address });
+      if (data.settings) setBusiness(current => ({
+        phone: typeof data.settings.phone === "string" && data.settings.phone.trim() ? data.settings.phone.trim() : current.phone,
+        address: typeof data.settings.address === "string" && data.settings.address.trim() ? data.settings.address.trim() : current.address
+      }));
     }).catch(() => {});
   }, []);
   return (
@@ -32,8 +36,8 @@ export function SiteFooter() {
         <div>
           <h2 className="text-sm font-bold uppercase tracking-[0.16em] text-gold-300">Tunisie</h2>
           <div className="mt-4 grid gap-3 text-sm text-white/74">
-            <p className="flex items-center gap-2"><Phone size={16} /> {business.phone}</p>
-            <p className="flex items-center gap-2"><MapPin size={16} /> {business.address}</p>
+            <a href={`tel:${business.phone.replace(/[^+0-9]/g, "")}`} className="flex items-center gap-2"><Phone size={16} className="shrink-0" /><span dir="ltr">{business.phone}</span></a>
+            <p className="flex items-start gap-2"><MapPin size={16} className="mt-1 shrink-0" /><span>{business.address}</span></p>
             <p className="flex items-center gap-2"><Leaf size={16} /> Fabriqué par AZI Pharma</p>
           </div>
         </div>

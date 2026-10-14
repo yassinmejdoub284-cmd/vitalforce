@@ -5,6 +5,8 @@ import { LandingOrder } from "./landing-order";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { arabicIngredientNames, ingredientReferences, type LandingPage } from "@/lib/landing-pages";
 import { products, vitalForceIngredients } from "@/lib/product-data";
+import { businessContact } from "@/lib/business";
+import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 
 const ingredientFacts = [
   "بعض مستحضراتها دُرست للتوتر والنوم.",
@@ -69,7 +71,7 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       <div className="lp-shell">
         <div className="lp-section-heading"><div><p className="lp-kicker">من الصورة للمكوّن</p><h2>شنوّة فيه؟</h2></div><p>تعرّف على المكوّنات المرتبطة بهذه الزاوية.</p></div>
         <div className={`lp-ingredient-grid${page.featured.length === 1 ? " lp-single-ingredient" : ""}`}>{page.featured.map(index => <article key={index} className="lp-ingredient-card">
-          <div><Image src={vitalForceIngredients[index].image} alt={arabicIngredientNames[index]} width={360} height={360} sizes="(max-width: 600px) 75vw, 30vw" /></div>
+          <div><Image src={vitalForceIngredients[index].image} alt={arabicIngredientNames[index]} width={360} height={360} sizes="(max-width: 600px) 75vw, 30vw" /><PhotoBrandMark /></div>
           <h3>{arabicIngredientNames[index]}</h3><p>{page.ingredientSummaries?.[index] ?? ingredientFacts[index]}</p>
           <details className="lp-ingredient-detail"><summary>الأبحاث والملاءمة</summary><p>{page.ingredientNotes?.[index] ?? vitalForceIngredients[index].advantageAr}</p><a href={page.references?.[index] ?? ingredientReferences[index]} target="_blank" rel="noopener noreferrer">اقرأ المرجع<ArrowUpLeft size={14} /></a></details>
         </article>)}</div>
@@ -83,7 +85,7 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
       {products.map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : "نعناع"}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}
     </section>}
     <section className="lp-faq lp-shell" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p><a href="tel:+21627200603" dir="ltr">+216 27 200 603</a><span>صفاقس، تونس · صور توضيحية مولّدة</span></div></footer>
+    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p><a href={businessContact.phoneHref} dir="ltr">{businessContact.phone}</a><span>{businessContact.addressAr} · صور توضيحية مولّدة</span></div></footer>
     <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : `${products[0].price} د.ت`}</strong><span>{page.informational ? "7 مكوّنات نباتية" : "+ 7 د.ت توصيل"}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
   </main>;
 }

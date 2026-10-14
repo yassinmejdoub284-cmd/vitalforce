@@ -171,7 +171,13 @@ body { background: var(--vf-white); color: var(--vf-ink); }
 
 .usage-guide { padding-top: 92px; padding-bottom: 96px; }
 .usage-guide-image { position: relative; overflow: hidden; border-radius: 6px; background-image: none; }
-.usage-guide-image img { object-fit: cover; }
+.usage-guide-image img { object-fit: contain; }
+.photo-brand-mark { position: absolute; z-index: 3; inset: 12px 12px auto auto; display: block; width: clamp(52px, 18%, 92px); padding: 5px; border-radius: 5px; background: #fffffff2; pointer-events: none; }
+.photo-brand-mark img { position: static; display: block; width: 100%; height: auto; object-fit: contain; }
+.ingredient-photo > .photo-brand-mark { inset: 12px 12px auto auto; }
+.ingredient-photo .photo-brand-mark img, .lp-ingredient-card .photo-brand-mark img { width: 100%; height: auto; }
+.ingredient-tile:hover .photo-brand-mark img { transform: none; }
+.lp-ingredient-card > div { position: relative; }
 .usage-guide-copy > span { color: var(--vf-gold); }
 .usage-guide-step { min-width: 0; }
 

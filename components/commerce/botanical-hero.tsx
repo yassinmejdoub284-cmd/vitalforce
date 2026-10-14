@@ -4,6 +4,7 @@ import { ArrowRight, Check, ShieldCheck, Truck } from "lucide-react";
 import { formatTnd } from "@/lib/utils";
 import { products } from "@/lib/product-data";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
+import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 
 export function BotanicalHero() {
   const product = products[0];
@@ -12,6 +13,7 @@ export function BotanicalHero() {
     <section className="shop-hero" aria-labelledby="hero-title">
       <Image src="/images/hero-botanical-background.png" alt="" fill priority sizes="100vw" className="shop-hero-image" />
       <div className="shop-hero-shade" aria-hidden="true" />
+      <PhotoBrandMark />
       <div className="container-shell shop-hero-inner">
         <div className="shop-hero-copy">
           <p className="shop-kicker">VITAL FORCE · 400 G · 7 INGRÉDIENTS</p>
