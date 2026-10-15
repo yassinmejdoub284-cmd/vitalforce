@@ -165,8 +165,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/how-to-fall-asleep-faster-and-sleep-better/"
       }
     ],
-    "image": "/images/landing/calm-campaign-clean-v6.webp",
-    "visualImage": "/images/landing/calm-campaign-clean-v6.webp",
+    "image": "/images/landing/calm-campaign-botanicals-v7.webp",
+    "visualImage": "/images/landing/calm-campaign-botanicals-v7.webp",
     "imageAlt": "مشهد توضيحي لعادات يومية متوازنة — الهدوء والتوازن مع VITAL FORCE",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك.",
     "ingredientNotes": {
@@ -374,8 +374,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://pubmed.ncbi.nlm.nih.gov/12472620/"
       }
     ],
-    "image": "/images/landing/intimacy-campaign-clean-v6.webp",
-    "visualImage": "/images/landing/intimacy-campaign-clean-v6.webp",
+    "image": "/images/landing/intimacy-campaign-botanicals-v7.webp",
+    "visualImage": "/images/landing/intimacy-campaign-botanicals-v7.webp",
     "lifestyleImage": "/images/landing/intimacy-lifestyle-clean-v4.webp",
     "imageAlt": "صورة توضيحية لزوجين بالغين شابين يتعانقان بابتسامة — VITAL FORCE، قوة الطبيعة، لحيوية متجدّدة وحياة زوجية أجمل",
     "benefitsIntro": "أبحاث على مستحضرات محدّدة من المكوّنات، مع عادات يومية تكمّل اهتمامك بعافيتك."
@@ -434,8 +434,8 @@ export const landingPages: LandingPage[] = [
         "reference": "https://www.nhs.uk/every-mind-matters/mental-wellbeing-tips/be-active-for-your-mental-health/"
       }
     ],
-    "image": "/images/landing/sleep-campaign-clean-v6.webp",
-    "visualImage": "/images/landing/sleep-campaign-clean-v6.webp",
+    "image": "/images/landing/sleep-campaign-botanicals-v7.webp",
+    "visualImage": "/images/landing/sleep-campaign-botanicals-v7.webp",
     "imageAlt": "مشاهد توضيحية لنفس المرأة البالغة في الفراش أثناء الاستعداد للنوم وأثناء نوم هادئ، مع عبوة ومشروب زيتوني في لوحة عناية نهارية منفصلة"
   },
   {
