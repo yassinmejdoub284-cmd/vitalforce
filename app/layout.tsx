@@ -5,6 +5,9 @@ import "./storefront.css";
 import { SiteChrome } from "@/components/layout/site-chrome";
 import { CartProvider } from "@/components/cart/cart-provider";
 import { MetaPixel } from "@/components/integrations/meta-pixel";
+import { VisitorTracker } from "@/components/integrations/visitor-tracker";
+import { StoreSettingsProvider } from "@/components/store-settings";
+import { getPublicSettings } from "@/lib/settings";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-display", display: "swap" });
@@ -42,14 +45,18 @@ export const viewport: Viewport = {
   colorScheme: "light"
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const settings = await getPublicSettings();
   return (
     <html lang="fr" data-scroll-behavior="smooth" className={`${inter.variable} ${playfair.variable}`}>
       <body>
-        <CartProvider>
-          <MetaPixel />
-          <SiteChrome>{children}</SiteChrome>
-        </CartProvider>
+        <StoreSettingsProvider value={settings}>
+          <CartProvider>
+            <MetaPixel pixelId={settings.pixelId} />
+            <VisitorTracker />
+            <SiteChrome>{children}</SiteChrome>
+          </CartProvider>
+        </StoreSettingsProvider>
       </body>
     </html>
   );

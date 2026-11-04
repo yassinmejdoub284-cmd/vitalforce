@@ -28,6 +28,7 @@ export type Product = {
   warnings: string[];
   conservation: string;
   ingredients: Ingredient[];
+  template?: "vital-force" | "simple";
 };
 
 export const vitalForceIngredients: Ingredient[] = [
@@ -109,5 +110,3 @@ export function getProductBySlug(slug: string) {
   return products.find((product) => product.slug === slug);
 }
 
-export const orderStatuses = ["new", "confirmed", "processing", "shipped", "delivered", "cancelled"] as const;
-export const paymentStatuses = ["pending", "paid", "failed", "refunded"] as const;

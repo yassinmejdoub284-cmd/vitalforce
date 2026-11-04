@@ -11,11 +11,11 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="shop-product-card group">
       <Link href={`/products/${product.slug}`} className="product-still block overflow-hidden" aria-label={product.name}>
-        <span className="product-card-tag">400 g</span>
-        <ProductJar flavor={product.flavor} />
+        {product.netWeight && <span className="product-card-tag">{product.netWeight}</span>}
+        <ProductJar flavor={product.flavor} image={product.image} name={product.name} />
       </Link>
       <div className="product-card-body">
-        <div className="flex items-center justify-between gap-3"><Badge>{product.flavor}</Badge><span className="product-stock"><Check size={13}/> En stock</span></div>
+        <div className="flex items-center justify-between gap-3"><Badge>{product.flavor || product.netWeight}</Badge><span className="product-stock"><Check size={13}/> {product.stock > 0 ? "En stock" : "Rupture"}</span></div>
         <h2>{product.name}</h2>
         <p>{product.subtitle}</p>
         <div className="product-card-promotion"><DiscountBadge percent={product.discountPercent} /></div>

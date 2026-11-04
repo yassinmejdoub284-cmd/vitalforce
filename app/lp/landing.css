@@ -423,3 +423,14 @@
 .lp-visual-page .lp-ingredient-grid.lp-single-ingredient { grid-template-columns: minmax(0, 1fr); max-width: 520px; }
 
 .lp-hero-promotion { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
+
+/* Formulaire de commande enregistré (champs obligatoires) */
+.lp-fields-order label { font-size: 13px; font-weight: 600; }
+.lp-fields-order label small { font-weight: 400; color: var(--lp-muted); }
+.lp-fields-order label[data-wide] { grid-column: 1 / -1; }
+.lp-fields select { width: 100%; min-width: 0; border: 1px solid #d7dfcf; border-radius: 4px; min-height: 45px; background: white; padding: 8px 12px; font-size: 14px; color: inherit; }
+.lp-fields-order input { font-size: 15px; }
+.lp-fields input:user-invalid, .lp-fields select:user-invalid { border-color: #b42318; }
+.lp-whatsapp:disabled { opacity: .6; cursor: progress; }
+.lp-flavor-buttons button:disabled { opacity: .45; cursor: not-allowed; }
+.lp-order-form fieldset { position: relative; }

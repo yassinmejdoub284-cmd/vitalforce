@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CampaignLanding } from "@/components/landing/campaign-landing";
 import { getLandingPage, landingPages } from "@/lib/landing-pages";
+import { getCatalog } from "@/lib/catalog";
+import { getPublicSettings } from "@/lib/settings";
 
 export function generateStaticParams() { return landingPages.map(page => ({ angle: page.slug })); }
 export async function generateMetadata({ params }: { params: Promise<{ angle: string }> }): Promise<Metadata> {
@@ -19,5 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ angle: st
 export default async function LandingPage({ params }: { params: Promise<{ angle: string }> }) {
   const page = getLandingPage((await params).angle);
   if (!page) notFound();
-  return <CampaignLanding page={page} />;
+  const [{ products, live }, settings] = await Promise.all([getCatalog(), getPublicSettings()]);
+  // Les pages de vente présentent la formule VITAL FORCE (accessoires et autres produits restent dans la boutique).
+  const formula = products.filter((product) => product.template === "vital-force");
+  return <CampaignLanding page={page} products={formula.length ? formula : products} settings={settings} ordersLive={live} />;
 }

@@ -2,12 +2,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Truck } from "lucide-react";
 import { formatOfferPrice } from "@/lib/utils";
-import { products } from "@/lib/product-data";
+import type { Product } from "@/lib/product-data";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 
-export function BotanicalHero() {
-  const product = products[0];
+export function BotanicalHero({ product }: { product: Product }) {
 
   return <>
     <section className="shop-hero" aria-labelledby="hero-title">

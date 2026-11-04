@@ -1,5 +1,5 @@
 import { ProductCard } from "@/components/commerce/product-card";
-import { products } from "@/lib/product-data";
+import { getCatalog } from "@/lib/catalog";
 
 export const metadata = {
   title: "Catalogue"
@@ -7,6 +7,7 @@ export const metadata = {
 
 export default async function ProductsPage({ searchParams }: { searchParams?: Promise<{ q?: string }> }) {
   const query = (await searchParams)?.q?.toLowerCase() ?? "";
+  const { products } = await getCatalog();
   const filtered = products.filter((product) =>
     [product.name, product.subtitle, product.flavor, product.shortDescription].join(" ").toLowerCase().includes(query)
   );
@@ -16,7 +17,7 @@ export default async function ProductsPage({ searchParams }: { searchParams?: Pr
       <div className="catalog-heading">
         <p className="shop-kicker">LA COLLECTION</p>
         <h1>Choisissez votre goût.</h1>
-        <p>Une même formule botanique, trois saveurs et un format de 400 g.</p>
+        <p>Une même formule botanique, plusieurs saveurs et un format de 400 g.</p>
       </div>
       <form className="catalog-search">
         <label htmlFor="product-search">Rechercher dans la collection</label>

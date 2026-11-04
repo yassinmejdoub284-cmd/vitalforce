@@ -65,3 +65,7 @@
 .large .variantBody b { font-size: 11px; padding: 8px; }
 .citron { --flavor-color: #e3cf75; }
 .menthe { --flavor-color: #91c4a9; }
+
+.photo { width: 180px; aspect-ratio: 1; display: grid; place-items: center; }
+.photo img { width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(10px 20px 10px #18181825); }
+.photoLarge { width: min(320px, 78vw); }

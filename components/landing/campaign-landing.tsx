@@ -5,8 +5,9 @@ import { ArrowDownLeft, ArrowUpLeft, Check, Leaf, ShieldCheck, Truck } from "luc
 import { LandingOrder } from "./landing-order";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { arabicIngredientNames, ingredientReferences, type LandingPage } from "@/lib/landing-pages";
-import { products, vitalForceIngredients } from "@/lib/product-data";
-import { businessContact } from "@/lib/business";
+import { vitalForceIngredients, type Product } from "@/lib/product-data";
+import type { PublicSettings } from "@/lib/settings";
+import { deliveryFeeFor } from "@/lib/pricing";
 import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 
 const ingredientFacts = [
@@ -19,17 +20,23 @@ const ingredientFacts = [
   "يحتوي على البيبيرين."
 ];
 
-export function CampaignLanding({ page }: { page: LandingPage }) {
+export function CampaignLanding({ page, products, settings, ordersLive = true }: { page: LandingPage; products: Product[]; settings: PublicSettings; ordersLive?: boolean }) {
+  const main = products[0];
+  const deliveryFee = main ? deliveryFeeFor(main.price, settings.delivery) : settings.delivery.fee;
+  const dt = (value: number) => `${new Intl.NumberFormat("fr-TN", { numberingSystem: "latn", maximumFractionDigits: 3 }).format(value)} د.ت`;
+  const deliveryText = deliveryFee === 0 ? "التوصيل مجاني" : `التوصيل ${dt(deliveryFee)}`;
+  const flavorList = products.map((product) => ({ Orange: "برتقال", Citron: "ليمون", Menthe: "نعناع" } as Record<string, string>)[product.flavor] ?? product.flavor).join(" · ");
+  const contact = settings.store;
   const target = page.informational ? "#ingredients" : "#order";
   const cta = page.informational ? "اكتشف المكوّنات" : "اختار نكهتك واطلب";
   const faq = [
     [page.question, page.answer],
     ["شنوّة الفرق بين النكهات؟", "نفس المزيج بثلاث نكهات: برتقال، ليمون ونعناع. راجع ملصق كل نكهة للتفاصيل."],
     ["وين نلقى معلومات المنتج الكاملة؟", `افتح «شوف الملصق الكامل» في ${page.informational ? "قسم معلومات المنتج" : "قسم الطلب"}: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة.`],
-    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية وافتح رسالة واتساب الجاهزة. أرسلها بنفسك؛ الفريق يؤكّد التوفر والعنوان والتوصيل بـ7 د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
+    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية، عمّر اسمك ورقمك وعنوانك واضغط «أكّد طلبي». الفريق يتّصل بيك باش يأكّد العنوان والتوصيل بـ7 د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
   ];
   return <main className="lp-page lp-visual-page lp-campaign-conversion" style={{ "--lp-accent": page.color } as React.CSSProperties}>
-    <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</div>
+    <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>{contact.announcementAr || <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</>}</div>
     <header className="lp-header lp-shell">
       <Link href="/lp" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
       <a href={target} className="lp-header-cta">{page.informational ? "اكتشف التركيبة" : "اطلب توا"}<ArrowDownLeft size={17} /></a>
@@ -46,16 +53,16 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
         <p className="lp-campaign-description">{page.description}</p>
         <div className="lp-ingredient-pills">{page.featured.map(index => <span key={index}>{arabicIngredientNames[index]}</span>)}</div>
         {!page.informational && <>
-          <div className="lp-hero-promotion">{products[0].compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(products[0].compareAtPrice)}</del>}<DiscountBadge percent={products[0].discountPercent} lang="ar" /></div>
-          <div className="lp-hero-offer"><strong dir="ltr">{formatOfferPrice(products[0].price)}</strong><span>400 غ · التوصيل 7 د.ت<br />برتقال · ليمون · نعناع</span></div>
+          {main && <div className="lp-hero-promotion">{main.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(main.compareAtPrice)}</del>}<DiscountBadge percent={main.discountPercent} lang="ar" /></div>}
+          {main && <div className="lp-hero-offer"><strong dir="ltr">{formatOfferPrice(main.price)}</strong><span>400 غ · {deliveryText}<br />{flavorList}</span></div>}
         </>}
         <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>
         <p className="lp-visual-evidence">{page.benefitCaption ?? "7 مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
         <a href={target} className="lp-primary">{cta}<ArrowDownLeft size={20} /></a>
-        <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : "الدفع عند الاستلام · 170 د.ت بالتوصيل لعبوة واحدة"}</p>
+        <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : `الدفع عند الاستلام · ${main ? dt(main.price + deliveryFee) : ""} بالتوصيل لعبوة واحدة`}</p>
       </div>
     </section>
-    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>7 د.ت للطلب</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} للطلب`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
     {page.benefits && <section className="lp-angle-benefits lp-shell" aria-labelledby="angle-benefits-title">
       <p className="lp-kicker">من المكوّن، لفهم روتينك</p><h2 id="angle-benefits-title">{page.benefitsTitle ?? "شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟"}</h2>
       <p className="lp-angle-benefits-intro">{page.benefitsIntro ?? "أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها."}</p>
@@ -80,13 +87,13 @@ export function CampaignLanding({ page }: { page: LandingPage }) {
         <details className="lp-full-formula"><summary>شوف التركيبة الكاملة</summary><p>{arabicIngredientNames.join(" · ")}</p></details>
       </div>
     </section>
-    {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} />}
+    {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} products={products} ordersLive={ordersLive} />}
     {page.informational && <section className="lp-product-labels lp-shell" id="product-info" aria-labelledby="product-labels-title">
       <p className="lp-kicker">معلومات المنتج</p><h2 id="product-labels-title">اكتشف الملصق الكامل لكل نكهة.</h2>
-      {products.map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : "نعناع"}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}
+      {products.filter(product => product.template === "vital-force").map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : product.flavor === "Menthe" ? "نعناع" : product.name}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}
     </section>}
     <section className="lp-faq lp-shell" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
-    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p><a href={businessContact.phoneHref} dir="ltr">{businessContact.phone}</a><span>{businessContact.addressAr} · صور توضيحية مولّدة</span></div></footer>
-    <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : `${products[0].price} د.ت`}</strong><span>{page.informational ? "7 مكوّنات نباتية" : "+ 7 د.ت توصيل"}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
+    <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p>{contact.phone && <a href={`tel:${contact.phone.replace(/[^+0-9]/g, "")}`} dir="ltr">{contact.phone}</a>}<span>{contact.addressAr} · صور توضيحية مولّدة</span></div></footer>
+    <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : main ? dt(main.price) : ""}</strong><span>{page.informational ? "7 مكوّنات نباتية" : deliveryFee === 0 ? "التوصيل مجاني" : `+ ${dt(deliveryFee)} توصيل`}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
   </main>;
 }

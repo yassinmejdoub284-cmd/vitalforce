@@ -3,7 +3,6 @@
 import type { ReactNode } from "react";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { products } from "@/lib/product-data";
 
 export type CartItem = {
   productId: string;
@@ -56,10 +55,8 @@ export const useCart = create<CartState>()(
         return {
           ...currentState,
           ...saved,
-          items: (saved.items ?? []).filter((item) => products.some((entry) => entry.id === item.productId)).map((item) => {
-            const product = products.find((entry) => entry.id === item.productId);
-            return product ? { ...item, price: product.price } : item;
-          })
+          // Le serveur recalcule toujours les prix depuis la base: le panier ne sert qu'à l'affichage.
+          items: (saved.items ?? []).filter((item) => typeof item.productId === "string" && item.quantity > 0)
         };
       }
     }

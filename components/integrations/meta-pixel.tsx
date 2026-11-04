@@ -24,9 +24,10 @@ function MetaPageView() {
   return null;
 }
 
-export function MetaPixel() {
-  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
-  if (!pixelId) return null;
+export function MetaPixel({ pixelId }: { pixelId: string }) {
+  const pathname = usePathname();
+  // Jamais sur l'admin; l'ID vient de Réglages → Meta (chiffres uniquement, validé côté serveur).
+  if (!/^\d{5,20}$/.test(pixelId) || pathname.startsWith("/admin")) return null;
 
   return (
     <>
