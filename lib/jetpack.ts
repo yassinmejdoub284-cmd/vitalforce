@@ -35,19 +35,26 @@ export class JetpackError extends Error {}
 
 async function post(endpoint: string, token: string, body: Record<string, string>) {
   if (!token) throw new JetpackError("Token Jetpack manquant. Ajoutez-le dans Réglages → Jetpack.");
-  const response = await fetch(`${BASE_URL}/${endpoint}`, {
-    method: "POST",
-    headers: { "X-Api-Key": token, "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json" },
-    body: new URLSearchParams(body).toString(),
-    cache: "no-store",
-    signal: AbortSignal.timeout(20_000)
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${BASE_URL}/${endpoint}`, {
+      method: "POST",
+      headers: { "X-Api-Key": token, "Content-Type": "application/x-www-form-urlencoded", Accept: "application/json", "User-Agent": "VitalForce-Admin/1.0" },
+      body: new URLSearchParams(body).toString(),
+      cache: "no-store",
+      signal: AbortSignal.timeout(20_000)
+    });
+  } catch (error) {
+    const cause = (error as { cause?: { code?: string } }).cause?.code;
+    throw new JetpackError(`serveur injoignable (${cause ?? (error as Error).name}).`);
+  }
   const text = await response.text();
   let data: unknown;
   try {
     data = JSON.parse(text);
   } catch {
-    throw new JetpackError(`Réponse Jetpack illisible (HTTP ${response.status}).`);
+    console.error("[jetpack] réponse non JSON", endpoint, response.status, text.slice(0, 500));
+    throw new JetpackError(`Réponse illisible (HTTP ${response.status}): ${text.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().slice(0, 160) || "vide"}`);
   }
   return data as Record<string, unknown>;
 }

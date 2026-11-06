@@ -110,10 +110,10 @@ Ouvrez `https://admin.vitalforce-bioactive.com`, connectez-vous avec `ADMIN_EMAI
 ## Mises à jour
 
 ```bash
-cd ~/vitalforce && npm run deploy
+bash /srv/vitalforce/app/scripts/deploy.sh
 ```
 
-(`git pull`, installation, migration de la base, build, redémarrage sans coupure.)
+(`git pull`, installation, migration de la base, build, puis redémarrage du service `vitalforce`.)
 
 ## En cas de problème
 

@@ -1,17 +1,16 @@
 #!/usr/bin/env bash
-# Mise à jour sur le VPS: récupère le code, installe, migre la base, construit et redémarre.
-# Usage (dans le dossier du projet): npm run deploy
+# Mise à jour du site sur le VPS (à lancer avec l'utilisateur debian):
+#   bash /srv/vitalforce/app/scripts/deploy.sh
+# Le code appartient à l'utilisateur « vitalforce »; le service systemd « vitalforce » fait tourner le site.
 set -euo pipefail
-cd "$(dirname "$0")/.."
+APP=/srv/vitalforce/app
+as_app() { sudo -u vitalforce env HOME=/srv/vitalforce bash -c "cd $APP && $1"; }
 
-git pull --ff-only
-npm ci
-npm run db:migrate
-npm run build
-if pm2 describe vitalforce >/dev/null 2>&1; then
-  pm2 reload vitalforce --update-env
-else
-  pm2 start deploy/ecosystem.config.cjs
-  pm2 save
-fi
+as_app "git pull --ff-only"
+as_app "npm ci --no-audit --no-fund"
+as_app "npm run db:migrate"
+as_app "npm run build"
+sudo systemctl restart vitalforce
+sleep 5
+systemctl is-active vitalforce
 echo "Déploiement terminé."

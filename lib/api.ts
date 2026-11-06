@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { requireAdminApi } from "@/lib/auth";
 import type { AdminSession } from "@/lib/auth-token";
+import { JetpackError } from "@/lib/jetpack";
 import { OrderError } from "@/lib/orders";
 
 type Handler<C> = (request: Request, context: C & { admin: AdminSession }) => Promise<Response>;
@@ -13,6 +14,7 @@ export function jsonError(message: string, status = 400) {
 
 export function handleError(error: unknown) {
   if (error instanceof OrderError) return jsonError(error.message, error.status);
+  if (error instanceof JetpackError) return jsonError(`Jetpack: ${error.message}`, 502);
   if (error instanceof ZodError) return jsonError(error.issues[0]?.message ?? "Données invalides.");
   // Les erreurs inattendues (SQL, réseau) sont journalisées mais jamais renvoyées telles quelles au navigateur.
   console.error(error);
