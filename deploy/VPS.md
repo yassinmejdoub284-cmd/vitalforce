@@ -97,7 +97,35 @@ crontab -e
 
 Ajoutez la ligne de `deploy/crontab.example` en remplaçant `VOTRE_CRON_SECRET` par la valeur de `CRON_SECRET`.
 
-## 8. Premier passage dans l'admin
+## 8. Ville des visiteurs (géolocalisation IP)
+
+```bash
+sudo bash /srv/vitalforce/app/scripts/update-geoip.sh
+```
+
+Installe la base DB-IP City Lite (licence CC BY 4.0) dans `/srv/vitalforce/geo` et redémarre le site. Mise à jour mensuelle automatique:
+
+```bash
+sudo tee /etc/systemd/system/vitalforce-geoip.service >/dev/null <<'UNIT'
+[Unit]
+Description=Vital Force - mise a jour base IP
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /srv/vitalforce/app/scripts/update-geoip.sh
+UNIT
+sudo tee /etc/systemd/system/vitalforce-geoip.timer >/dev/null <<'UNIT'
+[Unit]
+Description=Vital Force - base IP chaque mois
+[Timer]
+OnCalendar=monthly
+Persistent=true
+[Install]
+WantedBy=timers.target
+UNIT
+sudo systemctl daemon-reload && sudo systemctl enable --now vitalforce-geoip.timer
+```
+
+## 9. Premier passage dans l'admin
 
 Ouvrez `https://admin.vitalforce-bioactive.com`, connectez-vous avec `ADMIN_EMAIL` / `ADMIN_PASSWORD`, puis **Gestion du site**:
 

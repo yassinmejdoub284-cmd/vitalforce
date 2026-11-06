@@ -144,6 +144,7 @@ export const visitors = pgTable("visitors", {
   device: text("device"),
   country: text("country"),
   city: text("city"),
+  region: text("region"),
   pageViews: integer("page_views").notNull().default(0)
 }, (table) => [index("visitors_last_seen_idx").on(table.lastSeen)]);
 

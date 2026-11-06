@@ -144,7 +144,7 @@ export async function getDailySeries(range: Range) {
 }
 
 export async function getBreakdowns(range: Range) {
-  const [sources, angles, governorates, productsSold] = await Promise.all([
+  const [sources, angles, governorates, productsSold, cities, regions] = await Promise.all([
     rows<{ source: string; visitors: number; orders: number }>(sql`
       with v as (select coalesce(source, 'direct') as source, count(distinct visitor_id)::int as visitors from events where type = 'page_view' and ${inRange("created_at", range)} group by 1),
       o as (select case
@@ -168,14 +168,27 @@ export async function getBreakdowns(range: Range) {
     rows<{ name: string; ordered: number; delivered: number; revenue: number }>(sql`
       select i.name, sum(i.quantity) filter (where o.status <> 'cancelled')::int as ordered, coalesce(sum(i.quantity) filter (where o.status = 'delivered'), 0)::int as delivered,
         coalesce(sum(i.unit_price * i.quantity) filter (where o.status = 'delivered'), 0)::float as revenue
-      from order_items i join orders o on o.id = i.order_id where ${inRange("o.created_at", range)} group by 1 order by 2 desc nulls last`)
+      from order_items i join orders o on o.id = i.order_id where ${inRange("o.created_at", range)} group by 1 order by 2 desc nulls last`),
+    rows<{ city: string; region: string | null; visitors: number }>(sql`
+      select coalesce(v.city, 'Inconnue') as city, v.region, count(distinct e.visitor_id)::int as visitors
+      from events e join visitors v on v.id = e.visitor_id
+      where e.type = 'page_view' and ${inRange("e.created_at", range)} group by 1, 2 order by 3 desc limit 20`),
+    rows<{ region: string; visitors: number }>(sql`
+      select v.region, count(distinct e.visitor_id)::int as visitors
+      from events e join visitors v on v.id = e.visitor_id
+      where e.type = 'page_view' and v.region is not null and ${inRange("e.created_at", range)} group by 1`)
   ]);
-  return { sources, angles, governorates, productsSold };
+  // Visiteurs (localisés par IP) rapprochés des commandes par gouvernorat → conversion par région.
+  const normalize = (value: string) => value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/^(la|le|el)\s+/, "").replace(/[^a-z]/g, "");
+  const visitorsByRegion = new Map<string, number>();
+  for (const row of regions) visitorsByRegion.set(normalize(row.region), (visitorsByRegion.get(normalize(row.region)) ?? 0) + row.visitors);
+  const governoratesWithVisitors = governorates.map((row) => ({ ...row, visitors: visitorsByRegion.get(normalize(row.governorate)) ?? 0 }));
+  return { sources, angles, governorates: governoratesWithVisitors, productsSold, cities };
 }
 
 export async function getLiveVisitors() {
-  return rows<{ id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string }>(sql`
-    select id, current_path, source, device, city, country, page_views, first_seen, last_seen from visitors
+  return rows<{ id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string }>(sql`
+    select id, current_path, source, device, city, region, country, page_views, first_seen, last_seen from visitors
     where last_seen > now() - interval '60 seconds' order by last_seen desc limit 100`);
 }
 

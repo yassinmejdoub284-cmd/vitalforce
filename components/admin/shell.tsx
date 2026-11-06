@@ -7,6 +7,7 @@ import { ExternalLink, Home, LogOut, Megaphone, Menu, Package, Radio, Settings, 
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./client-api";
 import { PushToggle, registerAdminWorker } from "./push-toggle";
+import { loadSoundPrefs, playSound, unlockAudio } from "./sounds";
 import { money } from "@/lib/format";
 
 type Live = { summary: { online: number; pending: number; today_orders: number }; latestOrder: { id: number; number: string; customerName: string; total: number; governorate: string } | null };
@@ -25,36 +26,32 @@ function isActive(pathname: string, href: string) {
   return href === "/admin" ? pathname === "/admin" : pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function beep() {
-  try {
-    const context = new AudioContext();
-    const oscillator = context.createOscillator();
-    const gain = context.createGain();
-    oscillator.connect(gain); gain.connect(context.destination);
-    oscillator.frequency.value = 880;
-    gain.gain.setValueAtTime(0.15, context.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.5);
-    oscillator.start(); oscillator.stop(context.currentTime + 0.5);
-  } catch { /* son désactivé par le navigateur */ }
-}
-
 export function AdminShell({ children, adminName, initialPending }: { children: ReactNode; adminName: string; initialPending: number }) {
   const pathname = usePathname();
   const router = useRouter();
   const [live, setLive] = useState<{ online: number; pending: number }>({ online: 0, pending: initialPending });
   const [toasts, setToasts] = useState<Toast[]>([]);
   const lastOrderId = useRef<number | null>(null);
+  const lastOnline = useRef<number | null>(null);
+  const lastVisitorSound = useRef(0);
 
   const poll = useCallback(async () => {
     if (document.visibilityState !== "visible") return;
     try {
       const data = await api<Live>("/api/admin/live");
       setLive({ online: data.summary.online, pending: data.summary.pending });
+      const sounds = loadSoundPrefs();
+      // Son « visiteur » quand le nombre de personnes en ligne augmente (au plus une fois par 30 s).
+      if (lastOnline.current !== null && data.summary.online > lastOnline.current && sounds.visitorsEnabled && Date.now() - lastVisitorSound.current > 30_000) {
+        lastVisitorSound.current = Date.now();
+        playSound(sounds.visitor, sounds.volume * 0.7);
+      }
+      lastOnline.current = data.summary.online;
       const latest = data.latestOrder;
       if (latest && lastOrderId.current !== null && latest.id > lastOrderId.current) {
         const toast = { id: latest.id, title: `🛒 Nouvelle commande ${latest.number}`, body: `${latest.customerName} · ${latest.governorate} · ${money(latest.total)}`, href: `/admin/orders/${latest.id}` };
         setToasts((current) => [toast, ...current].slice(0, 3));
-        beep();
+        playSound(sounds.order, sounds.volume);
         window.setTimeout(() => setToasts((current) => current.filter((item) => item.id !== toast.id)), 9000);
         if (pathname === "/admin" || pathname.startsWith("/admin/orders")) router.refresh();
       }
@@ -62,6 +59,13 @@ export function AdminShell({ children, adminName, initialPending }: { children: 
       else lastOrderId.current = 0;
     } catch { /* hors ligne: on réessaie au prochain tour */ }
   }, [pathname, router]);
+
+  useEffect(() => {
+    const unlock = () => unlockAudio();
+    window.addEventListener("pointerdown", unlock, { once: true });
+    window.addEventListener("keydown", unlock, { once: true });
+    return () => { window.removeEventListener("pointerdown", unlock); window.removeEventListener("keydown", unlock); };
+  }, []);
 
   useEffect(() => {
     registerAdminWorker()?.catch(() => {});

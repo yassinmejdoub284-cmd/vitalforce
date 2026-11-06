@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { api } from "./client-api";
 import { Kpi } from "./widgets";
 
-type Visitor = { id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string };
+type Visitor = { id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string };
 type Live = { summary: { online: number; last30: number; today_visitors: number; today_orders: number; pending: number }; visitors: Visitor[] };
 
 const pageName = (path: string | null) => {
@@ -34,6 +34,12 @@ export function LiveVisitors() {
 
   if (!data) return <p className="adm-empty">{error || "Chargement…"}</p>;
   const pages = Object.entries(data.visitors.reduce<Record<string, number>>((acc, visitor) => { const key = pageName(visitor.current_path); acc[key] = (acc[key] ?? 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1]);
+  const place = (visitor: Visitor) => {
+    if (!visitor.city && !visitor.region) return visitor.country && visitor.country !== "TN" ? visitor.country : "Inconnue";
+    const local = visitor.city && visitor.region && !visitor.city.startsWith(visitor.region) ? `${visitor.city} (${visitor.region})` : visitor.city ?? visitor.region ?? "";
+    return visitor.country && visitor.country !== "TN" ? `${local}, ${visitor.country}` : local;
+  };
+  const cities = Object.entries(data.visitors.reduce<Record<string, number>>((acc, visitor) => { const key = place(visitor); acc[key] = (acc[key] ?? 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1]);
   const sources = Object.entries(data.visitors.reduce<Record<string, number>>((acc, visitor) => { const key = visitor.source ?? "direct"; acc[key] = (acc[key] ?? 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1]);
 
   return <>
@@ -43,19 +49,21 @@ export function LiveVisitors() {
       <Kpi label="Visiteurs aujourd'hui" value={data.summary.today_visitors} />
       <Kpi label="Commandes aujourd'hui" value={data.summary.today_orders} hint={data.summary.today_visitors ? `Conversion ${((data.summary.today_orders / data.summary.today_visitors) * 100).toFixed(1)} %` : undefined} />
     </div>
-    <div className="adm-grid adm-grid-2 adm-section">
+    <div className="adm-grid adm-grid-3 adm-section">
       <section className="adm-card"><h2>Pages consultées maintenant</h2>{pages.length ? pages.map(([page, value]) => <div key={page} className="adm-cost-row"><span>{page}</span><b>{value}</b></div>) : <p className="adm-empty">Personne en ce moment.</p>}</section>
+      <section className="adm-card"><h2>Villes maintenant</h2>{cities.length ? cities.map(([city, value]) => <div key={city} className="adm-cost-row"><span>📍 {city}</span><b>{value}</b></div>) : <p className="adm-empty">—</p>}</section>
       <section className="adm-card"><h2>Sources</h2>{sources.length ? sources.map(([source, value]) => <div key={source} className="adm-cost-row"><span>{source}</span><b>{value}</b></div>) : <p className="adm-empty">—</p>}</section>
     </div>
     <section className="adm-card adm-section">
       <h2>Visiteurs actifs</h2>
       {data.visitors.length === 0 ? <p className="adm-empty">Aucun visiteur actif.</p> : <div className="adm-table-wrap"><table className="adm-table">
-        <thead><tr><th>Page actuelle</th><th>Source</th><th>Appareil</th><th>Ville</th><th className="num">Pages vues</th><th className="num">Sur le site depuis</th></tr></thead>
+        <thead><tr><th>Page actuelle</th><th>Source</th><th>Appareil</th><th>Ville (gouvernorat)</th><th className="num">Pages vues</th><th className="num">Sur le site depuis</th></tr></thead>
         <tbody>{data.visitors.map((visitor) => <tr key={visitor.id}>
           <td><strong>{pageName(visitor.current_path)}</strong></td><td>{visitor.source ?? "direct"}</td><td>{visitor.device ?? "—"}</td>
-          <td>{[visitor.city, visitor.country].filter(Boolean).join(", ") || "—"}</td><td className="num">{visitor.page_views}</td><td className="num">{since(visitor.first_seen)}</td>
+          <td>{place(visitor)}</td><td className="num">{visitor.page_views}</td><td className="num">{since(visitor.first_seen)}</td>
         </tr>)}</tbody>
       </table></div>}
+      <p className="adm-hint" style={{ marginTop: 10 }}>Ville estimée d&apos;après l&apos;adresse IP (<a href="https://db-ip.com" target="_blank" rel="noopener noreferrer">IP Geolocation by DB-IP</a>). Les connexions 4G apparaissent souvent à Tunis; pour une commande, le gouvernorat saisi par le client fait foi.</p>
     </section>
   </>;
 }

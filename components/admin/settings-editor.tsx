@@ -5,6 +5,7 @@ import { CheckCircle2, Loader2, PlugZap, Trash2 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { api } from "./client-api";
 import { PushToggle } from "./push-toggle";
+import { SoundPicker } from "./sound-picker";
 import type { Settings } from "@/lib/settings";
 import { formatTunisianPhone } from "@/lib/tunisia";
 
@@ -184,6 +185,9 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
     {tab === "notifications" && <div className="adm-grid">
       <Section title="Application sur le téléphone" hint="Ouvrez l'admin sur votre téléphone puis « Ajouter à l'écran d'accueil » (Android: menu ⋮ ; iPhone: bouton Partager).">
         {env.push ? <><PushToggle /><div className="adm-row" style={{ marginTop: 10 }}><TestButton target="push" label="Envoyer une notification test" /></div></> : <p className="adm-alert adm-alert-warn">Notifications push non configurées sur le serveur: ajoutez les clés VAPID (voir README, section Notifications).</p>}
+      </Section>
+      <Section title="Sons dans l'admin (cet appareil)" hint="Choisissez un son pour les commandes (ex: caisse « cha-ching ») et un autre pour les visiteurs. Appuyez sur ▶ pour écouter.">
+        <SoundPicker />
       </Section>
       <form key="notifications" onSubmit={(event) => save("notifications", event)}><Section title="Quand me notifier">
         <div className="adm-form-grid">

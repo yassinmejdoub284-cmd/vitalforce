@@ -20,6 +20,10 @@ export const trackSchema = z.object({
 
 const botPattern = /bot|crawl|spider|slurp|preview|facebookexternalhit|whatsapp|headless|lighthouse|pingdom|monitor/i;
 
+function safeDecode(value: string) {
+  try { return decodeURIComponent(value); } catch { return value; }
+}
+
 export function isBot(userAgent: string) {
   return !userAgent || botPattern.test(userAgent);
 }
@@ -51,7 +55,7 @@ export function sourceOf(utm: Record<string, string> | undefined, referrer: stri
   }
 }
 
-export async function recordTracking(input: z.infer<typeof trackSchema>, request: { userAgent: string; country?: string | null; city?: string | null; host?: string | null }) {
+export async function recordTracking(input: z.infer<typeof trackSchema>, request: { userAgent: string; country?: string | null; city?: string | null; region?: string | null; host?: string | null }) {
   const now = new Date();
   const path = input.path?.split("?")[0].slice(0, 200) ?? null;
   if (path?.startsWith("/admin")) return;
@@ -72,13 +76,16 @@ export async function recordTracking(input: z.infer<typeof trackSchema>, request
     utm: input.utm,
     device: deviceOf(request.userAgent),
     country: request.country ?? null,
-    city: request.city ? decodeURIComponent(request.city).slice(0, 60) : null,
+    city: request.city ? safeDecode(request.city).slice(0, 60) : null,
+    region: request.region?.slice(0, 60) ?? null,
     pageViews: input.type === "page_view" ? 1 : 0
   }).onConflictDoUpdate({
     target: visitors.id,
     set: {
       lastSeen: now,
       currentPath: path ?? sql`${visitors.currentPath}`,
+      // L'IP peut changer (Wi-Fi → 4G): on garde la dernière localisation connue.
+      ...(request.city ? { city: safeDecode(request.city).slice(0, 60), region: request.region?.slice(0, 60) ?? null, country: request.country ?? null } : {}),
       pageViews: input.type === "page_view" ? sql`${visitors.pageViews} + 1` : sql`${visitors.pageViews}`
     }
   }).returning({ firstSeen: visitors.firstSeen, source: visitors.source });

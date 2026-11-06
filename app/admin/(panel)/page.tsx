@@ -102,7 +102,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
         <SimpleTable head={["Source", "Visiteurs", "Commandes"]} rows={breakdowns.sources.map((row) => [row.source, count(row.visitors), count(row.orders)])} />
       </section>
       <section className="adm-card"><h2>Gouvernorats</h2>
-        <SimpleTable head={["Gouvernorat", "Commandes", "Livrées", "Retours"]} rows={breakdowns.governorates.map((row) => [row.governorate, count(row.orders), count(row.delivered), count(row.returned)])} />
+        <SimpleTable head={["Gouvernorat", "Visiteurs", "Commandes", "Livrées", "Retours"]} rows={breakdowns.governorates.map((row) => [row.governorate, row.visitors ? count(row.visitors) : "—", count(row.orders), count(row.delivered), count(row.returned)])} />
+      </section>
+      <section className="adm-card"><h2>Villes des visiteurs</h2>
+        <SimpleTable head={["Ville", "Gouvernorat", "Visiteurs"]} rows={breakdowns.cities.map((row) => [row.city, row.region ?? "—", count(row.visitors)])} empty="Pas encore de localisation (base IP à installer sur le serveur)." />
+        <p className="adm-hint" style={{ marginTop: 8 }}>Localisation par adresse IP (DB-IP): précise pour l&apos;ADSL/fibre, les connexions 4G apparaissent souvent à Tunis.</p>
       </section>
       <section className="adm-card"><h2>Produits</h2>
         <SimpleTable head={["Produit", "Commandés", "Livrés", "CA livré"]} rows={breakdowns.productsSold.map((row) => [row.name, count(row.ordered), count(row.delivered), money(row.revenue)])} />
