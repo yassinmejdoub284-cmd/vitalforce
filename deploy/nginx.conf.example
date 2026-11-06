@@ -1,0 +1,21 @@
+# /etc/nginx/sites-available/vitalforce  (puis: ln -s ../sites-available/vitalforce /etc/nginx/sites-enabled/)
+# Certificats HTTPS: sudo certbot --nginx -d vitalforce-bioactive.com -d www.vitalforce-bioactive.com -d admin.vitalforce-bioactive.com
+
+server {
+  listen 80;
+  server_name vitalforce-bioactive.com www.vitalforce-bioactive.com admin.vitalforce-bioactive.com;
+
+  client_max_body_size 5m;   # import d'images produit (3 Mo max)
+
+  location / {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;                       # indispensable: le site reconnaît l'admin par le nom de domaine
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 90s;                            # envoi Jetpack de nombreux colis
+  }
+}

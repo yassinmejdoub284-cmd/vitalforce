@@ -14,8 +14,9 @@ export async function POST(request: Request) {
   if (!parsed.success) return new NextResponse(null, { status: 400 });
   after(() => recordTracking(parsed.data, {
     userAgent,
-    country: request.headers.get("x-vercel-ip-country"),
-    city: request.headers.get("x-vercel-ip-city"),
+    // Pays/ville fournis par Cloudflare ou Vercel s'ils sont devant le site (sinon vide).
+    country: request.headers.get("cf-ipcountry") ?? request.headers.get("x-vercel-ip-country"),
+    city: request.headers.get("cf-ipcity") ?? request.headers.get("x-vercel-ip-city"),
     host: request.headers.get("host")
   }).catch((error) => console.error("[tracking]", error)));
   return new NextResponse(null, { status: 204 });

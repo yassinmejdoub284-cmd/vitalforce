@@ -1,0 +1,3 @@
+# crontab -e  (utilisateur debian) — suivi Jetpack + dépenses Meta toutes les 15 minutes.
+# Remplacez VOTRE_CRON_SECRET par la valeur de CRON_SECRET dans .env
+*/15 * * * * curl -fsS -m 120 -H "Authorization: Bearer VOTRE_CRON_SECRET" http://127.0.0.1:3000/api/cron/sync > /dev/null 2>&1

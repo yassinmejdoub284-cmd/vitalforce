@@ -4,6 +4,11 @@ import { Pool } from "pg";
 import { admins } from "../lib/db/schema";
 
 // Usage: npm run admin:create -- email@exemple.tn "MotDePasseSolide" "Nom"
+// Charge .env (VPS) ou .env.local (poste de dev) si présents.
+for (const file of [".env", ".env.local"]) {
+  try { process.loadEnvFile(file); } catch { /* fichier absent */ }
+}
+
 async function main() {
   const [email, password, name = "Admin"] = process.argv.slice(2);
   if (!email || !password || password.length < 10) throw new Error('Usage: npm run admin:create -- email "mot-de-passe (10+ caractères)" "Nom"');

@@ -3,6 +3,11 @@ import { Pool } from "pg";
 import * as schema from "../lib/db/schema";
 import { products } from "../lib/product-data";
 
+// Charge .env (VPS) ou .env.local (poste de dev) si présents.
+for (const file of [".env", ".env.local"]) {
+  try { process.loadEnvFile(file); } catch { /* fichier absent */ }
+}
+
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL manquante.");

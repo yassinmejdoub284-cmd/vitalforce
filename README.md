@@ -17,7 +17,7 @@ Le stock est réservé à la confirmation, rendu en cas d'annulation, et remis e
 
 ## Stack
 
-Next.js 16 (App Router), React 19, TypeScript, Tailwind, **PostgreSQL + Drizzle ORM**, Zod, Zustand, Three.js, web-push.
+Next.js 16 (App Router), React 19, TypeScript, Tailwind, **PostgreSQL + Drizzle ORM**, Zod, Zustand, Three.js, web-push. Hébergé sur VPS (Node.js + PM2 derrière Nginx).
 
 ## Installation locale
 
@@ -35,14 +35,16 @@ npm run dev
 
 Autre admin: `npm run admin:create -- email@exemple.tn "MotDePasse10+" "Nom"`.
 
-## Mise en ligne sur Vercel
+## Mise en ligne sur le VPS (Debian)
 
-1. **Base de données**: Vercel → Storage → Neon Postgres → connecter au projet (ajoute `DATABASE_URL` et `DATABASE_URL_UNPOOLED`).
-2. **Variables d'environnement** (Settings → Environment Variables): `AUTH_SECRET`, `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_HOST=admin.vitalforce-bioactive.com`, `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `CRON_SECRET`.
-3. **Build**: le script `vercel-build` applique les migrations puis construit le site. Après le premier déploiement, lancez une fois `npm run db:seed` avec la `DATABASE_URL` de production.
-4. **Sous-domaine admin**: Vercel → Settings → Domains → ajouter `admin.vitalforce-bioactive.com` au même projet, puis chez votre registrar un enregistrement `CNAME admin → cname.vercel-dns.com`.
-5. **Tâche planifiée**: `vercel.json` lance `/api/cron/sync` chaque jour (suivi Jetpack + dépenses Meta). Avec un plan Vercel Pro vous pouvez passer à toutes les 30 min (`*/30 * * * *`). Le suivi se lance aussi via le bouton « Suivi Jetpack ».
-6. Dans l'admin → **Gestion du site**: collez les tokens Jetpack (bouton « Tester la connexion »), l'ID du pixel, le token API Conversions, l'ID du compte pub et le token Marketing API.
+Le guide pas à pas complet est dans [`deploy/VPS.md`](deploy/VPS.md). En résumé:
+
+1. PostgreSQL local, Node.js 22, PM2, Nginx, Certbot.
+2. Fichier `.env` dans le dossier du projet (modèle: `.env.example`).
+3. `npm ci && npm run db:migrate && npm run db:seed && npm run build`, puis `pm2 start deploy/ecosystem.config.cjs`.
+4. Nginx (`deploy/nginx.conf.example`) pour `vitalforce-bioactive.com` et `admin.vitalforce-bioactive.com`, puis HTTPS avec Certbot (obligatoire: la connexion admin exige HTTPS).
+5. Tâche cron toutes les 15 min (`deploy/crontab.example`): suivi Jetpack + dépenses Meta.
+6. Mises à jour suivantes: `npm run deploy`.
 
 ## Application mobile (PWA) et notifications
 
