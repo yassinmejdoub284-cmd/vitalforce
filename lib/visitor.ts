@@ -3,7 +3,7 @@
 /** Identifiant visiteur anonyme et attribution de campagne, côté navigateur. */
 const VISITOR_KEY = "vf_vid";
 const UTM_KEY = "vf_utm";
-const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "fbclid"] as const;
+const attributionKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term", "campaign_id", "adset_id", "ad_id", "fbclid"] as const;
 let memoryId: string | null = null;
 
 export function getVisitorId() {

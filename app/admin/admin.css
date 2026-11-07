@@ -206,3 +206,6 @@ textarea.adm-input { min-height: 78px; resize: vertical; }
 .adm-field { align-content: start; }
 
 @media (min-width: 861px) { .adm-tabs { flex-wrap: wrap; overflow: visible; } }
+.adm-grid > * { min-width: 0; }
+details.adm-card { overflow: hidden; }
+details.adm-card > summary::-webkit-details-marker { display: none; }

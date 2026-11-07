@@ -99,7 +99,7 @@ export function AdSpendManager({ rows, metaConnected }: { rows: SpendRow[]; meta
 
   return <section className="adm-card">
     <div className="adm-card-head"><h2>Dépenses publicitaires</h2>
-      {metaConnected && <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => run("sync", () => api("/api/admin/ads/sync", { body: { days: 30 } }), (result: { rows: number; spend: number }) => `Meta Ads: ${result.rows} ligne(s) importée(s), ${money(result.spend)} sur 30 jours.`)}>
+      {metaConnected && <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => run("sync", () => api("/api/admin/ads/sync", { body: { days: 30 } }), (result: { rows: number; ads: number; spend: number; warning?: string }) => `Meta Ads: ${result.rows} ligne(s) par pub importée(s), ${result.ads} pub(s), ${money(result.spend)} sur 30 jours.${result.warning ? ` Attention: ${result.warning}` : ""}`)}>
         {busy === "sync" ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}Synchroniser Meta Ads
       </button>}
     </div>
@@ -124,4 +124,12 @@ export function AdSpendManager({ rows, metaConnected }: { rows: SpendRow[]; meta
       </div>)}
     </div>
   </section>;
+}
+
+export function CopyText({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+  return <div className="adm-row" style={{ flexWrap: "nowrap" }}>
+    <code className="adm-mono" style={{ flex: 1, overflowX: "auto", whiteSpace: "nowrap", padding: "9px 10px", background: "#f4f4f1", borderRadius: 8 }}>{text}</code>
+    <button type="button" className="adm-btn adm-btn-sm" onClick={async () => { try { await navigator.clipboard.writeText(text); setCopied(true); window.setTimeout(() => setCopied(false), 1500); } catch { /* copie refusée */ } }}>{copied ? "Copié ✓" : "Copier"}</button>
+  </div>;
 }

@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   boolean,
+  doublePrecision,
   customType,
   date,
   index,
@@ -182,6 +183,85 @@ export const adSpend = pgTable("ad_spend", {
   source: text("source").notNull().default("manual"),
   createdAt: createdAt()
 }, (table) => [uniqueIndex("ad_spend_day_campaign_idx").on(table.date, table.platform, table.campaign)]);
+
+/** Statistiques Meta Ads jour par jour, au niveau de chaque pub. */
+export const metaAdInsights = pgTable("meta_ad_insights", {
+  id: serial("id").primaryKey(),
+  date: date("date", { mode: "string" }).notNull(),
+  campaignId: text("campaign_id").notNull().default(""),
+  campaignName: text("campaign_name").notNull().default(""),
+  adsetId: text("adset_id").notNull().default(""),
+  adsetName: text("adset_name").notNull().default(""),
+  adId: text("ad_id").notNull(),
+  adName: text("ad_name").notNull().default(""),
+  spend: money("spend").notNull().default(0),
+  impressions: integer("impressions").notNull().default(0),
+  reach: integer("reach").notNull().default(0),
+  clicks: integer("clicks").notNull().default(0),
+  linkClicks: integer("link_clicks").notNull().default(0),
+  landingPageViews: integer("landing_page_views").notNull().default(0),
+  viewContent: integer("view_content").notNull().default(0),
+  addToCart: integer("add_to_cart").notNull().default(0),
+  initiateCheckout: integer("initiate_checkout").notNull().default(0),
+  purchases: integer("purchases").notNull().default(0),
+  purchaseValue: money("purchase_value").notNull().default(0),
+  leads: integer("leads").notNull().default(0),
+  videoPlays3s: integer("video_plays_3s").notNull().default(0),
+  videoP25: integer("video_p25").notNull().default(0),
+  videoP50: integer("video_p50").notNull().default(0),
+  videoP75: integer("video_p75").notNull().default(0),
+  videoP100: integer("video_p100").notNull().default(0),
+  thruplays: integer("thruplays").notNull().default(0),
+  postEngagement: integer("post_engagement").notNull().default(0),
+  reactions: integer("reactions").notNull().default(0),
+  comments: integer("comments").notNull().default(0),
+  shares: integer("shares").notNull().default(0),
+  saves: integer("saves").notNull().default(0),
+  pageLikes: integer("page_likes").notNull().default(0),
+  messages: integer("messages").notNull().default(0),
+  objective: text("objective"),
+  optimizationGoal: text("optimization_goal"),
+  /** Toutes les actions renvoyées par Meta (type → nombre), pour ne rien perdre. */
+  actions: jsonb("actions").$type<Record<string, number>>(),
+  actionValues: jsonb("action_values").$type<Record<string, number>>()
+}, (table) => [
+  uniqueIndex("meta_ad_insights_day_ad_idx").on(table.date, table.adId),
+  index("meta_ad_insights_date_idx").on(table.date)
+]);
+
+/** Fiche de chaque pub: statut, contenu de la créa, portée/fréquence et classements sur la dernière période synchronisée. */
+export const metaAds = pgTable("meta_ads", {
+  adId: text("ad_id").primaryKey(),
+  name: text("name").notNull().default(""),
+  status: text("status"),
+  effectiveStatus: text("effective_status"),
+  campaignId: text("campaign_id"),
+  adsetId: text("adset_id"),
+  createdTime: timestamp("created_time", { withTimezone: true }),
+  title: text("title"),
+  body: text("body"),
+  callToAction: text("call_to_action"),
+  objectType: text("object_type"),
+  thumbnailUrl: text("thumbnail_url"),
+  link: text("link"),
+  periodSince: date("period_since", { mode: "string" }),
+  periodUntil: date("period_until", { mode: "string" }),
+  periodReach: integer("period_reach"),
+  periodFrequency: doublePrecision("period_frequency"),
+  qualityRanking: text("quality_ranking"),
+  engagementRanking: text("engagement_ranking"),
+  conversionRanking: text("conversion_ranking"),
+  updatedAt: updatedAt()
+});
+
+/** Campagnes et ensembles de pubs Meta: objectif, budget, statut, ciblage (données brutes de l'API). */
+export const metaObjects = pgTable("meta_objects", {
+  id: text("id").primaryKey(),
+  level: text("level").$type<"campaign" | "adset">().notNull(),
+  name: text("name").notNull().default(""),
+  data: jsonb("data").$type<Record<string, unknown>>().notNull(),
+  updatedAt: updatedAt()
+});
 
 export const pushSubscriptions = pgTable("push_subscriptions", {
   id: serial("id").primaryKey(),

@@ -1,6 +1,8 @@
 import { asc, between, desc, eq } from "drizzle-orm";
 import { Suspense } from "react";
-import { AdSpendManager, ProfitCalculator } from "@/components/admin/marketing";
+import { AdsAnalysisView } from "@/components/admin/ads-analysis";
+import { AdSpendManager, CopyText, ProfitCalculator } from "@/components/admin/marketing";
+import { buildAdsAnalysis } from "@/lib/ads-analysis";
 import { RangePicker } from "@/components/admin/range-picker";
 import { PageHeader } from "@/components/admin/shell";
 import { Kpi, SimpleTable } from "@/components/admin/widgets";
@@ -15,11 +17,14 @@ export const metadata = { title: "Marketing" };
 export default async function MarketingPage({ searchParams }: { searchParams: Promise<{ preset?: string; from?: string; to?: string }> }) {
   const params = await searchParams;
   const range = rangeFromPreset(params.preset ?? "30d", params.from, params.to);
-  const [stats, breakdowns, observed, config, spendRows, [mainProduct]] = await Promise.all([
+  const [stats, breakdowns, observed, config, spendRows, [mainProduct], analysis] = await Promise.all([
     getDashboardStats(range), getBreakdowns(range), getObservedRates(), getSettings(),
     db.select().from(adSpend).where(between(adSpend.date, range.from, range.to)).orderBy(desc(adSpend.date), asc(adSpend.campaign)),
-    db.select().from(products).where(eq(products.active, true)).orderBy(asc(products.sortOrder)).limit(1)
+    db.select().from(products).where(eq(products.active, true)).orderBy(asc(products.sortOrder)).limit(1),
+    buildAdsAnalysis(range)
   ]);
+  const exportQuery = new URLSearchParams({ preset: range.preset, from: range.from, to: range.to }).toString();
+  const urlParams = "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}";
   const { ads, orders: o, unitCosts, rates } = stats;
   const metaConnected = Boolean(config.meta.adAccountId && config.meta.marketingToken);
   const campaigns = Object.values(spendRows.reduce<Record<string, { campaign: string; spend: number; clicks: number; lpv: number; purchases: number }>>((acc, row) => {
@@ -28,7 +33,6 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
     acc[row.campaign] = item;
     return acc;
   }, {})).sort((a, b) => b.spend - a.spend);
-  const campaignOrders = new Map(breakdowns.sources.map((row) => [row.source, row.orders]));
 
   return <>
     <PageHeader title="Marketing & rentabilité" subtitle="Meta Ads, pixel, coût réel par commande en tenant compte des retours" />
@@ -73,12 +77,29 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
       <AdSpendManager rows={spendRows.map((row) => ({ id: row.id, date: row.date, campaign: row.campaign, platform: row.platform, amount: row.amount, source: row.source }))} metaConnected={metaConnected} />
     </div>
 
+    <section className="adm-section">
+      <div className="adm-spread" style={{ marginBottom: 10 }}>
+        <h2 className="adm-section-title" style={{ margin: 0 }}>Analyse par campagne et par pub</h2>
+        <a className="adm-btn adm-btn-primary" href={`/api/admin/marketing/export?${exportQuery}`}>⬇ Exporter l&apos;analyse (JSON)</a>
+      </div>
+      <p className="adm-hint" style={{ marginBottom: 10 }}>
+        Cliquez sur une campagne pour voir chaque pub. Les campagnes « Engagement / Notoriété / Messages » (pour chauffer la page) sont jugées sur leurs propres chiffres, pas sur les ventes.
+        L&apos;export JSON contient tout: noms et IDs, objectif, budget, ciblage, créas, toutes les actions Meta, chiffres jour par jour et commandes réelles. Envoyez-le à Claude pour une analyse.
+      </p>
+      <AdsAnalysisView analysis={analysis} />
+      {analysis.unattributedMetaOrders.orders > 0 && <p className="adm-alert adm-alert-warn" style={{ marginTop: 10 }}>{analysis.unattributedMetaOrders.orders} commande(s) venues de Facebook/Instagram sans pub identifiée: ajoutez les paramètres d&apos;URL ci-dessous à vos pubs.</p>}
+      <div className="adm-card" style={{ marginTop: 10 }}>
+        <h3>Paramètres d&apos;URL à coller dans chaque pub (Meta → Pub → Suivi → Paramètres d&apos;URL)</h3>
+        <CopyText text={urlParams} />
+        <p className="adm-hint" style={{ marginTop: 6 }}>Ainsi chaque commande est reliée à sa campagne, son ensemble et sa pub exacte.</p>
+      </div>
+    </section>
+
     <section className="adm-card adm-section">
-      <h2>Campagnes</h2>
+      <h2>Campagnes (dépenses par jour)</h2>
       <SimpleTable head={["Campagne", "Dépense", "Clics", "Vues page", "Achats pixel", "Coût / achat"]}
         rows={campaigns.map((row) => [row.campaign, money(row.spend), count(row.clicks), count(row.lpv), count(row.purchases), money(row.purchases ? row.spend / row.purchases : null)])}
         empty="Aucune dépense sur la période. Synchronisez Meta Ads ou saisissez vos dépenses." />
-      <p className="adm-hint" style={{ marginTop: 10 }}>Astuce: ajoutez <span className="adm-mono">?utm_source=facebook&amp;utm_campaign={"{{campaign.name}}"}&amp;utm_content={"{{ad.name}}"}</span> aux liens de vos pubs pour relier chaque commande à sa campagne ({count(campaignOrders.get("facebook") ?? 0)} commandes facebook sur la période).</p>
     </section>
 
     <section className="adm-card adm-section">
