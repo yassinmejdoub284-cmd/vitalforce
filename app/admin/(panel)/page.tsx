@@ -64,7 +64,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
             ["Chiffre d'affaires livré", o.delivered_revenue, "livraison client incluse"],
             ["− Coût de production", -costs.cogs, "pots livrés"],
             ["− Emballage", -costs.packaging, "colis expédiés"],
-            ["− Frais Jetpack livraisons", -costs.carrier],
+            ["− Livraison (Jetpack + perso)", -costs.carrier],
             ["− Frais Jetpack retours", -costs.returns, `${o.returned} retour(s)`],
             ["− Confirmation téléphonique", -costs.confirmation],
             ...(costs.lostGoods ? [["− Marchandise perdue (retours)", -costs.lostGoods] as [string, number]] : []),

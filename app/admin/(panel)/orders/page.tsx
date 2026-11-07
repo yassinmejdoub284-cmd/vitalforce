@@ -13,7 +13,7 @@ import { governorates } from "@/lib/tunisia";
 
 export const metadata = { title: "Commandes" };
 
-const tabs: [string, string][] = [["", "Toutes"], ["pending", "À confirmer"], ["no_answer", "Pas de réponse"], [CONFIRMED_ALL, "Confirmées"], ["confirmed", "À expédier"], ["shipped", "Chez Jetpack"], ["delivered", "Livrées"], ["returned", "Retours"], ["cancelled", "Annulées"]];
+const tabs: [string, string][] = [["", "Toutes"], ["pending", "À confirmer"], ["no_answer", "Pas de réponse"], [CONFIRMED_ALL, "Confirmées"], ["confirmed", "À expédier"], ["shipped", "En livraison"], ["delivered", "Livrées"], ["returned", "Retours"], ["cancelled", "Annulées"]];
 
 export default async function OrdersPage({ searchParams }: { searchParams: Promise<Record<string, string | undefined>> }) {
   const params = await searchParams;
@@ -37,7 +37,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
   const boardOrders: BoardOrder[] = orders.map((order) => ({
     id: order.id, number: order.number, status: order.status, customerName: order.customerName, phone: order.phone, governorate: order.governorate, city: order.city,
     total: order.total, createdAt: order.createdAt.toISOString(), items: order.items.map((item) => `${item.quantity}× ${item.name.replace(/^VITAL FORCE /, "")}`).join(", "),
-    callAttempts: order.callAttempts, carrierBarcode: order.carrierBarcode, carrierState: order.carrierState, carrierPreState: order.carrierPreState, carrierPaid: order.carrierPaid, carrierError: order.carrierError,
+    callAttempts: order.callAttempts, carrier: order.carrier, carrierBarcode: order.carrierBarcode, carrierState: order.carrierState, carrierPreState: order.carrierPreState, carrierPaid: order.carrierPaid, carrierError: order.carrierError,
     source: order.landingAngle ?? order.source, history: history.get(order.phone) ?? null, blacklisted: blockedSet.has(order.phone), duplicate: duplicateSet.has(order.id)
   }));
 

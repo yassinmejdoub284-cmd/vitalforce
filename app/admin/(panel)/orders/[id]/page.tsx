@@ -67,14 +67,19 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
         <div className="adm-cost-row is-total"><span>À encaisser</span><span>{money(order.total)}</span></div>
         <p className="adm-hint" style={{ marginTop: 10 }}>Marge estimée si livrée: <strong>{money(margin)}</strong> (production + emballage {money(productCost)}, Jetpack {money(order.carrierCost)}, confirmation {money(order.confirmationCost)}, hors publicité). Si retour: −{money(order.returnCost + order.confirmationCost + items.reduce((sum, item) => sum + item.packagingCost * item.quantity, 0))}.</p>
 
-        <h2 style={{ marginTop: 18 }}>Jetpack</h2>
-        {order.carrierBarcode ? <dl className="adm-dl">
+        <h2 style={{ marginTop: 18 }}>Livraison</h2>
+        {order.carrier === "self" ? <dl className="adm-dl">
+          <dt>Mode</dt><dd>🛵 Livrée par vous (sans Jetpack)</dd>
+          <dt>État</dt><dd>{order.carrierState ?? "—"}</dd>
+          <dt>Paiement</dt><dd>{order.carrierPaid ? <span className="adm-badge adm-badge-paid">Encaissée{order.carrierPaidAt ? ` le ${shortDate(order.carrierPaidAt)}` : ""}</span> : "Non encaissée"}</dd>
+          <dt>Coût de livraison</dt><dd>{money(order.carrierCost)}</dd>
+        </dl> : order.carrierBarcode ? <dl className="adm-dl">
           <dt>Code à barre</dt><dd className="adm-mono">{order.carrierBarcode}</dd>
           <dt>État officiel</dt><dd>{order.carrierState || "—"}{order.carrierReason && ` · ${order.carrierReason}`}</dd>
           <dt>Livreur (temps réel)</dt><dd>{order.carrierPreState || "—"}{order.carrierPreReason && ` · ${order.carrierPreReason}`}</dd>
           <dt>Paiement</dt><dd>{order.carrierPaid ? <span className="adm-badge adm-badge-paid">Payée par Jetpack{order.carrierPaidAt ? ` le ${shortDate(order.carrierPaidAt)}` : ""}</span> : "Non payée"}</dd>
           <dt>Dernier suivi</dt><dd>{order.carrierSyncedAt ? shortDate(order.carrierSyncedAt) : "—"}</dd>
-        </dl> : <p className="adm-muted" style={{ fontSize: 14 }}>{order.carrierError ? <span style={{ color: "var(--adm-red)" }}>⚠ {order.carrierError}</span> : "Pas encore envoyée. Confirmez la commande puis envoyez-la à Jetpack."}</p>}
+        </dl> : <p className="adm-muted" style={{ fontSize: 14 }}>{order.carrierError ? <span style={{ color: "var(--adm-red)" }}>⚠ {order.carrierError}</span> : "Pas encore expédiée. Confirmez la commande, puis envoyez-la à Jetpack ou livrez-la vous-même (« Je livre moi-même »)."}</p>}
       </section>
 
       <section className="adm-card">

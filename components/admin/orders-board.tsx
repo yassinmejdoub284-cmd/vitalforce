@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Archive, ArchiveRestore, Check, Download, Loader2, PhoneCall, PhoneOff, RefreshCw, Send, Truck, X } from "lucide-react";
+import { Archive, ArchiveRestore, Bike, Check, Download, Loader2, PackageCheck, PhoneCall, PhoneOff, RefreshCw, Send, Truck, Undo2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api, shortDate } from "./client-api";
 import { StatusBadge } from "./widgets";
@@ -11,7 +11,7 @@ import { formatTunisianPhone } from "@/lib/tunisia";
 
 export type BoardOrder = {
   id: number; number: string; status: string; customerName: string; phone: string; governorate: string; city: string; total: number; createdAt: string; items: string;
-  callAttempts: number; carrierBarcode: string | null; carrierState: string | null; carrierPreState: string | null; carrierPaid: boolean; carrierError: string | null;
+  callAttempts: number; carrier: string | null; carrierBarcode: string | null; carrierState: string | null; carrierPreState: string | null; carrierPaid: boolean; carrierError: string | null;
   source: string; history: { total: number; delivered: number; returned: number; cancelled: number } | null; blacklisted: boolean; duplicate: boolean;
 };
 
@@ -29,6 +29,7 @@ export function CustomerFlags({ order }: { order: Pick<BoardOrder, "history" | "
 }
 
 function CarrierLine({ order }: { order: BoardOrder }) {
+  if (order.carrier === "self") return <small className="adm-muted" style={{ display: "block" }}>🛵 {order.carrierState ?? "Livraison perso"}{order.carrierPaid && <span className="adm-badge adm-badge-paid" style={{ marginLeft: 6 }}>Encaissée</span>}</small>;
   if (order.carrierError && !order.carrierBarcode) return <small style={{ color: "var(--adm-red)", display: "block" }}>⚠ {order.carrierError}</small>;
   if (!order.carrierBarcode) return null;
   return <small className="adm-muted" style={{ display: "block" }}>
@@ -46,6 +47,8 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, arc
   const selectedOrders = useMemo(() => orders.filter((order) => selected.has(order.id)), [orders, selected]);
   const confirmedSelected = selectedOrders.filter((order) => order.status === "confirmed" && !order.carrierBarcode);
   const cancelledSelected = selectedOrders.filter((order) => order.status === "cancelled");
+  // Livraison faite soi-même: commandes confirmées (pas chez Jetpack) ou déjà en route avec vous.
+  const selfDeliverable = selectedOrders.filter((order) => !order.carrierBarcode && (order.status === "confirmed" || (order.status === "shipped" && order.carrier === "self")));
 
   const toggle = (id: number) => setSelected((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
   const allSelected = orders.length > 0 && orders.every((order) => selected.has(order.id));
@@ -90,7 +93,14 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, arc
     </>;
     if (archivedView) return <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => archive([order.id], false)}><ArchiveRestore size={14} />Désarchiver</button>;
     if (order.status === "cancelled") return <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => archive([order.id], true)}><Archive size={14} />Archiver</button>;
-    if (order.status === "confirmed" && !order.carrierBarcode) return <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => ship([order.id])}><Truck size={14} />Jetpack</button>;
+    if (order.status === "confirmed" && !order.carrierBarcode) return <>
+      <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => ship([order.id])}><Truck size={14} />Jetpack</button>
+      <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} title="Je livre moi-même" onClick={() => setStatus([order.id], "shipped")}><Bike size={14} />Moi</button>
+    </>;
+    if (order.status === "shipped" && order.carrier === "self") return <>
+      <button type="button" className="adm-btn adm-btn-sm adm-btn-green" disabled={!!busy} onClick={() => setStatus([order.id], "delivered")}><PackageCheck size={14} />Livrée</button>
+      <button type="button" className="adm-btn adm-btn-sm adm-btn-red" disabled={!!busy} onClick={() => window.confirm("Le client a refusé / colis revenu ?") && setStatus([order.id], "returned")}><Undo2 size={14} />Retour</button>
+    </>;
     return null;
   };
 
@@ -152,6 +162,12 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, arc
       <button type="button" className="adm-btn adm-btn-sm adm-btn-red" disabled={!!busy} onClick={() => cancel([...selected])}><X size={14} />Annuler</button>
       <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy || confirmedSelected.length === 0} onClick={() => ship(confirmedSelected.map((order) => order.id))}>
         <Send size={14} />Envoyer à Jetpack ({confirmedSelected.length})
+      </button>
+      <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy || selfDeliverable.length === 0} onClick={() => setStatus(selfDeliverable.filter((order) => order.status === "confirmed").map((order) => order.id), "shipped")} title="Je livre moi-même: en route">
+        <Bike size={14} />Je livre ({selfDeliverable.filter((order) => order.status === "confirmed").length})
+      </button>
+      <button type="button" className="adm-btn adm-btn-sm adm-btn-green" disabled={!!busy || selfDeliverable.length === 0} onClick={() => window.confirm(`Marquer ${selfDeliverable.length} commande(s) comme livrées par vous et encaissées ?`) && setStatus(selfDeliverable.map((order) => order.id), "delivered")}>
+        <PackageCheck size={14} />Livrées par moi ({selfDeliverable.length})
       </button>
       <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy || cancelledSelected.length === 0} onClick={() => archive(cancelledSelected.map((order) => order.id), true)}>
         <Archive size={14} />Archiver les annulées ({cancelledSelected.length})

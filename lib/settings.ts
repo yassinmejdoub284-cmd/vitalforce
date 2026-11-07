@@ -34,6 +34,8 @@ export const settingsSchemas = {
     carrierCost: amount.default(7),
     /** Ce que la société vous facture pour un colis retourné. */
     returnCost: amount.default(4),
+    /** Coût d'une commande que vous livrez vous-même (carburant, livreur...). */
+    selfCost: amount.default(0),
     eta: optionalText.default("24-72 h selon la ville"),
     etaAr: optionalText.default("24-72 ساعة حسب المدينة")
   }),

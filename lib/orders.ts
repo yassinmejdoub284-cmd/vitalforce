@@ -186,7 +186,25 @@ async function applyTransition(tx: Tx, order: OrderRow, transition: Transition, 
   if (status === "no_answer") patch.callAttempts = order.callAttempts + 1;
   if (status === "cancelled") { patch.cancelledAt = now; patch.cancelReason = transition.reason ?? order.cancelReason; }
   if (status === "shipped" && !order.shippedAt) patch.shippedAt = now;
+  // Livraison faite par vous-même (sans Jetpack): coût de livraison perso, et l'argent est encaissé à la livraison.
+  const selfDelivery = !transition.carrierDriven && !order.carrierBarcode && (status === "shipped" || status === "delivered" || (status === "returned" && order.carrier === "self"));
+  if (selfDelivery) {
+    patch.carrier = "self";
+    patch.carrierCost = config.delivery.selfCost;
+    patch.returnCost = 0;
+    patch.carrierState = status === "delivered" ? "Livrée (moi-même)" : status === "returned" ? "Retour (moi-même)" : "En livraison (moi-même)";
+    if (status === "delivered") { patch.carrierPaid = true; patch.carrierPaidAt = order.carrierPaidAt ?? now; }
+  }
+  if (order.carrier === "self" && (status === "confirmed" || status === "pending" || status === "cancelled")) {
+    patch.carrier = null;
+    patch.carrierState = null;
+    patch.carrierPaid = false;
+    patch.carrierPaidAt = null;
+    patch.carrierCost = config.delivery.carrierCost;
+    patch.returnCost = config.delivery.returnCost;
+  }
   if (status === "delivered") patch.deliveredAt = order.deliveredAt ?? now;
+  if (status === "returned" && order.carrier === "self") { patch.carrierPaid = false; patch.carrierPaidAt = null; }
   if (status === "returned") patch.returnedAt = order.returnedAt ?? now;
   // Une commande archivée qui reprend vie (annulation retirée) revient dans les listes.
   if (order.archivedAt && status !== "cancelled") patch.archivedAt = null;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Archive, ArchiveRestore, Ban, Check, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Ban, Bike, Check, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
 import { useState } from "react";
 import { api } from "./client-api";
 import { governorates } from "@/lib/tunisia";
@@ -13,9 +13,9 @@ const targetButtons: Record<string, { label: string; icon: typeof Check; classNa
   no_answer: { label: "Pas de réponse", icon: PhoneOff, className: "" },
   cancelled: { label: "Annuler", icon: X, className: "adm-btn-red" },
   pending: { label: "Remettre à confirmer", icon: RotateCcw, className: "" },
-  delivered: { label: "Marquer livrée", icon: PackageCheck, className: "" },
+  delivered: { label: "Livrée (par moi) · encaissée", icon: PackageCheck, className: "adm-btn-green" },
   returned: { label: "Marquer retournée", icon: Undo2, className: "adm-btn-red" },
-  shipped: { label: "Expédiée (hors Jetpack)", icon: Truck, className: "" }
+  shipped: { label: "Je livre moi-même", icon: Bike, className: "" }
 };
 
 export function OrderActions({ order, targets, jetpackReady }: { order: Order; targets: string[]; jetpackReady: boolean }) {
@@ -45,7 +45,8 @@ export function OrderActions({ order, targets, jetpackReady }: { order: Order; t
       if (answer === null) return;
       reason = answer || undefined;
     }
-    if (status === "shipped" && !window.confirm("Marquer comme expédiée sans passer par Jetpack (livraison manuelle) ?")) return;
+    if (status === "shipped" && !window.confirm("Vous livrez cette commande vous-même (sans Jetpack) ?")) return;
+    if (status === "delivered" && !order.carrierBarcode && !window.confirm("Commande livrée par vous et argent encaissé ?")) return;
     run(status, () => api("/api/admin/orders/status", { body: { ids: [order.id], status, reason } }), "Statut mis à jour.");
   }
 

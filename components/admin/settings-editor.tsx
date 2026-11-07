@@ -127,6 +127,7 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
           <h3 className="adm-span-2" style={{ margin: "8px 0 0" }}>Ce que Jetpack vous facture</h3>
           <Text name="carrierCost" label="Par colis livré (DT)" value={s.delivery.carrierCost} type="number" />
           <Text name="returnCost" label="Par colis retourné (DT)" value={s.delivery.returnCost} type="number" />
+          <Text name="selfCost" label="Livraison faite par vous-même (DT / commande)" value={s.delivery.selfCost} type="number" hint="Ex: Sfax livré par vous. Carburant, livreur… 0 si rien." span />
           <SaveBar group="delivery" />
         </div>
       </Section></form>
