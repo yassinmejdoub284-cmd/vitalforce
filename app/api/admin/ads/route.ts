@@ -14,7 +14,9 @@ const schema = z.object({
 
 /** Saisie manuelle des dépenses pub (si l'API Meta n'est pas connectée, ou pour TikTok/Google). */
 export const POST = adminRoute(async (request) => {
-  const value = schema.parse(await readJson(request));
+  const parsed = schema.safeParse(await readJson(request));
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Dépense invalide." }, { status: 400 });
+  const value = parsed.data;
   await db.insert(adSpend).values({ ...value, campaign: value.campaign || "Total", source: "manual" })
     .onConflictDoUpdate({ target: [adSpend.date, adSpend.platform, adSpend.campaign], set: { amount: value.amount, source: "manual" } });
   return NextResponse.json({ ok: true });
