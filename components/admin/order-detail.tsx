@@ -1,12 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Ban, Check, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Ban, Check, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
 import { useState } from "react";
 import { api } from "./client-api";
 import { governorates } from "@/lib/tunisia";
 
-type Order = { id: number; number: string; status: string; phone: string; customerName: string; total: number; carrierBarcode: string | null; blacklisted: boolean };
+type Order = { id: number; number: string; status: string; phone: string; customerName: string; total: number; carrierBarcode: string | null; blacklisted: boolean; archived: boolean };
 
 const targetButtons: Record<string, { label: string; icon: typeof Check; className: string }> = {
   confirmed: { label: "Confirmer", icon: Check, className: "adm-btn-green" },
@@ -68,6 +68,10 @@ export function OrderActions({ order, targets, jetpackReady }: { order: Order; t
         const reason = window.prompt("Pourquoi bloquer ce numéro ? (faux numéro, refus répétés…)", "Refus de colis");
         if (reason !== null) run("blacklist", () => api("/api/admin/blacklist", { body: { phone: order.phone, reason } }), "Numéro ajouté à la liste noire.");
       }}><Ban size={16} />{order.blacklisted ? "Débloquer le numéro" : "Liste noire"}</button>
+      {(order.archived || order.status === "cancelled") && <button type="button" className="adm-btn" disabled={!!busy}
+        onClick={() => run("archive", () => api("/api/admin/orders/archive", { body: { ids: [order.id], archived: !order.archived } }), order.archived ? "Commande désarchivée." : "Commande archivée.")}>
+        {order.archived ? <ArchiveRestore size={16} /> : <Archive size={16} />}{order.archived ? "Désarchiver" : "Archiver"}
+      </button>}
     </div>
     {message && <p className={`adm-alert adm-alert-${message.tone}`} style={{ marginTop: 10 }}>{message.text}</p>}
   </section>;

@@ -204,3 +204,5 @@ textarea.adm-input { min-height: 78px; resize: vertical; }
   .adm-desk-only { display: none; }
 }
 .adm-field { align-content: start; }
+
+@media (min-width: 861px) { .adm-tabs { flex-wrap: wrap; overflow: visible; } }

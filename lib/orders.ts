@@ -1,5 +1,5 @@
 import "server-only";
-import { and, eq, gt, inArray, isNotNull, ne, or, sql } from "drizzle-orm";
+import { and, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db, type Tx } from "@/lib/db";
 import { blacklist, orderEvents, orderItems, orders, products, type OrderRow, type OrderStatus } from "@/lib/db/schema";
@@ -188,6 +188,8 @@ async function applyTransition(tx: Tx, order: OrderRow, transition: Transition, 
   if (status === "shipped" && !order.shippedAt) patch.shippedAt = now;
   if (status === "delivered") patch.deliveredAt = order.deliveredAt ?? now;
   if (status === "returned") patch.returnedAt = order.returnedAt ?? now;
+  // Une commande archivée qui reprend vie (annulation retirée) revient dans les listes.
+  if (order.archivedAt && status !== "cancelled") patch.archivedAt = null;
 
   await tx.update(orders).set(patch).where(eq(orders.id, order.id));
   const message = status === "no_answer" ? `Appel sans réponse n°${order.callAttempts + 1}` : `${orderLabel(order.status)} → ${orderLabel(status)}`;
@@ -217,6 +219,24 @@ export async function changeOrderStatus(ids: number[], target: OrderStatus, acto
   }
   refreshStorefront("products");
   return results;
+}
+
+/** Archiver: seulement les commandes annulées. Désarchiver: n'importe laquelle. */
+export async function archiveOrders(input: { ids?: number[]; allCancelled?: boolean; archived: boolean }, actor: string) {
+  const now = new Date();
+  if (input.allCancelled) {
+    const rows = await db.update(orders).set({ archivedAt: now }).where(and(eq(orders.status, "cancelled"), isNull(orders.archivedAt))).returning({ id: orders.id });
+    if (rows.length) await db.insert(orderEvents).values(rows.map((row) => ({ orderId: row.id, type: "archive", message: "Archivée", actor })));
+    return { ok: rows.length, skipped: 0 };
+  }
+  const ids = input.ids ?? [];
+  if (ids.length === 0) return { ok: 0, skipped: 0 };
+  const condition = input.archived
+    ? and(inArray(orders.id, ids), eq(orders.status, "cancelled"), isNull(orders.archivedAt))
+    : and(inArray(orders.id, ids), isNotNull(orders.archivedAt));
+  const rows = await db.update(orders).set({ archivedAt: input.archived ? now : null }).where(condition).returning({ id: orders.id });
+  if (rows.length) await db.insert(orderEvents).values(rows.map((row) => ({ orderId: row.id, type: "archive", message: input.archived ? "Archivée" : "Désarchivée", actor })));
+  return { ok: rows.length, skipped: ids.length - rows.length };
 }
 
 export const orderUpdateSchema = z.object({

@@ -97,10 +97,13 @@ export const orders = pgTable("orders", {
   deliveredAt: timestamp("delivered_at", { withTimezone: true }),
   returnedAt: timestamp("returned_at", { withTimezone: true }),
   cancelledAt: timestamp("cancelled_at", { withTimezone: true }),
+  /** Commande archivée: masquée des listes, mais toujours comptée dans les statistiques. */
+  archivedAt: timestamp("archived_at", { withTimezone: true }),
   createdAt: createdAt(),
   updatedAt: updatedAt()
 }, (table) => [
   index("orders_status_idx").on(table.status),
+  index("orders_archived_idx").on(table.archivedAt),
   index("orders_phone_idx").on(table.phone),
   index("orders_created_idx").on(table.createdAt),
   index("orders_barcode_idx").on(table.carrierBarcode)

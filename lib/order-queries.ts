@@ -1,15 +1,21 @@
 import "server-only";
-import { and, desc, eq, ilike, inArray, or, sql, type SQL } from "drizzle-orm";
+import { and, desc, eq, ilike, inArray, isNotNull, isNull, ne, or, sql, type SQL } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { orderItems, orders, orderStatuses, type OrderStatus } from "@/lib/db/schema";
 import { TZ } from "@/lib/stats";
 
-export type OrderFilters = { status?: string; q?: string; from?: string; to?: string; governorate?: string; page?: number; paid?: string; returning?: string };
+export type OrderFilters = { status?: string; q?: string; from?: string; to?: string; governorate?: string; page?: number; paid?: string; returning?: string; archived?: string };
 export const PAGE_SIZE = 50;
+
+/** Pseudo-statut « toutes les confirmées »: confirmées par téléphone, qu'elles soient à expédier, chez Jetpack, livrées ou retournées. */
+export const CONFIRMED_ALL = "confirmed_all";
 
 function where(filters: OrderFilters) {
   const conditions: SQL[] = [];
-  if (filters.status && (orderStatuses as readonly string[]).includes(filters.status)) conditions.push(eq(orders.status, filters.status as OrderStatus));
+  // Les commandes archivées n'apparaissent que dans l'onglet « Archivées ».
+  if (filters.archived !== "any") conditions.push(filters.archived === "yes" ? isNotNull(orders.archivedAt) : isNull(orders.archivedAt));
+  if (filters.status === CONFIRMED_ALL) conditions.push(and(isNotNull(orders.confirmedAt), ne(orders.status, "cancelled"))!);
+  else if (filters.status && (orderStatuses as readonly string[]).includes(filters.status)) conditions.push(eq(orders.status, filters.status as OrderStatus));
   if (filters.governorate) conditions.push(eq(orders.governorate, filters.governorate));
   if (filters.paid === "yes") conditions.push(eq(orders.carrierPaid, true));
   if (filters.paid === "no") conditions.push(and(eq(orders.status, "delivered"), eq(orders.carrierPaid, false))!);
@@ -38,9 +44,15 @@ export async function listOrders(filters: OrderFilters, options: { all?: boolean
 }
 
 export async function statusCounts(filters: OrderFilters) {
-  const condition = where({ ...filters, status: undefined });
-  const rows = await db.select({ status: orders.status, count: sql<number>`count(*)::int` }).from(orders).where(condition).groupBy(orders.status);
+  const condition = where({ ...filters, status: undefined, archived: undefined });
+  const [rows, [extra]] = await Promise.all([
+    db.select({ status: orders.status, count: sql<number>`count(*)::int` }).from(orders).where(condition).groupBy(orders.status),
+    db.select({
+      confirmedAll: sql<number>`count(*) filter (where ${orders.confirmedAt} is not null and ${orders.status} <> 'cancelled' and ${orders.archivedAt} is null)::int`,
+      archived: sql<number>`count(*) filter (where ${orders.archivedAt} is not null)::int`
+    }).from(orders).where(where({ ...filters, status: undefined, archived: "any" }))
+  ]);
   const counts = Object.fromEntries(orderStatuses.map((status) => [status, 0])) as Record<OrderStatus, number>;
   for (const row of rows) counts[row.status] = row.count;
-  return counts;
+  return { ...counts, [CONFIRMED_ALL]: extra?.confirmedAll ?? 0, archived: extra?.archived ?? 0 };
 }

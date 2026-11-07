@@ -39,9 +39,10 @@ export default async function OrderPage({ params }: { params: Promise<{ id: stri
       <StatusBadge status={order.status} />
       <CustomerFlags order={{ history: history.get(order.phone) ?? null, blacklisted: blocked.length > 0, duplicate: duplicates.length > 0 }} />
       {order.callAttempts > 0 && <span className="adm-badge adm-badge-no_answer">{order.callAttempts} appel(s) sans réponse</span>}
+      {order.archivedAt && <span className="adm-badge adm-badge-muted">🗄 Archivée</span>}
     </div>
 
-    <OrderActions order={{ id: order.id, number: order.number, status: order.status, phone: order.phone, customerName: order.customerName, total: order.total, carrierBarcode: order.carrierBarcode, blacklisted: blocked.length > 0 }} targets={allowedTargets(order.status)} jetpackReady={Boolean(config.jetpack.addToken)} />
+    <OrderActions order={{ id: order.id, number: order.number, status: order.status, phone: order.phone, customerName: order.customerName, total: order.total, carrierBarcode: order.carrierBarcode, blacklisted: blocked.length > 0, archived: Boolean(order.archivedAt) }} targets={allowedTargets(order.status)} jetpackReady={Boolean(config.jetpack.addToken)} />
 
     <div className="adm-grid adm-grid-2 adm-section">
       <section className="adm-card">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Check, Download, Loader2, PhoneCall, PhoneOff, RefreshCw, Send, Truck, X } from "lucide-react";
+import { Archive, ArchiveRestore, Check, Download, Loader2, PhoneCall, PhoneOff, RefreshCw, Send, Truck, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api, shortDate } from "./client-api";
 import { StatusBadge } from "./widgets";
@@ -38,23 +38,25 @@ function CarrierLine({ order }: { order: BoardOrder }) {
   </small>;
 }
 
-export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady }: { orders: BoardOrder[]; exportQuery: string; jetpackReady: boolean; trackReady: boolean }) {
+export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, archivedView = false }: { orders: BoardOrder[]; exportQuery: string; jetpackReady: boolean; trackReady: boolean; archivedView?: boolean }) {
   const router = useRouter();
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [busy, setBusy] = useState("");
   const [notice, setNotice] = useState<{ tone: "ok" | "error" | "info"; text: string } | null>(null);
   const selectedOrders = useMemo(() => orders.filter((order) => selected.has(order.id)), [orders, selected]);
   const confirmedSelected = selectedOrders.filter((order) => order.status === "confirmed" && !order.carrierBarcode);
+  const cancelledSelected = selectedOrders.filter((order) => order.status === "cancelled");
 
   const toggle = (id: number) => setSelected((current) => { const next = new Set(current); if (next.has(id)) next.delete(id); else next.add(id); return next; });
   const allSelected = orders.length > 0 && orders.every((order) => selected.has(order.id));
 
-  async function run(label: string, action: () => Promise<Result | { checked: number; changed: number }>) {
+  async function run(label: string, action: () => Promise<Result | { checked: number; changed: number } | { ok: number; skipped: number }>) {
     setBusy(label);
     setNotice(null);
     try {
       const result = await action();
-      if ("checked" in result) setNotice({ tone: "ok", text: `${result.checked} colis vérifié(s) chez Jetpack, ${result.changed} mis à jour.` });
+      if ("skipped" in result) setNotice({ tone: "ok", text: `${result.ok} commande(s) ${archivedView ? "désarchivée(s)" : "archivée(s)"}.${result.skipped ? ` ${result.skipped} ignorée(s) (seules les annulées s'archivent).` : ""}` });
+      else if ("checked" in result) setNotice({ tone: "ok", text: `${result.checked} colis vérifié(s) chez Jetpack, ${result.changed} mis à jour.` });
       else if (result.failed.length) setNotice({ tone: "error", text: `${result.ok} réussie(s). Échec: ${result.failed.map((item) => `${item.number ?? `#${item.id}`} (${item.error})`).join(" · ")}` });
       else setNotice({ tone: "ok", text: `${result.ok} commande(s) mise(s) à jour.` });
       setSelected(new Set());
@@ -66,6 +68,7 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady }: {
     }
   }
 
+  const archive = (ids: number[], archived: boolean) => run("archive", () => api<{ ok: number; skipped: number }>("/api/admin/orders/archive", { body: { ids, archived } }));
   const setStatus = (ids: number[], status: string, reason?: string) => run(status, () => api<Result>("/api/admin/orders/status", { body: { ids, status, reason } }));
   const cancel = (ids: number[]) => {
     const reason = window.prompt("Raison de l'annulation (facultatif)", "Client a annulé");
@@ -85,6 +88,8 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady }: {
       <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => setStatus([order.id], "no_answer")} title="Pas de réponse"><PhoneOff size={14} />{order.callAttempts > 0 ? `×${order.callAttempts}` : ""}</button>
       <button type="button" className="adm-btn adm-btn-sm adm-btn-red" disabled={!!busy} onClick={() => cancel([order.id])} aria-label="Annuler"><X size={14} /></button>
     </>;
+    if (archivedView) return <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => archive([order.id], false)}><ArchiveRestore size={14} />Désarchiver</button>;
+    if (order.status === "cancelled") return <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => archive([order.id], true)}><Archive size={14} />Archiver</button>;
     if (order.status === "confirmed" && !order.carrierBarcode) return <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => ship([order.id])}><Truck size={14} />Jetpack</button>;
     return null;
   };
@@ -133,7 +138,13 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady }: {
       </div>
     </>}
 
-    {selected.size > 0 && <div className="adm-bulkbar">
+    {selected.size > 0 && archivedView && <div className="adm-bulkbar">
+      <strong>{selected.size} sélectionnée(s)</strong>
+      {busy && <Loader2 size={16} className="animate-spin" />}
+      <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} onClick={() => archive([...selected], false)}><ArchiveRestore size={14} />Désarchiver</button>
+      <button type="button" className="adm-btn adm-btn-sm" onClick={() => setSelected(new Set())}>Fermer</button>
+    </div>}
+    {selected.size > 0 && !archivedView && <div className="adm-bulkbar">
       <strong>{selected.size} sélectionnée(s)</strong>
       {busy && <Loader2 size={16} className="animate-spin" />}
       <button type="button" className="adm-btn adm-btn-sm adm-btn-green" disabled={!!busy} onClick={() => setStatus([...selected], "confirmed")}><Check size={14} />Confirmer</button>
@@ -142,7 +153,20 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady }: {
       <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy || confirmedSelected.length === 0} onClick={() => ship(confirmedSelected.map((order) => order.id))}>
         <Send size={14} />Envoyer à Jetpack ({confirmedSelected.length})
       </button>
+      <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy || cancelledSelected.length === 0} onClick={() => archive(cancelledSelected.map((order) => order.id), true)}>
+        <Archive size={14} />Archiver les annulées ({cancelledSelected.length})
+      </button>
       <button type="button" className="adm-btn adm-btn-sm" onClick={() => setSelected(new Set())}>Fermer</button>
     </div>}
   </>;
+}
+
+export function ArchiveAllCancelled({ count }: { count: number }) {
+  const router = useRouter();
+  const [busy, setBusy] = useState(false);
+  return <button type="button" className="adm-btn" disabled={busy} onClick={async () => {
+    if (!window.confirm(`Archiver les ${count} commande(s) annulée(s) ? Elles restent consultables dans « Archivées ».`)) return;
+    setBusy(true);
+    try { await api("/api/admin/orders/archive", { body: { allCancelled: true, archived: true } }); router.refresh(); } finally { setBusy(false); }
+  }}>{busy ? <Loader2 size={16} className="animate-spin" /> : <Archive size={16} />}Archiver toutes les annulées ({count})</button>;
 }
