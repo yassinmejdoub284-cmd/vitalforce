@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Mise à jour du site sur le VPS (à lancer avec l'utilisateur debian):
-#   bash /srv/vitalforce/app/scripts/deploy.sh
+# Mise à jour du site sur le VPS (à lancer avec sudo: le dossier appartient à « vitalforce »):
+#   sudo bash /srv/vitalforce/app/scripts/deploy.sh
 # Le code appartient à l'utilisateur « vitalforce »; le service systemd « vitalforce » fait tourner le site.
 set -euo pipefail
 APP=/srv/vitalforce/app

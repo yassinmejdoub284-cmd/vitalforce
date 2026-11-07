@@ -138,7 +138,7 @@ Ouvrez `https://admin.vitalforce-bioactive.com`, connectez-vous avec `ADMIN_EMAI
 ## Mises à jour
 
 ```bash
-bash /srv/vitalforce/app/scripts/deploy.sh
+sudo bash /srv/vitalforce/app/scripts/deploy.sh
 ```
 
 (`git pull`, installation, migration de la base, build, puis redémarrage du service `vitalforce`.)
