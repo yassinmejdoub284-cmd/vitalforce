@@ -75,6 +75,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
     {(params.status === "delivered" || params.status === "shipped") && <div className="adm-row" style={{ marginBottom: 12 }}>
       {params.status === "delivered" && <><Link className="adm-tab" aria-current={params.paid === "no" ? "page" : undefined} href={link({ paid: params.paid === "no" ? undefined : "no" })}>Pas encore payées par Jetpack</Link><Link className="adm-tab" aria-current={params.paid === "yes" ? "page" : undefined} href={link({ paid: params.paid === "yes" ? undefined : "yes" })}>Payées</Link></>}
       {params.status === "shipped" && <Link className="adm-tab" aria-current={params.returning === "yes" ? "page" : undefined} href={link({ returning: params.returning === "yes" ? undefined : "yes" })}>Retour en cours</Link>}
+      {params.status === "shipped" && orders.some((order) => order.carrier === "self") && <a className="adm-tab" href={`/admin/print?ids=${orders.filter((order) => order.carrier === "self").map((order) => order.id).join(",")}`} target="_blank" rel="noopener">🖨 Feuille de route + bons (mes livraisons)</a>}
     </div>}
     <OrdersBoard orders={boardOrders} exportQuery={new URLSearchParams(Object.entries(params).filter(([key, value]) => value && key !== "page") as [string, string][]).toString()} jetpackReady={Boolean(config.jetpack.addToken)} trackReady={Boolean(config.jetpack.trackToken)} archivedView={archivedView} />
     {pages > 1 && <nav className="adm-pager">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Archive, ArchiveRestore, Ban, Bike, Check, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Ban, Bike, Check, Printer, Loader2, PackageCheck, PhoneCall, PhoneOff, RotateCcw, Truck, Undo2, X } from "lucide-react";
 import { useState } from "react";
 import { api } from "./client-api";
 import { governorates } from "@/lib/tunisia";
@@ -64,6 +64,7 @@ export function OrderActions({ order, targets, jetpackReady }: { order: Order; t
         onClick={() => window.confirm("Créer le colis chez Jetpack ?") && run("jetpack", () => api("/api/admin/orders/jetpack", { body: { ids: [order.id] } }), "Colis créé chez Jetpack.")}>
         {busy === "jetpack" ? <Loader2 size={16} className="animate-spin" /> : <Truck size={16} />}Envoyer à Jetpack
       </button>}
+      <a className="adm-btn" href={`/admin/print?ids=${order.id}&mode=labels`} target="_blank" rel="noopener"><Printer size={16} />Bon de livraison</a>
       <button type="button" className="adm-btn" disabled={!!busy} onClick={() => {
         if (order.blacklisted) return run("blacklist", () => api(`/api/admin/blacklist?phone=${order.phone}`, { method: "DELETE" }), "Numéro retiré de la liste noire.");
         const reason = window.prompt("Pourquoi bloquer ce numéro ? (faux numéro, refus répétés…)", "Refus de colis");

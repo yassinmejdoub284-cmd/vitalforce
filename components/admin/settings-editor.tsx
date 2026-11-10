@@ -100,6 +100,8 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
     {tab === "store" && <form key="store" onSubmit={(event) => save("store", event)}><Section title="Boutique et contact" hint="Ces informations apparaissent dans le pied de page, les pages de vente et le bouton WhatsApp.">
       <div className="adm-form-grid">
         <Text name="siteName" label="Nom de la boutique" value={s.store.siteName} />
+        <Text name="senderName" label="Expéditeur sur les bons de livraison" value={s.store.senderName} placeholder="Produit vital force" />
+        <Text name="taxId" label="Matricule fiscal (M/F)" value={s.store.taxId} placeholder="1999318ANC000" hint="Imprimé sur les bons de livraison" />
         <Text name="phone" label="Téléphone affiché" value={s.store.phone} placeholder="+216 27 200 603" />
         <Text name="whatsapp" label="Numéro WhatsApp" value={s.store.whatsapp} hint="Format international sans + : 216XXXXXXXX" />
         <Text name="email" label="Email de contact" value={s.store.email} type="email" />

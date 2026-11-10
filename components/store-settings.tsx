@@ -4,7 +4,7 @@ import { createContext, useContext, type ReactNode } from "react";
 import type { PublicSettings } from "@/lib/settings";
 
 const fallback: PublicSettings = {
-  store: { siteName: "VITAL FORCE", phone: "+216 27 200 603", whatsapp: "21627200603", email: "", address: "Rue Sidi Mansour km 6, Sfax", addressAr: "طريق سيدي منصور كلم 6، صفاقس", facebook: "", instagram: "", tiktok: "", announcement: "", announcementAr: "", ordersEnabled: true },
+  store: { siteName: "VITAL FORCE", senderName: "Produit vital force", taxId: "", phone: "+216 27 200 603", whatsapp: "21627200603", email: "", address: "Rue Sidi Mansour km 6, Sfax", addressAr: "طريق سيدي منصور كلم 6، صفاقس", facebook: "", instagram: "", tiktok: "", announcement: "", announcementAr: "", ordersEnabled: true },
   delivery: { fee: 7, included: false, freeThreshold: 0, eta: "24-72 h selon la ville", etaAr: "24-72 ساعة حسب المدينة" },
   pixelId: "",
   purchaseOn: "order"

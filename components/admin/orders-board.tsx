@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Archive, ArchiveRestore, Bike, Check, Download, Loader2, PackageCheck, PhoneCall, PhoneOff, RefreshCw, Send, Truck, Undo2, X } from "lucide-react";
+import { Archive, ArchiveRestore, Bike, Check, Printer, Download, Loader2, PackageCheck, PhoneCall, PhoneOff, RefreshCw, Send, Truck, Undo2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { api, shortDate } from "./client-api";
 import { StatusBadge } from "./widgets";
@@ -98,6 +98,7 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, arc
       <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy} title="Je livre moi-même" onClick={() => setStatus([order.id], "shipped")}><Bike size={14} />Moi</button>
     </>;
     if (order.status === "shipped" && order.carrier === "self") return <>
+      <a className="adm-btn adm-btn-sm" href={`/admin/print?ids=${order.id}&mode=labels`} target="_blank" rel="noopener" aria-label="Imprimer le bon"><Printer size={14} /></a>
       <button type="button" className="adm-btn adm-btn-sm adm-btn-green" disabled={!!busy} onClick={() => setStatus([order.id], "delivered")}><PackageCheck size={14} />Livrée</button>
       <button type="button" className="adm-btn adm-btn-sm adm-btn-red" disabled={!!busy} onClick={() => window.confirm("Le client a refusé / colis revenu ?") && setStatus([order.id], "returned")}><Undo2 size={14} />Retour</button>
     </>;
@@ -163,6 +164,7 @@ export function OrdersBoard({ orders, exportQuery, jetpackReady, trackReady, arc
       <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy || confirmedSelected.length === 0} onClick={() => ship(confirmedSelected.map((order) => order.id))}>
         <Send size={14} />Envoyer à Jetpack ({confirmedSelected.length})
       </button>
+      <a className="adm-btn adm-btn-sm" href={`/admin/print?ids=${[...selected].join(",")}`} target="_blank" rel="noopener"><Printer size={14} />Bons de livraison ({selected.size})</a>
       <button type="button" className="adm-btn adm-btn-sm" disabled={!!busy || selfDeliverable.length === 0} onClick={() => setStatus(selfDeliverable.filter((order) => order.status === "confirmed").map((order) => order.id), "shipped")} title="Je livre moi-même: en route">
         <Bike size={14} />Je livre ({selfDeliverable.filter((order) => order.status === "confirmed").length})
       </button>

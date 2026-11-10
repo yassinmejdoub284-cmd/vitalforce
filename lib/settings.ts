@@ -11,6 +11,10 @@ const amount = z.coerce.number().min(0).max(100000);
 export const settingsSchemas = {
   store: z.object({
     siteName: z.string().trim().min(2).max(80).default("VITAL FORCE"),
+    /** Nom de l'expéditeur imprimé sur les bons de livraison. */
+    senderName: optionalText.default("Produit vital force"),
+    /** Matricule fiscal (M/F) imprimé sur les bons. */
+    taxId: optionalText,
     phone: optionalText.default("+216 27 200 603"),
     whatsapp: optionalText.default("21627200603"),
     email: optionalText,
