@@ -436,12 +436,7 @@
 .lp-order-form fieldset { position: relative; }
 
 .lp-offer-details { margin-block: 1rem; padding-inline-start: 1rem; border-inline-start: 3px solid var(--lp-accent); }
-.lp-offer-details p, .lp-reviews blockquote { margin-block: .5rem; }
-.lp-reviews { padding-block: 2rem; }
-.lp-reviews blockquote { padding-inline-start: 1rem; border-inline-start: 2px solid var(--lp-accent); white-space: pre-wrap; overflow-wrap: anywhere; }
+.lp-offer-details p { margin-block: .5rem; }
 @media (max-width: 800px) {
   .lp-order-grid .lp-order-form { order: -1; }
 }
-.lp-review-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); gap: 1rem; margin-block: 1rem; }
-.lp-review-list img { width: 100%; height: auto; max-height: 22rem; object-fit: contain; }
-.lp-review-list figcaption { font-weight: 700; }

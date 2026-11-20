@@ -1,3 +1,4 @@
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import Image from "next/image";
 import { notFound, redirect } from "next/navigation";
 import { ProductPurchase } from "@/components/commerce/product-purchase";
@@ -30,6 +31,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   return (
     <main>
       <ProductViewTracker product={product} />
+      <CustomerReviews />
       <ProductPurchase key={product.id} initialProduct={product} variants={variants} checkoutAvailable={live} />
       {product.template === "vital-force" && <>
         <IngredientGrid />

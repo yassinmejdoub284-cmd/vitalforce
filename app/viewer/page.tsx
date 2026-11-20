@@ -1,3 +1,4 @@
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import { ProductViewer } from "@/components/commerce/product-viewer";
 import { getCatalog } from "@/lib/catalog";
 
@@ -7,5 +8,5 @@ export default async function ViewerPage({ searchParams }: { searchParams?: Prom
   const { slug } = (await searchParams) ?? {};
   const { products } = await getCatalog();
   const product = products.find((item) => item.slug === slug) ?? products[0];
-  return <ProductViewer product={product} />;
+  return <><CustomerReviews /><ProductViewer product={product} /></>;
 }

@@ -7,7 +7,7 @@ import { LandingOrder } from "./landing-order";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { arabicIngredientNames, ingredientReferences, type LandingPage } from "@/lib/landing-pages";
 import { vitalForceIngredients, type Product } from "@/lib/product-data";
-import type { getReviews } from "@/lib/reviews";
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import type { PublicSettings } from "@/lib/settings";
 import { deliveryFeeFor } from "@/lib/pricing";
 import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
@@ -22,7 +22,7 @@ const ingredientFacts = [
   "يحتوي على البيبيرين."
 ];
 
-export function CampaignLanding({ page, products, settings, reviews, ordersLive = true }: { page: LandingPage; products: Product[]; settings: PublicSettings; reviews: Awaited<ReturnType<typeof getReviews>>; ordersLive?: boolean }) {
+export function CampaignLanding({ page, products, settings, ordersLive = true }: { page: LandingPage; products: Product[]; settings: PublicSettings; ordersLive?: boolean }) {
   const main = products.find(product => product.stock > 0) ?? products[0];
   const deliveryFee = main ? deliveryFeeFor(main.price, settings.delivery) : settings.delivery.fee;
   const dt = (value: number) => `${new Intl.NumberFormat("fr-TN", { numberingSystem: "latn", maximumFractionDigits: 3 }).format(value)} د.ت`;
@@ -72,17 +72,9 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
         <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : `الدفع عند الاستلام · ${main ? dt(main.price + deliveryFee) : ""} بالتوصيل لعبوة واحدة`}</p>
       </div>
     </section>
+    <CustomerReviews lang="ar" whatsapp={page.informational ? undefined : contact.whatsapp} />
     {!page.informational && <div data-live-section="proof" className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} لعبوة · مجاني من زوز`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
     {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} products={products} ordersLive={ordersLive} />}
-    {!page.informational && (reviews.length > 0 || contact.whatsapp) && <section className="lp-reviews lp-shell" data-live-section="reviews" aria-labelledby="lp-reviews-title">
-      <h2 id="lp-reviews-title">آراء الحرفاء</h2>
-      <div className="lp-review-list">{reviews.map(review => <figure key={review.id}>
-        {review.photoId && <a data-live-action="reviewPhoto" href={`/api/media/${review.photoId}`} target="_blank" rel="noopener noreferrer"><Image unoptimized src={`/api/media/${review.photoId}`} alt={review.name ? `رأي ${review.name}` : "تصويرة من رأي حريف"} width={420} height={300} /></a>}
-        {review.body && <blockquote dir="auto">{review.body}</blockquote>}
-        {review.name && <figcaption dir="auto">{review.name}</figcaption>}
-      </figure>)}</div>
-      {contact.whatsapp && <a className="lp-text-link" href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("السلام، جرّبت VITAL FORCE ونحب نشارك رأيي.")}`}>جرّبت VITAL FORCE؟ شاركنا رأيك على واتساب</a>}
-    </section>}
     {page.benefits && <section className="lp-angle-benefits lp-shell" data-live-section="benefits" aria-labelledby="angle-benefits-title">
       <p className="lp-kicker">من المكوّن، لفهم روتينك</p><h2 id="angle-benefits-title">{page.benefitsTitle ?? "شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟"}</h2>
       <p className="lp-angle-benefits-intro">{page.benefitsIntro ?? "أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها."}</p>

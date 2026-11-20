@@ -1,3 +1,4 @@
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import { CartPageContent } from "@/components/cart/cart-page-content";
 
 export const metadata = {
@@ -5,5 +6,5 @@ export const metadata = {
 };
 
 export default function CartPage() {
-  return <CartPageContent />;
+  return <><CustomerReviews /><CartPageContent /></>;
 }

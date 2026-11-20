@@ -1,3 +1,4 @@
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import { ProductCard } from "@/components/commerce/product-card";
 import { getCatalog } from "@/lib/catalog";
 
@@ -19,6 +20,7 @@ export default async function ProductsPage({ searchParams }: { searchParams?: Pr
         <h1>Choisissez votre goût.</h1>
         <p>Une même formule botanique, plusieurs saveurs et un format de 400 g.</p>
       </div>
+      <CustomerReviews />
       <form className="catalog-search">
         <label htmlFor="product-search">Rechercher dans la collection</label>
         <input id="product-search" name="q" defaultValue={query} placeholder="Orange, citron, menthe..." />

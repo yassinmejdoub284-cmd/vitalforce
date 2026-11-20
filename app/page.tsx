@@ -1,3 +1,4 @@
+import { CustomerReviews } from "@/components/commerce/customer-reviews";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { BotanicalHero } from "@/components/commerce/botanical-hero";
@@ -14,6 +15,7 @@ export default async function HomePage() {
   const featured=products[0];
   return <main>
     {featured && <BotanicalHero product={featured}/>}
+    <CustomerReviews />
     <CampaignGallery/>
     <section className="container-shell collection-section" data-live-section="catalog" id="collection"><div className="section-heading"><div><p className="eyebrow">CHOISISSEZ VOTRE GOÛT</p><h2>Un rituel, trois façons<br/><em>de l’adopter.</em></h2></div><Link href="/products" className="editorial-link">Voir la boutique <ArrowUpRight size={20}/></Link></div><div className="grid gap-5 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
     <StoryGallery/>
