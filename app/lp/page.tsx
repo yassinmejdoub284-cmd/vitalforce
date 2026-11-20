@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { RegistrationNotice } from "@/components/layout/registration-notice";
 import Link from "next/link";
 import { ArrowUpLeft } from "lucide-react";
 import { landingPages } from "@/lib/landing-pages";
@@ -7,7 +8,10 @@ import { productBenefitsAr } from "@/lib/product-benefits";
 export const metadata = { title: { absolute: "اختر روتينك | VITAL FORCE تونس" }, description: "اكتشف صفحات VITAL FORCE حسب اهتماماتك، وتعرّف على المكوّنات وملاءمة المنتج." };
 export default function LandingDirectory() {
   return <main className="lp-directory lp-shell">
-    <Link href="/" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
+    <header className="lp-directory-header">
+      <RegistrationNotice />
+      <Link href="/" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
+    </header>
     <p className="lp-kicker">روتينك، بطريقتك</p><h1>كل نهار حكاية.<br /><em>اختار البداية متاعك.</em></h1>
     <p className="lp-intro">{new Intl.NumberFormat("fr-TN", { numberingSystem: "latn" }).format(landingPages.length)} مسارات، نفس التركيبة النباتية. اكتشف المكوّنات، واختر الزاوية والنكهة اللي تناسبك.</p>
     <section className="lp-benefits" aria-labelledby="directory-benefits-title"><h2 id="directory-benefits-title">{productBenefitsAr.title}</h2><p>{productBenefitsAr.paragraph}</p></section>

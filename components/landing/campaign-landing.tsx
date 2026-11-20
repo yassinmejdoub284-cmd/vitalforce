@@ -1,5 +1,6 @@
 import { formatOfferPrice } from "@/lib/utils";
 import Image from "next/image";
+import { RegistrationNotice } from "@/components/layout/registration-notice";
 import Link from "next/link";
 import { ArrowDownLeft, ArrowUpLeft, Check, Leaf, ShieldCheck, Truck } from "lucide-react";
 import { LandingOrder } from "./landing-order";
@@ -38,9 +39,12 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
   ];
   return <main className="lp-page lp-visual-page lp-campaign-conversion" style={{ "--lp-accent": page.color } as React.CSSProperties}>
     <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>{contact.announcementAr || <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</>}</div>
-    <header className="lp-header lp-shell">
-      <Link href="/lp" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
-      <a href={target} className="lp-header-cta">{page.informational ? "اكتشف التركيبة" : "اطلب توا"}<ArrowDownLeft size={17} /></a>
+    <header>
+      <RegistrationNotice />
+      <div className="lp-header lp-shell">
+        <Link href="/lp" className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></Link>
+        <a href={target} className="lp-header-cta">{page.informational ? "اكتشف التركيبة" : "اطلب توا"}<ArrowDownLeft size={17} /></a>
+      </div>
     </header>
     <section className={`lp-visual-hero lp-shell${page.visualImage ? " lp-has-poster" : ""}`} aria-labelledby="lp-title">
       <div className="lp-campaign-art">
@@ -59,7 +63,7 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
         </>}
         {!page.informational && main && <div className="lp-offer-details">
           <p><strong>التوصيل علينا من زوز عبوات</strong></p>
-          <p>VITAL FORCE مسجّل لدى وزارة الصحة التونسية{contact.registrationRef && <> · مرجع التسجيل <bdi>{contact.registrationRef}</bdi></>}</p>
+          {contact.registrationRef && <p>مرجع التسجيل <bdi>{contact.registrationRef}</bdi></p>}
           {page.slug === "sport" && main.netWeight === "400 g" && <p>عبوة 400 غ فيها 40 حصّة بحساب 10 غ للحصّة.</p>}
         </div>}
         <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>

@@ -152,7 +152,7 @@
 .lp-footer .lp-shell > span { grid-column: 1 / -1; text-align: center; color: #87927b; font-size: 9px; }
 .lp-mobile-buy { display: none; }
 .lp-directory { padding-block: 55px 90px; }
-.lp-directory > .lp-brand { margin-bottom: 65px; }
+.lp-directory-header { display: grid; gap: 1rem; margin-bottom: 65px; }
 .lp-directory h1 { font-size: clamp(32px, 4vw, 55px); line-height: 1.65; font-weight: 800; }
 .lp-intro { max-width: 65ch; color: var(--lp-muted); font-size: 14px; margin-top: 20px !important; }
 .lp-directory-grid { margin-top: 45px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 24px; }
@@ -257,7 +257,7 @@
   .lp-faq details p { font-size: 11px; }
   .lp-mobile-buy { padding-inline: 18px; }
   .lp-directory { padding-block: 35px 60px; }
-  .lp-directory > .lp-brand { margin-bottom: 45px; }
+  .lp-directory-header { margin-bottom: 45px; }
   .lp-directory-grid { grid-template-columns: 1fr; gap: 32px; }
   .lp-directory h1 { font-size: 33px; }
 }

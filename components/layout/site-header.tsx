@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { RegistrationNotice } from "@/components/layout/registration-notice";
 import Link from "next/link";
 import { Menu, ShoppingBag, Truck, X } from "lucide-react";
 import { useState } from "react";
@@ -24,6 +25,7 @@ export function SiteHeader() {
     <>
       <div className="announcement-bar"><Truck size={14} /><span>Livraison partout en Tunisie</span><i aria-hidden="true" /><span>Paiement à la livraison</span></div>
       <header className="site-header sticky top-0 z-50">
+        <RegistrationNotice />
         <div className="container-shell flex h-[72px] items-center justify-between gap-4">
           <Link href="/" className="focus-ring flex items-center gap-3">
             <Image src="/images/v2/logo.png" alt="VITAL FORCE" width={110} height={74} className="h-12 w-auto object-contain" priority />

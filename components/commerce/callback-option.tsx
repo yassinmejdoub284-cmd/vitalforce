@@ -5,7 +5,7 @@ import { normalizeTunisianPhone } from "@/lib/tunisia";
 import type { DraftItem } from "@/lib/db/schema";
 
 export function CallbackOption({ items, lang, angle = "" }: { items: DraftItem[]; lang: "fr" | "ar"; angle?: string }) {
-  const checkbox = useRef<HTMLInputElement>(null);
+  const [requested, setRequested] = useState(false);
   const hidden = useRef<HTMLInputElement>(null);
   const revision = useRef(0);
   const previous = useRef("");
@@ -14,18 +14,17 @@ export function CallbackOption({ items, lang, angle = "" }: { items: DraftItem[]
   const ar = lang === "ar";
 
   useEffect(() => {
-    const control = checkbox.current;
-    const form = control?.form;
     const field = hidden.current;
-    if (!form || !control || !field) return;
+    const form = field?.form;
+    if (!form || !field) return;
     let timer: ReturnType<typeof setTimeout>;
     function save() {
-      if (!form || !control || !field) return;
+      if (!form || !field) return;
       clearTimeout(timer);
       const data = new FormData(form);
       const phone = normalizeTunisianPhone(String(data.get("phone") || ""));
       const details = Object.fromEntries(["customerName", "governorate", "city", "address", "website"].map(name => [name, String(data.get(name) || "")]));
-      const consent = control.checked && Boolean(phone);
+      const consent = requested && Boolean(phone);
       if (!consent && !field.value) return;
       const payload = consent ? { consent, phone, ...details, angle, items: JSON.parse(itemsJson) } : { consent };
       const signature = JSON.stringify(payload);
@@ -46,10 +45,9 @@ export function CallbackOption({ items, lang, angle = "" }: { items: DraftItem[]
         setStatus(ar ? "التسجيل ما تمّش. عاود المحاولة." : "Enregistrement impossible. Réessayez.");
       });
     }
-    function schedule(event: Event) {
+    function schedule() {
       clearTimeout(timer);
-      if (event.target === control) save();
-      else timer = setTimeout(save, 350);
+      timer = setTimeout(save, 350);
     }
     save();
     form.addEventListener("input", schedule);
@@ -63,11 +61,23 @@ export function CallbackOption({ items, lang, angle = "" }: { items: DraftItem[]
       form.removeEventListener("submit", save, true);
       window.removeEventListener("pagehide", save);
     };
-  }, [angle, ar, itemsJson]);
+  }, [angle, ar, itemsJson, requested]);
 
   return <div data-wide="true" className="callback-option">
     <input type="hidden" name="draftId" ref={hidden} />
-    <label><input ref={checkbox} type="checkbox" /> {ar ? "احفظ رقمي ومعلومات الطلب وكلّمني إذا ما كمّلتش." : "Enregistrer mes coordonnées et me rappeler si je ne termine pas ma commande."}</label>
+    <button type="button" className="callback-link" onClick={() => {
+      if (!requested) {
+        const phone = hidden.current?.form?.elements.namedItem("phone");
+        if (phone instanceof HTMLInputElement && !normalizeTunisianPhone(phone.value)) {
+          setStatus(ar ? "اكتب رقم تليفونك باش نكلّموك." : "Saisissez votre numéro pour être rappelé.");
+          phone.focus();
+          return;
+        }
+      }
+      setRequested(!requested);
+    }}>{requested
+      ? (ar ? "إلغاء طلب المكالمة" : "Annuler le rappel")
+      : (ar ? "كلّمني باش نكمّل طلبي" : "Être rappelé pour commander")}</button>
     <small role="status" aria-live="polite">{status}</small>
   </div>;
 }
