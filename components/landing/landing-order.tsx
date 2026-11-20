@@ -83,30 +83,30 @@ ${details.join("\n")}`));
 
   const whatsappText = `السلام عليكم، نحب نطلب VITAL FORCE\nالنكهة: ${flavorName(selected)}\nالكمية: ${quantity}\nالمجموع بالتوصيل: ${money(total)}\nصفحة: ${angle}`;
 
-  if (placed) return <section className="lp-order-section" id="order"><div className="lp-shell">
+  if (placed) return <section data-live-section="confirmation" className="lp-order-section" id="order"><div className="lp-shell">
     <div className="lp-order-form" role="status" style={{ textAlign: "center" }}>
       <CheckCircle2 size={54} style={{ margin: "0 auto", color: "#678747" }} />
       <h3>شكراً! طلبك وصل.</h3>
       <p style={{ fontSize: 15 }}>رقم الطلب: <strong dir="ltr">{placed.number}</strong></p>
-      <div className="lp-final-total" style={{ marginTop: 18 }}><span>المبلغ عند الاستلام</span><strong>{money(placed.total)}</strong></div>
+      <div data-live-section="total" className="lp-final-total" style={{ marginTop: 18 }}><span>المبلغ عند الاستلام</span><strong>{money(placed.total)}</strong></div>
       <p className="lp-order-next" style={{ marginTop: 14 }}>فريقنا باش يتّصل بيك على الهاتف باش يأكّد الطلب والعنوان. خلّي تليفونك قريب منك. التوصيل {delivery.etaAr}، والدفع عند الاستلام.</p>
       {store.whatsapp && <a className="lp-whatsapp" style={{ marginTop: 18 }} href={whatsappHref(store.whatsapp, `السلام عليكم، عملت الطلب ${placed.number}`)} target="_blank" rel="noopener noreferrer"><MessageCircle size={20} /> تحب تحكي معانا على واتساب؟</a>}
     </div>
   </div></section>;
 
-  return <section className="lp-order-section" id="order"><div className="lp-shell lp-order-grid">
+  return <section data-live-section="order" className="lp-order-section" id="order"><div className="lp-shell lp-order-grid">
     <div className="lp-order-product"><p className="lp-kicker">ابدأ بطعمك المفضّل</p><h2>روتينك.<br /><em>نكهتك. اختيارك.</em></h2><div className="lp-order-jar"><ProductJar flavor={selected.flavor} image={selected.image} name={selected.name} large /></div><span className="lp-order-weight">{selected.netWeight || "400 غ"}{selected.template === "vital-force" ? " / 7 مكوّنات نباتية" : ""}</span>{selected.template === "vital-force" && <details className="lp-label"><summary>شوف الملصق الكامل · {flavorName(selected)}</summary><Image src={selected.image} alt={`ملصق VITAL FORCE ${flavorName(selected)}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 50vw" /></details>}</div>
     <form className="lp-order-form" onSubmit={submit} onFocusCapture={start}>
       <span className="lp-order-context">{angleName}</span><h3>نحضّرولك طلبك.</h3><p>عمّر المعلومات، وفريقنا يتّصل بيك باش يأكّد. الدفع عند الاستلام.</p>
       <p className="lp-order-promotion">{selected.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(selected.compareAtPrice)}</del>}<DiscountBadge percent={selected.discountPercent} lang="ar" /> <span>{formatOfferPrice(selected.price)}{selected.discountPercent ? " بعد التخفيض" : ""} / عبوة</span></p>
-      {products.length > 1 && <fieldset><legend>1. اختار النكهة</legend><div className="lp-flavor-buttons">{products.map(product => <button key={product.id} type="button" disabled={product.stock < 1} aria-pressed={product.id === selected.id} onClick={() => { setSelected(product); setQuantity(1); }}><span className={`lp-flavor-dot lp-flavor-${product.flavor.toLowerCase()}`} />{flavorName(product)}{product.stock < 1 ? " (نفذ)" : ""}{product.id === selected.id && <Check size={14} />}</button>)}</div></fieldset>}
-      <fieldset><legend>{products.length > 1 ? "2." : "1."} حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button type="button" disabled={quantity >= maxQuantity} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
-      {maxQuantity >= 2 && <p className="lp-bundle-note">{quantity >= 2 ? "التوصيل متاعك مجاني" : <button className="lp-text-link" type="button" onClick={() => setQuantity(2)}>ناخو زوز بـ{money(2 * selected.price)} والتوصيل مجاني</button>}</p>}
-      <fieldset><legend>{products.length > 1 ? "3." : "2."} معلومات التوصيل</legend>
+      {products.length > 1 && <fieldset data-live-section="flavor"><legend>1. اختار النكهة</legend><div className="lp-flavor-buttons">{products.map(product => <button data-live-flavor={product.flavor.toLowerCase()} key={product.id} type="button" disabled={product.stock < 1} aria-pressed={product.id === selected.id} onClick={() => { setSelected(product); setQuantity(1); }}><span className={`lp-flavor-dot lp-flavor-${product.flavor.toLowerCase()}`} />{flavorName(product)}{product.stock < 1 ? " (نفذ)" : ""}{product.id === selected.id && <Check size={14} />}</button>)}</div></fieldset>}
+      <fieldset data-live-section="quantity"><legend>{products.length > 1 ? "2." : "1."} حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button data-live-action="decrease" type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button data-live-action="increase" type="button" disabled={quantity >= maxQuantity} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
+      {maxQuantity >= 2 && <p data-live-section="quantity" className="lp-bundle-note">{quantity >= 2 ? "التوصيل متاعك مجاني" : <button data-live-action="bundle" className="lp-text-link" type="button" onClick={() => setQuantity(2)}>ناخو زوز بـ{money(2 * selected.price)} والتوصيل مجاني</button>}</p>}
+      <fieldset data-live-section="delivery"><legend>{products.length > 1 ? "3." : "2."} معلومات التوصيل</legend>
         <CustomerFields lang="ar" showEmail={false} className="lp-fields lp-fields-order" />
       </fieldset>
-      <div className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(subtotal)}</strong></div><div className="lp-shipping-row"><span>التوصيل</span><strong>{deliveryFee === 0 ? "مجاني" : money(deliveryFee)}</strong></div>
-      <div className="lp-final-total" aria-live="polite"><span>المجموع عند الاستلام</span><strong>{money(total)}</strong></div>
+      <div data-live-section="total" className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(subtotal)}</strong></div><div data-live-section="total" className="lp-shipping-row"><span>التوصيل</span><strong>{deliveryFee === 0 ? "مجاني" : money(deliveryFee)}</strong></div>
+      <div data-live-section="total" className="lp-final-total" aria-live="polite"><span>المجموع عند الاستلام</span><strong>{money(total)}</strong></div>
       <p className="lp-delivery-note">التوصيل مجاني من زوز عبوات. {delivery.etaAr}.</p>
       {error && <p className="lp-order-status" role="alert" style={{ background: "#fdecea", borderColor: "#b42318" }}>{error}</p>}
       <button type="submit" className="lp-whatsapp" disabled={loading || selected.stock < 1 || !store.ordersEnabled}>{loading ? <Loader2 size={21} className="animate-spin" /> : <ShoppingBag size={21} />} {!store.ordersEnabled ? "الطلبات مسكّرة مؤقتاً" : ordersLive ? "ابعث طلبي للتأكيد" : "نكمّل طلبي على واتساب"}</button>

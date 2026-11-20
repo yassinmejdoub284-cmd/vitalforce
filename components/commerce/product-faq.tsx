@@ -10,7 +10,7 @@ const questions = [
 ];
 
 export function ProductFaq() {
-  return <section className="container-shell faq-section" aria-labelledby="faq-heading">
+  return <section className="container-shell faq-section" data-live-section="faq" aria-labelledby="faq-heading">
     <div className="faq-heading"><p className="eyebrow">QUESTIONS FRÉQUENTES</p><h2 id="faq-heading">Avant de commander.</h2><p>Tout ce qu’il faut savoir sur le produit, son utilisation et sa conservation.</p></div>
     <div className="faq-list">
       {questions.map(({ question, answer, answerAr }) => <details key={question}>

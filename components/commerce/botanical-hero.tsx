@@ -9,7 +9,7 @@ import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
 export function BotanicalHero({ product }: { product: Product }) {
 
   return <>
-    <section className="shop-hero" aria-labelledby="hero-title">
+    <section className="shop-hero" data-live-section="hero" aria-labelledby="hero-title">
       <Image src="/images/hero-botanical-background.png" alt="" fill priority sizes="100vw" className="shop-hero-image" />
       <div className="shop-hero-shade" aria-hidden="true" />
       <PhotoBrandMark />

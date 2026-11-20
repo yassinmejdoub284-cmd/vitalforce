@@ -1,7 +1,9 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { observeLivePage } from "./live-activity";
+import type { LiveStep } from "@/lib/live-activity";
 import { track } from "@/lib/visitor";
 
 const HEARTBEAT_MS = 25_000;
@@ -9,6 +11,8 @@ const HEARTBEAT_MS = 25_000;
 /** Mesure interne: page vue à chaque navigation + présence (visiteurs en temps réel dans l'admin). */
 export function VisitorTracker() {
   const pathname = usePathname();
+  const history = useRef<LiveStep[]>([]);
+  useEffect(() => observeLivePage(pathname, history.current), [pathname]);
 
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;

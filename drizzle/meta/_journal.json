@@ -43,6 +43,13 @@
       "when": 1795180857621,
       "tag": "0005_reviews_and_callbacks",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795182604837,
+      "tag": "0006_live_activity",
+      "breakpoints": true
     }
   ]
 }

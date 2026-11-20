@@ -14,7 +14,7 @@ export function CartDrawer({ open, onClose }: { open: boolean; onClose: () => vo
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[80]" role="dialog" aria-modal="true" aria-label="Panier">
+    <div className="fixed inset-0 z-[80]" data-live-section="cart" role="dialog" aria-modal="true" aria-label="Panier">
       <button className="absolute inset-0 bg-forest-950/45 backdrop-blur-sm" onClick={onClose} aria-label="Fermer le panier" />
       <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-cream shadow-2xl">
         <div className="flex items-center justify-between border-b border-forest-900/10 p-5">

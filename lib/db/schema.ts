@@ -1,3 +1,4 @@
+import type { LiveActivity } from "../live-activity";
 import { sql } from "drizzle-orm";
 import {
   boolean,
@@ -151,6 +152,13 @@ export const visitors = pgTable("visitors", {
   region: text("region"),
   pageViews: integer("page_views").notNull().default(0)
 }, (table) => [index("visitors_last_seen_idx").on(table.lastSeen)]);
+
+// The first snapshot can arrive before the asynchronous page-view write.
+export const visitorActivity = pgTable("visitor_activity", {
+  visitorId: text("visitor_id").primaryKey(),
+  snapshot: jsonb("snapshot").$type<LiveActivity>().notNull(),
+  seenAt: timestamp("seen_at", { withTimezone: true }).notNull().defaultNow()
+}, (table) => [index("visitor_activity_seen_idx").on(table.seenAt)]);
 
 export const trackingEventTypes = ["page_view", "view_content", "add_to_cart", "initiate_checkout", "purchase"] as const;
 export type TrackingEventType = (typeof trackingEventTypes)[number];

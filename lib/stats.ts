@@ -1,4 +1,5 @@
 import "server-only";
+import type { LiveActivity } from "./live-activity";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { adSpendTnd } from "@/lib/ad-currency";
@@ -192,8 +193,10 @@ export async function getBreakdowns(range: Range) {
 }
 
 export async function getLiveVisitors() {
-  return rows<{ id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string }>(sql`
-    select id, current_path, source, device, city, region, country, page_views, first_seen, last_seen from visitors
+  return rows<{ id: string; live_activity: LiveActivity | null; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string }>(sql`
+    select id, current_path, source, device, city, region, country, page_views, first_seen, last_seen,
+      a.snapshot as live_activity
+    from visitors left join visitor_activity a on a.visitor_id = visitors.id and a.seen_at > now() - interval '60 seconds'
     where last_seen > now() - interval '60 seconds' order by last_seen desc limit 100`);
 }
 

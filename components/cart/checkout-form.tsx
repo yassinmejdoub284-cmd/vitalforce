@@ -47,12 +47,12 @@ export function CheckoutForm({ checkoutAvailable, catalog }: { checkoutAvailable
         <h1 className="font-display text-3xl font-bold">Finaliser la commande</h1>
         {!canOrder && <p role="status" className="mt-4 border-l-4 border-gold-500 bg-gold-100/40 p-4 text-sm">La commande en ligne est temporairement indisponible. Appelez-nous au {store.phone} pour commander.</p>}
         <p className="mt-2 flex items-center gap-2 text-forest-900/65"><HandCoins size={18} /> Paiement à la livraison partout en Tunisie. Nous vous appelons pour confirmer.</p>
-        <fieldset disabled={!canOrder} className="mt-8 disabled:opacity-55">
+        <fieldset data-live-section="delivery" disabled={!canOrder} className="mt-8 disabled:opacity-55">
           <CustomerFields lang="fr" showNote className="product-fields grid gap-4 md:grid-cols-2" inputClassName="w-full rounded-2xl border border-forest-900/15 bg-white px-4 py-3" />
         </fieldset>
         {error && <p role="alert" className="mt-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
       </section>
-      <aside className="h-fit rounded-[28px] bg-forest-950 p-5 text-white shadow-green">
+      <aside data-live-section="total" className="h-fit rounded-[28px] bg-forest-950 p-5 text-white shadow-green">
         <h2 className="text-lg font-bold">Résumé</h2>
         <div className="mt-5 grid gap-4">
           {items.length === 0 ? <p className="text-sm text-white/65">Votre panier est vide.</p> : items.map((item) => (
@@ -67,7 +67,7 @@ export function CheckoutForm({ checkoutAvailable, catalog }: { checkoutAvailable
           <div className="flex justify-between"><span>Livraison · {delivery.eta}</span><span>{deliveryFee === 0 ? "Offerte" : formatTnd(deliveryFee)}</span></div>
           <div className="flex justify-between text-xl font-bold"><span>Total</span><span>{formatTnd(total)}</span></div>
         </div>
-        <Button disabled={!canOrder || items.length === 0 || loading} className="mt-6 w-full bg-gold-300 text-forest-950 hover:bg-gold-100">
+        <Button data-live-action="submit" disabled={!canOrder || items.length === 0 || loading} className="mt-6 w-full bg-gold-300 text-forest-950 hover:bg-gold-100">
           {loading && <Loader2 className="animate-spin" size={18} />}
           Confirmer la commande
         </Button>

@@ -46,12 +46,12 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
         <a href={target} className="lp-header-cta">{page.informational ? "اكتشف التركيبة" : "اطلب توا"}<ArrowDownLeft size={17} /></a>
       </div>
     </header>
-    <section className={`lp-visual-hero lp-shell${page.visualImage ? " lp-has-poster" : ""}`} aria-labelledby="lp-title">
+    <section className={`lp-visual-hero lp-shell${page.visualImage ? " lp-has-poster" : ""}`} data-live-section="hero" aria-labelledby="lp-title">
       <div className="lp-campaign-art">
         <h1 id="lp-title" className={page.visualImage ? "lp-visually-hidden" : "lp-art-headline"}>{page.title} {page.accent}</h1>
         <Image src={page.visualImage ?? page.image} alt={page.imageAlt} width={page.visualImage ? 1024 : 1280} height={page.visualImage ? 1536 : 853} preload sizes="(max-width: 800px) 100vw, 55vw" className={page.visualImage ? "lp-campaign-poster" : "lp-campaign-photo"} />
       </div>
-      <div className="lp-visual-offer">
+      <div data-live-section="offer" className="lp-visual-offer">
         <p className="lp-kicker">{page.name}</p>
         <h2 dir="ltr">VITAL <em>FORCE</em></h2>
         <p className="lp-visual-tagline">{page.title}<br />{page.accent}</p>
@@ -72,30 +72,30 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
         <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : `الدفع عند الاستلام · ${main ? dt(main.price + deliveryFee) : ""} بالتوصيل لعبوة واحدة`}</p>
       </div>
     </section>
-    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} لعبوة · مجاني من زوز`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {!page.informational && <div data-live-section="proof" className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} لعبوة · مجاني من زوز`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
     {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} products={products} ordersLive={ordersLive} />}
-    {!page.informational && (reviews.length > 0 || contact.whatsapp) && <section className="lp-reviews lp-shell" aria-labelledby="lp-reviews-title">
+    {!page.informational && (reviews.length > 0 || contact.whatsapp) && <section className="lp-reviews lp-shell" data-live-section="reviews" aria-labelledby="lp-reviews-title">
       <h2 id="lp-reviews-title">آراء الحرفاء</h2>
       <div className="lp-review-list">{reviews.map(review => <figure key={review.id}>
-        {review.photoId && <a href={`/api/media/${review.photoId}`} target="_blank" rel="noopener noreferrer"><Image unoptimized src={`/api/media/${review.photoId}`} alt={review.name ? `رأي ${review.name}` : "تصويرة من رأي حريف"} width={420} height={300} /></a>}
+        {review.photoId && <a data-live-action="reviewPhoto" href={`/api/media/${review.photoId}`} target="_blank" rel="noopener noreferrer"><Image unoptimized src={`/api/media/${review.photoId}`} alt={review.name ? `رأي ${review.name}` : "تصويرة من رأي حريف"} width={420} height={300} /></a>}
         {review.body && <blockquote dir="auto">{review.body}</blockquote>}
         {review.name && <figcaption dir="auto">{review.name}</figcaption>}
       </figure>)}</div>
       {contact.whatsapp && <a className="lp-text-link" href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("السلام، جرّبت VITAL FORCE ونحب نشارك رأيي.")}`}>جرّبت VITAL FORCE؟ شاركنا رأيك على واتساب</a>}
     </section>}
-    {page.benefits && <section className="lp-angle-benefits lp-shell" aria-labelledby="angle-benefits-title">
+    {page.benefits && <section className="lp-angle-benefits lp-shell" data-live-section="benefits" aria-labelledby="angle-benefits-title">
       <p className="lp-kicker">من المكوّن، لفهم روتينك</p><h2 id="angle-benefits-title">{page.benefitsTitle ?? "شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟"}</h2>
       <p className="lp-angle-benefits-intro">{page.benefitsIntro ?? "أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها."}</p>
       <div className="lp-angle-benefit-grid">{page.benefits.map((benefit, index) => <article key={benefit.title}>
         <span className="lp-benefit-number" aria-hidden="true">0{index + 1}</span><h3>{benefit.title}</h3><p className="lp-benefit-ingredient">{benefit.ingredient}</p><p>{benefit.body}</p>
-        <a href={benefit.reference} target="_blank" rel="noopener noreferrer">اكتشف المرجع<ArrowUpLeft size={16} aria-hidden="true" /></a>
+        <a data-live-action="reference" href={benefit.reference} target="_blank" rel="noopener noreferrer">اكتشف المرجع<ArrowUpLeft size={16} aria-hidden="true" /></a>
       </article>)}</div>
     </section>}
-    <section className="lp-motivation lp-shell" aria-labelledby="motivation-title">
+    <section className="lp-motivation lp-shell" data-live-section="story" aria-labelledby="motivation-title">
       <div className="lp-motivation-photo"><Image src={page.lifestyleImage ?? `/images/landing/${page.slug}-lifestyle-v2.webp`} alt={`صورة توضيحية لعادات يومية متوازنة — ${page.name}`} width={1280} height={853} sizes="(max-width: 800px) 100vw, 50vw" /><span>لحظة عناية، كل نهار</span></div>
       <div><p className="lp-kicker">روتين يتماشى مع حياتك</p><h2 id="motivation-title">{page.storyTitle}</h2><p>{page.story}</p><ul>{page.habits.map(habit => <li key={habit}><Check size={18} aria-hidden="true" />{habit}</li>)}</ul><a href={target} className="lp-text-link">{cta}<ArrowDownLeft size={18} /></a></div>
     </section>
-    <section className="lp-ingredients-section lp-visual-ingredients" id="ingredients">
+    <section className="lp-ingredients-section lp-visual-ingredients" data-live-section="ingredients" id="ingredients">
       <div className="lp-shell">
         <div className="lp-section-heading"><div><p className="lp-kicker">من الصورة للمكوّن</p><h2>شنوّة فيه؟</h2></div><p>تعرّف على المكوّنات المرتبطة بهذه الزاوية.</p></div>
         <div className={`lp-ingredient-grid${page.featured.length === 1 ? " lp-single-ingredient" : ""}`}>{page.featured.map(index => <article key={index} className="lp-ingredient-card">
@@ -107,12 +107,12 @@ export function CampaignLanding({ page, products, settings, reviews, ordersLive 
         <details className="lp-full-formula"><summary>شوف التركيبة الكاملة</summary><p>{arabicIngredientNames.join(" · ")}</p></details>
       </div>
     </section>
-    {page.informational && <section className="lp-product-labels lp-shell" id="product-info" aria-labelledby="product-labels-title">
+    {page.informational && <section className="lp-product-labels lp-shell" data-live-section="labels" id="product-info" aria-labelledby="product-labels-title">
       <p className="lp-kicker">معلومات المنتج</p><h2 id="product-labels-title">اكتشف الملصق الكامل لكل نكهة.</h2>
       {products.filter(product => product.template === "vital-force").map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : product.flavor === "Menthe" ? "نعناع" : product.name}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}
     </section>}
-    <section className="lp-faq lp-shell" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
+    <section className="lp-faq lp-shell" data-live-section="faq" id="faq"><div><p className="lp-kicker">أسئلة المنتج</p><h2>تحبّ تعرف أكثر؟</h2></div><div>{faq.map(([question, answer]) => <details key={question}><summary>{question}<span aria-hidden="true">+</span></summary><p>{answer}</p></details>)}</div></section>
     <footer className="lp-footer"><div className="lp-shell"><div className="lp-brand" dir="ltr">VITAL FORCE<span>روتين نباتي يومي</span></div><p>مكمّل غذائي · مزيج من 7 مكوّنات نباتية · عبوة 400 غ</p>{contact.phone && <a href={`tel:${contact.phone.replace(/[^+0-9]/g, "")}`} dir="ltr">{contact.phone}</a>}<span>{contact.addressAr} · صور توضيحية مولّدة</span></div></footer>
-    <div className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : main ? dt(main.price) : ""}</strong><span>{page.informational ? "7 مكوّنات نباتية" : deliveryFee === 0 ? "التوصيل مجاني" : `+ ${dt(deliveryFee)} توصيل`}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
+    <div data-live-section="offer" className="lp-mobile-buy"><div><strong>{page.informational ? "روتينك اليومي" : main ? dt(main.price) : ""}</strong><span>{page.informational ? "7 مكوّنات نباتية" : deliveryFee === 0 ? "التوصيل مجاني" : `+ ${dt(deliveryFee)} توصيل`}</span></div><a href={target}>{page.informational ? "اكتشف التركيبة" : "اختار نكهتك"}<ArrowDownLeft size={18} /></a></div>
   </main>;
 }

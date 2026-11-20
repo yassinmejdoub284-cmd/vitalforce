@@ -15,7 +15,7 @@ export default async function HomePage() {
   return <main>
     {featured && <BotanicalHero product={featured}/>}
     <CampaignGallery/>
-    <section className="container-shell collection-section" id="collection"><div className="section-heading"><div><p className="eyebrow">CHOISISSEZ VOTRE GOÛT</p><h2>Un rituel, trois façons<br/><em>de l’adopter.</em></h2></div><Link href="/products" className="editorial-link">Voir la boutique <ArrowUpRight size={20}/></Link></div><div className="grid gap-5 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
+    <section className="container-shell collection-section" data-live-section="catalog" id="collection"><div className="section-heading"><div><p className="eyebrow">CHOISISSEZ VOTRE GOÛT</p><h2>Un rituel, trois façons<br/><em>de l’adopter.</em></h2></div><Link href="/products" className="editorial-link">Voir la boutique <ArrowUpRight size={20}/></Link></div><div className="grid gap-5 md:grid-cols-3">{products.slice(0,3).map(product=><ProductCard key={product.id} product={product}/>)}</div></section>
     <StoryGallery/>
     <IngredientGrid/>
     <ProductFaq />

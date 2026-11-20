@@ -58,7 +58,7 @@ export function StoryGallery() {
   }
 
   return (
-    <section className={styles.section} aria-labelledby="story-title">
+    <section className={styles.section} data-live-section="story" aria-labelledby="story-title">
       <div className="container-shell">
         <div className={styles.heading}>
           <div>

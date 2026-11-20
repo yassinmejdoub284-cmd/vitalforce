@@ -12,7 +12,7 @@ const sources = [
   { name: "Poivre noir", href: "https://www.nccih.nih.gov/health/turmeric" }
 ];
 export function IngredientGrid() {
-  return <section id="ingredients" className="container-shell ingredient-section">
+  return <section data-live-section="ingredients" id="ingredients" className="container-shell ingredient-section">
     <div className="section-heading"><div><p className="eyebrow">À L’ORIGINE DE LA FORMULE</p><h2>La nature a<br/><em>de belles ressources.</em></h2></div><p>Sept ingrédients réunis dans un seul mélange.<br/>Découvrez les racines, rhizomes et graines<br/>qui composent VITAL FORCE.</p></div>
     <div className="ingredient-gallery">{vitalForceIngredients.map((ingredient, i) => <article className="ingredient-tile" key={ingredient.name}>
       <div className="ingredient-photo"><span>0{i + 1}</span><Image src={ingredient.image} alt={`${ingredient.name} — ${ingredient.nameAr}, ${ingredient.label.toLowerCase()}`} width={360} height={360} sizes="(max-width: 480px) 85vw, (max-width: 1050px) 43vw, 30vw" loading="lazy"/><PhotoBrandMark /></div>

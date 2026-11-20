@@ -68,7 +68,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
         <div><HandCoins size={20}/><span><strong>Paiement à la livraison</strong><small>Simple et pratique</small></span></div>
       </div>
     </div>
-    <form onSubmit={submit} onFocusCapture={start} className="product-buy-panel">
+    <form data-live-section="order" onSubmit={submit} onFocusCapture={start} className="product-buy-panel">
       {product.template === "vital-force" ? <>
         <p className="shop-kicker">VITAL FORCE / 400 G</p>
         <h1>VITAL FORCE <span>{product.flavor}</span></h1>
@@ -79,28 +79,28 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
         <p className="product-lead">{product.shortDescription}</p>
       </>}
       <div className="product-rating-line"><span><Check size={14}/> {product.stock > 0 ? "Disponible" : "Rupture de stock"}</span><i/> <span>{product.template === "vital-force" ? "Livraison offerte dès 2 pots" : "Livraison en Tunisie"}</span></div>
-      <div className="product-price-line">{product.compareAtPrice && <del dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}<strong dir="ltr">{formatOfferPrice(product.price)}</strong><DiscountBadge percent={product.discountPercent} /><small>{product.discountPercent ? "Prix après réduction" : "Prix"}{product.netWeight ? ` · ${product.netWeight}` : ""}</small></div>
+      <div data-live-section="offer" className="product-price-line">{product.compareAtPrice && <del dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}<strong dir="ltr">{formatOfferPrice(product.price)}</strong><DiscountBadge percent={product.discountPercent} /><small>{product.discountPercent ? "Prix après réduction" : "Prix"}{product.netWeight ? ` · ${product.netWeight}` : ""}</small></div>
 
-      {variants.length > 1 && <fieldset className="product-option-group">
+      {variants.length > 1 && <fieldset data-live-section="flavor" className="product-option-group">
         <legend className="text-sm font-bold">{product.template === "vital-force" ? "Goût" : "Produit"}</legend>
         <div className="product-flavors">
-          {variants.map((variant) => <button key={variant.id} type="button" onClick={() => selectFlavor(variant)} aria-pressed={product.id === variant.id} className="focus-ring">
+          {variants.map((variant) => <button data-live-flavor={variant.flavor.toLowerCase()} key={variant.id} type="button" onClick={() => selectFlavor(variant)} aria-pressed={product.id === variant.id} className="focus-ring">
             <span aria-hidden="true" className={`h-4 w-4 rounded-full border border-black/10 ${variant.flavor === "Menthe" ? "bg-[#91c4a9]" : variant.flavor === "Citron" ? "bg-[#e3cf75]" : "bg-[#e2ae63]"}`} />{variant.flavor || variant.name}
           </button>)}
         </div>
       </fieldset>}
 
-      <fieldset className="product-option-group">
+      <fieldset data-live-section="quantity" className="product-option-group">
         <legend className="text-sm font-bold">Quantité</legend>
         <div className="mt-3 inline-flex h-12 items-center border border-forest-900/15 bg-white">
-          <button type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} disabled={quantity <= 1} className="focus-ring grid h-12 w-12 place-items-center disabled:opacity-35" aria-label="Diminuer la quantité"><Minus size={17} /></button>
+          <button data-live-action="decrease" type="button" onClick={() => setQuantity((value) => Math.max(1, value - 1))} disabled={quantity <= 1} className="focus-ring grid h-12 w-12 place-items-center disabled:opacity-35" aria-label="Diminuer la quantité"><Minus size={17} /></button>
           <output className="min-w-9 text-center font-bold">{quantity}</output>
-          <button type="button" onClick={() => setQuantity((value) => Math.min(product.stock, 20, value + 1))} disabled={quantity >= Math.min(product.stock, 20)} className="focus-ring grid h-12 w-12 place-items-center disabled:opacity-35" aria-label="Augmenter la quantité"><Plus size={17} /></button>
+          <button data-live-action="increase" type="button" onClick={() => setQuantity((value) => Math.min(product.stock, 20, value + 1))} disabled={quantity >= Math.min(product.stock, 20)} className="focus-ring grid h-12 w-12 place-items-center disabled:opacity-35" aria-label="Augmenter la quantité"><Plus size={17} /></button>
         </div>
         {product.stock < 1 && <p className="mt-2 text-sm font-semibold text-red-700">Indisponible pour le moment.</p>}
       </fieldset>
 
-      <fieldset disabled={!canOrder} className={`product-customer-fields ${canOrder ? "" : "hidden"}`}>
+      <fieldset data-live-section="delivery" disabled={!canOrder} className={`product-customer-fields ${canOrder ? "" : "hidden"}`}>
         <legend className="text-lg font-bold">Vos coordonnées</legend>
         <CustomerFields lang="fr" showNote className="product-fields mt-4 grid gap-3 sm:grid-cols-2" inputClassName="min-h-11 w-full border border-forest-900/15 bg-white px-3" />
         <p className="mt-4 flex items-center gap-2 text-sm"><HandCoins size={18} /> Paiement à la livraison · nous vous appelons pour confirmer</p>
@@ -113,7 +113,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
       </div>
       {!canOrder && store.whatsapp && <div className="whatsapp-order-box" role="status"><MessageCircle size={22}/><div><strong>Commandez directement sur WhatsApp</strong><p>Votre produit et votre quantité sont ajoutés automatiquement au message.</p></div><a href={whatsappHref(store.whatsapp, whatsAppMessage)} target="_blank" rel="noopener noreferrer">Continuer sur WhatsApp</a></div>}
       {error && <p role="alert" className="mt-4 bg-red-50 p-3 text-sm font-semibold text-red-700">{error}</p>}
-      {canOrder && <Button disabled={loading || product.stock < 1} className="product-submit">{loading && <Loader2 size={18} className="animate-spin" />} Confirmer la commande</Button>}
+      {canOrder && <Button data-live-action="submit" disabled={loading || product.stock < 1} className="product-submit">{loading && <Loader2 size={18} className="animate-spin" />} Confirmer la commande</Button>}
       <div className="product-secure-note"><ShieldCheck size={17}/><span>Vos informations servent uniquement au traitement de votre commande.</span></div>
       <p className="product-disclaimer">Complément alimentaire. Ne remplace pas une alimentation variée et équilibrée.</p>
     </form>

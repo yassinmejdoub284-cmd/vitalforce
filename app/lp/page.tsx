@@ -14,7 +14,7 @@ export default function LandingDirectory() {
     </header>
     <p className="lp-kicker">روتينك، بطريقتك</p><h1>كل نهار حكاية.<br /><em>اختار البداية متاعك.</em></h1>
     <p className="lp-intro">{new Intl.NumberFormat("fr-TN", { numberingSystem: "latn" }).format(landingPages.length)} مسارات، نفس التركيبة النباتية. اكتشف المكوّنات، واختر الزاوية والنكهة اللي تناسبك.</p>
-    <section className="lp-benefits" aria-labelledby="directory-benefits-title"><h2 id="directory-benefits-title">{productBenefitsAr.title}</h2><p>{productBenefitsAr.paragraph}</p></section>
+    <section className="lp-benefits" data-live-section="benefits" aria-labelledby="directory-benefits-title"><h2 id="directory-benefits-title">{productBenefitsAr.title}</h2><p>{productBenefitsAr.paragraph}</p></section>
     <div className="lp-directory-grid">{landingPages.map((page, index) => <Link href={`/lp/${page.slug}`} key={page.slug} className="lp-directory-card">
       <div className={page.visualImage ? "lp-directory-poster" : undefined}><Image src={page.visualImage ?? page.image} alt={page.imageAlt} width={page.visualImage ? 1024 : 1536} height={page.visualImage ? 1536 : 1024} sizes="(max-width: 650px) 100vw, (max-width: 1000px) 50vw, 33vw" /><span>0{index + 1}</span></div>
       <p>{page.eyebrow}</p><h2>{page.name}<ArrowUpLeft size={22} /></h2><span>اكتشف روتينك</span>

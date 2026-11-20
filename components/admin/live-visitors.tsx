@@ -1,10 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { actions, sections, type LiveActivity } from "@/lib/live-activity";
 import { api } from "./client-api";
 import { Kpi } from "./widgets";
 
-type Visitor = { id: string; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string };
+type Visitor = { id: string; live_activity: LiveActivity | null; current_path: string | null; source: string | null; device: string | null; city: string | null; region: string | null; country: string | null; page_views: number; first_seen: string; last_seen: string };
 type Live = { summary: { online: number; last30: number; today_visitors: number; today_orders: number; pending: number }; visitors: Visitor[] };
 
 const pageName = (path: string | null) => {
@@ -20,6 +21,23 @@ const since = (iso: string) => {
   return seconds < 60 ? `${seconds} s` : `${Math.floor(seconds / 60)} min`;
 };
 
+const time = new Intl.DateTimeFormat("fr-TN", { timeZone: "Africa/Tunis", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+
+function Activity({ activity }: { activity: LiveActivity | null }) {
+  if (!activity) return <span className="adm-hint">Détail indisponible</span>;
+  const duration = activity.seconds < 60 ? `${activity.seconds} s` : `${Math.floor(activity.seconds / 60)} min ${activity.seconds % 60} s`;
+  return <>
+    <strong>{sections[activity.section]}</strong>
+    <div>{activity.foreground ? "Au premier plan" : "En pause"} · {duration} · défilement {activity.scroll} %</div>
+    <details className="adm-live-steps">
+      <summary>Voir le parcours ({activity.steps.length})</summary>
+      <ol>{activity.steps.map((step, index) => <li key={index}>
+        <time>{time.format(step.at)}</time> · <b>{actions[step.action]}</b> · {sections[step.section]} · {pageName(step.path)}
+      </li>)}</ol>
+    </details>
+  </>;
+}
+
 export function LiveVisitors() {
   const [data, setData] = useState<Live | null>(null);
   const [error, setError] = useState("");
@@ -33,7 +51,7 @@ export function LiveVisitors() {
   }, []);
 
   if (!data) return <p className="adm-empty">{error || "Chargement…"}</p>;
-  const pages = Object.entries(data.visitors.reduce<Record<string, number>>((acc, visitor) => { const key = pageName(visitor.current_path); acc[key] = (acc[key] ?? 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1]);
+  const pages = Object.entries(data.visitors.reduce<Record<string, number>>((acc, visitor) => { const key = pageName(visitor.live_activity?.path ?? visitor.current_path); acc[key] = (acc[key] ?? 0) + 1; return acc; }, {})).sort((a, b) => b[1] - a[1]);
   const place = (visitor: Visitor) => {
     if (!visitor.city && !visitor.region) return visitor.country && visitor.country !== "TN" ? visitor.country : "Inconnue";
     const local = visitor.city && visitor.region && !visitor.city.startsWith(visitor.region) ? `${visitor.city} (${visitor.region})` : visitor.city ?? visitor.region ?? "";
@@ -56,10 +74,13 @@ export function LiveVisitors() {
     </div>
     <section className="adm-card adm-section">
       <h2>Visiteurs actifs</h2>
+      <p className="adm-hint">La durée mesure le temps où la section se trouve au centre de l’écran avec l’onglet au premier plan. Le parcours affiche les huit dernières étapes de cet onglet, en heure de Tunis.</p>
+      {error && <p role="status">Actualisation interrompue. Dernières données reçues ci-dessous.</p>}
       {data.visitors.length === 0 ? <p className="adm-empty">Aucun visiteur actif.</p> : <div className="adm-table-wrap"><table className="adm-table">
-        <thead><tr><th>Page actuelle</th><th>Source</th><th>Appareil</th><th>Ville (gouvernorat)</th><th className="num">Pages vues</th><th className="num">Sur le site depuis</th></tr></thead>
+        <thead><tr><th>Visiteur / page</th><th>Activité observée</th><th>Source</th><th>Appareil</th><th>Ville (gouvernorat)</th><th className="num">Pages vues</th><th className="num">Première visite il y a</th></tr></thead>
         <tbody>{data.visitors.map((visitor) => <tr key={visitor.id}>
-          <td><strong>{pageName(visitor.current_path)}</strong></td><td>{visitor.source ?? "direct"}</td><td>{visitor.device ?? "—"}</td>
+          <td><strong>{pageName(visitor.live_activity?.path ?? visitor.current_path)}</strong><div className="adm-hint">Visiteur {visitor.id.slice(0, 8)}</div></td>
+          <td><Activity activity={visitor.live_activity} /></td><td>{visitor.source ?? "direct"}</td><td>{visitor.device ?? "—"}</td>
           <td>{place(visitor)}</td><td className="num">{visitor.page_views}</td><td className="num">{since(visitor.first_seen)}</td>
         </tr>)}</tbody>
       </table></div>}

@@ -6,7 +6,7 @@ import { productBenefitsAr } from "@/lib/product-benefits";
 import styles from "./campaign-gallery.module.css";
 
 export function CampaignGallery() {
-  return <section className={styles.section} lang="ar" dir="rtl" aria-labelledby="campaign-gallery-title" id="campaigns">
+  return <section className={styles.section} lang="ar" dir="rtl" data-live-section="campaigns" aria-labelledby="campaign-gallery-title" id="campaigns">
     <div className="container-shell">
       <div className={styles.intro}>
         <p className={styles.kicker}>VITAL FORCE · العناية، بطريقتك</p>

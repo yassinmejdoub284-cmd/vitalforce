@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server";
+import { lt } from "drizzle-orm";
+import { db } from "@/lib/db";
+import { visitorActivity } from "@/lib/db/schema";
 import { syncAdInsights } from "@/lib/ads";
 import { syncJetpackTracking } from "@/lib/orders";
 import { getSettings } from "@/lib/settings";
@@ -10,6 +13,7 @@ export const maxDuration = 60;
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
   if (!secret || request.headers.get("authorization") !== `Bearer ${secret}`) return NextResponse.json({ error: "Non autorisé." }, { status: 401 });
+  await db.delete(visitorActivity).where(lt(visitorActivity.seenAt, new Date(Date.now() - 60_000)));
   const config = await getSettings();
   const report: Record<string, unknown> = {};
   if (config.jetpack.trackToken) {

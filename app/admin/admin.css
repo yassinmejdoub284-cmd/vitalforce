@@ -109,6 +109,11 @@ textarea.adm-input { min-height: 78px; resize: vertical; }
 .adm-table { width: 100%; border-collapse: collapse; font-size: 14px; }
 .adm-table th { position: sticky; top: 0; background: #fafaf8; text-align: left; font-size: 12px; font-weight: 800; color: var(--adm-muted); padding: 10px 12px; border-bottom: 1px solid var(--adm-line); white-space: nowrap; }
 .adm-table td { padding: 11px 12px; border-bottom: 1px solid #efefeb; vertical-align: top; }
+.adm-live-steps { margin-top: 6px; min-width: 185px; }
+.adm-live-steps summary { color: var(--adm-muted); cursor: pointer; text-decoration: underline; }
+.adm-live-steps ol { margin: 6px 0 0; padding-inline-start: 20px; list-style: decimal; }
+.adm-live-steps li { margin-block: 4px; }
+.adm-live-steps time { font-variant-numeric: tabular-nums; }
 .adm-table tr:last-child td { border-bottom: 0; }
 .adm-table tr.is-selected td { background: #fffbea; }
 .adm-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
