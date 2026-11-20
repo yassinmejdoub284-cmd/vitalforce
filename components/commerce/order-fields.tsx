@@ -1,8 +1,5 @@
 "use client";
 
-import { CallbackOption } from "./callback-option";
-import type { DraftItem } from "@/lib/db/schema";
-import { useStoreSettings } from "@/components/store-settings";
 import { trackMetaEvent } from "@/lib/meta";
 import { governorates, normalizeTunisianPhone } from "@/lib/tunisia";
 import { orderContext, track } from "@/lib/visitor";
@@ -15,8 +12,7 @@ const labels = {
 };
 
 /** Champs client communs aux formulaires de commande (boutique en français, pages de vente en arabe). */
-export function CustomerFields({ lang, className, inputClassName, showNote = false, showEmail = true, callbackItems, angle }: { lang: Lang; className?: string; inputClassName?: string; showNote?: boolean; showEmail?: boolean; callbackItems?: DraftItem[]; angle?: string }) {
-  const { store } = useStoreSettings();
+export function CustomerFields({ lang, className, inputClassName, showNote = false, showEmail = true }: { lang: Lang; className?: string; inputClassName?: string; showNote?: boolean; showEmail?: boolean }) {
   const t = labels[lang];
   const input = inputClassName ?? "";
   return <div className={className}>
@@ -25,7 +21,6 @@ export function CustomerFields({ lang, className, inputClassName, showNote = fal
       onInvalid={(event) => event.currentTarget.setCustomValidity(t.phoneError)}
       onInput={(event) => event.currentTarget.setCustomValidity("")}
       onBlur={(event) => { const value = event.currentTarget.value; event.currentTarget.setCustomValidity(value && !normalizeTunisianPhone(value) ? t.phoneError : ""); }} /></label>
-    {store.callbackEnabled && store.ordersEnabled && Boolean(callbackItems?.length) && <CallbackOption lang={lang} angle={angle} items={callbackItems!} />}
     <label>{t.governorate}<select className={input} name="governorate" required defaultValue="">
       <option value="" disabled>{t.choose}</option>
       {governorates.map((item) => <option key={item.value} value={item.value}>{lang === "ar" ? `${item.ar} · ${item.value}` : item.value}</option>)}
@@ -46,7 +41,7 @@ export async function submitOrder(form: HTMLFormElement, items: { productId: str
   const phone = normalizeTunisianPhone(String(data.get("phone") ?? ""));
   if (!phone) throw new Error(labels[options.lang].phoneError);
   const payload = {
-    draftId: data.get("draftId") || undefined, customerName: data.get("customerName"), phone, email: data.get("email") ?? "", governorate: data.get("governorate"), city: data.get("city"), address: data.get("address"),
+    customerName: data.get("customerName"), phone, email: data.get("email") ?? "", governorate: data.get("governorate"), city: data.get("city"), address: data.get("address"),
     note: data.get("note") ?? undefined, website: data.get("website") ?? "", items, source: options.angle ? "landing" : "site", ...orderContext(options.angle)
   };
   let response: Response;

@@ -115,7 +115,7 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
         <Text name="announcementAr" label="Bandeau d'annonce (arabe, pages de vente)" value={s.store.announcementAr} dir="rtl" span />
         <Text name="registrationRef" label="Référence officielle d’enregistrement du produit" value={s.store.registrationRef} span />
         <a className="adm-btn" href="/admin/reviews">Gérer les avis et les photos</a>
-        <Toggle name="callbackEnabled" label="Proposer le rappel pour les commandes incomplètes" checked={s.store.callbackEnabled} />
+        <Toggle name="callbackEnabled" label="Accepter les demandes de rappel" checked={s.store.callbackEnabled} />
         <Toggle name="ordersEnabled" label="Commandes en ligne ouvertes" checked={s.store.ordersEnabled} hint="Décochez pour fermer temporairement les commandes (rupture, congés)." />
         <SaveBar group="store" />
       </div>

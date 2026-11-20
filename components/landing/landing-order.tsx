@@ -103,7 +103,7 @@ ${details.join("\n")}`));
       <fieldset><legend>{products.length > 1 ? "2." : "1."} حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button type="button" disabled={quantity >= maxQuantity} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
       {maxQuantity >= 2 && <p className="lp-bundle-note">{quantity >= 2 ? "التوصيل متاعك مجاني" : <button className="lp-text-link" type="button" onClick={() => setQuantity(2)}>ناخو زوز بـ{money(2 * selected.price)} والتوصيل مجاني</button>}</p>}
       <fieldset><legend>{products.length > 1 ? "3." : "2."} معلومات التوصيل</legend>
-        <CustomerFields lang="ar" angle={angle} callbackItems={ordersLive ? [{ productId: selected.id, quantity }] : undefined} showEmail={false} className="lp-fields lp-fields-order" />
+        <CustomerFields lang="ar" showEmail={false} className="lp-fields lp-fields-order" />
       </fieldset>
       <div className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(subtotal)}</strong></div><div className="lp-shipping-row"><span>التوصيل</span><strong>{deliveryFee === 0 ? "مجاني" : money(deliveryFee)}</strong></div>
       <div className="lp-final-total" aria-live="polite"><span>المجموع عند الاستلام</span><strong>{money(total)}</strong></div>

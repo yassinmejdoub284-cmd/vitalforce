@@ -48,7 +48,7 @@ export function CheckoutForm({ checkoutAvailable, catalog }: { checkoutAvailable
         {!canOrder && <p role="status" className="mt-4 border-l-4 border-gold-500 bg-gold-100/40 p-4 text-sm">La commande en ligne est temporairement indisponible. Appelez-nous au {store.phone} pour commander.</p>}
         <p className="mt-2 flex items-center gap-2 text-forest-900/65"><HandCoins size={18} /> Paiement à la livraison partout en Tunisie. Nous vous appelons pour confirmer.</p>
         <fieldset disabled={!canOrder} className="mt-8 disabled:opacity-55">
-          <CustomerFields lang="fr" callbackItems={canOrder ? items.map(({ productId, quantity }) => ({ productId, quantity })) : undefined} showNote className="product-fields grid gap-4 md:grid-cols-2" inputClassName="w-full rounded-2xl border border-forest-900/15 bg-white px-4 py-3" />
+          <CustomerFields lang="fr" showNote className="product-fields grid gap-4 md:grid-cols-2" inputClassName="w-full rounded-2xl border border-forest-900/15 bg-white px-4 py-3" />
         </fieldset>
         {error && <p role="alert" className="mt-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
       </section>

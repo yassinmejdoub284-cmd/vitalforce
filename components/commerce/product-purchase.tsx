@@ -102,7 +102,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
 
       <fieldset disabled={!canOrder} className={`product-customer-fields ${canOrder ? "" : "hidden"}`}>
         <legend className="text-lg font-bold">Vos coordonnées</legend>
-        <CustomerFields lang="fr" callbackItems={canOrder ? [{ productId: product.id, quantity }] : undefined} showNote className="product-fields mt-4 grid gap-3 sm:grid-cols-2" inputClassName="min-h-11 w-full border border-forest-900/15 bg-white px-3" />
+        <CustomerFields lang="fr" showNote className="product-fields mt-4 grid gap-3 sm:grid-cols-2" inputClassName="min-h-11 w-full border border-forest-900/15 bg-white px-3" />
         <p className="mt-4 flex items-center gap-2 text-sm"><HandCoins size={18} /> Paiement à la livraison · nous vous appelons pour confirmer</p>
       </fieldset>
 
