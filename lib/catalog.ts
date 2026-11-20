@@ -33,7 +33,7 @@ export function toStorefrontProduct(row: ProductRow): Product {
     warnings: rich?.warnings ?? [],
     conservation: rich?.conservation ?? "",
     ingredients: rich?.ingredients ?? [],
-    template: rich ? "vital-force" : "simple"
+    template: row.template === "vital-force" ? "vital-force" : "simple"
   };
 }
 

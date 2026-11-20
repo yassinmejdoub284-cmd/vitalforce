@@ -1,6 +1,7 @@
 import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
+import { adSpendTnd } from "@/lib/ad-currency";
 import { getSettings } from "@/lib/settings";
 
 export const TZ = "Africa/Tunis";
@@ -43,6 +44,9 @@ async function rows<T extends Row = Row>(query: ReturnType<typeof sql>) {
   return result.rows as T[];
 }
 
+const spendByCurrency = sql`coalesce(sum(amount) filter (where source = 'meta-api'), 0) as meta_usd,
+  coalesce(sum(amount) filter (where source <> 'meta-api'), 0) as manual_tnd`;
+
 export async function getDashboardStats(range: Range) {
   const config = await getSettings();
   const days = Math.round((new Date(`${range.to}T00:00:00Z`).getTime() - new Date(`${range.from}T00:00:00Z`).getTime()) / 86_400_000) + 1;
@@ -76,7 +80,7 @@ export async function getDashboardStats(range: Range) {
     from order_items i join orders o on o.id = i.order_id where ${inRange("o.created_at", range)}`);
 
   const [ads] = await rows(sql`
-    select coalesce(sum(amount), 0) as spend, coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks,
+    select ${spendByCurrency}, coalesce(sum(impressions), 0)::int as impressions, coalesce(sum(clicks), 0)::int as clicks,
       coalesce(sum(landing_page_views), 0)::int as lpv, coalesce(sum(pixel_purchases), 0)::int as pixel_purchases, coalesce(sum(pixel_checkouts), 0)::int as pixel_checkouts,
       count(*) filter (where source = 'meta-api')::int as api_rows
     from ad_spend where date between ${range.from}::date and ${range.to}::date`);
@@ -93,21 +97,23 @@ export async function getDashboardStats(range: Range) {
 
   const o = numbers(orderTotals, ["received", "pending", "no_answer", "cancelled", "confirmed", "to_ship", "in_transit", "delivered", "returned", "delivered_revenue", "transit_value", "collected", "awaiting_payment", "carrier_cost", "return_cost", "confirmation_cost"]);
   const it = numbers(itemTotals, ["cogs_delivered", "cogs_returned", "packaging", "units_delivered"]);
-  const ad = numbers(ads, ["spend", "impressions", "clicks", "lpv", "pixel_purchases", "pixel_checkouts", "api_rows"]);
+  const ad = numbers(ads, ["meta_usd", "manual_tnd", "impressions", "clicks", "lpv", "pixel_purchases", "pixel_checkouts", "api_rows"]);
   const tr = numbers(traffic, ["visitors", "page_views", "view_content", "add_to_cart", "initiate_checkout", "purchasers"]);
 
   const lostGoods = config.orders.restockOnReturn ? 0 : it.cogs_returned;
   const fixed = (config.costs.monthlyFixed * days) / 30;
   const operating = it.cogs_delivered + it.packaging + o.carrier_cost + o.return_cost + o.confirmation_cost + lostGoods;
   const grossProfit = o.delivered_revenue - operating;
-  const netProfit = grossProfit - ad.spend - fixed;
+  const spend = adSpendTnd(ad.meta_usd, ad.manual_tnd, config.meta.usdToTnd);
+  const netProfit = spend === null ? null : grossProfit - spend - fixed;
+  const totalCost = spend === null ? null : operating + spend + fixed;
   const finished = o.delivered + o.returned;
-  const ratio = (a: number, b: number) => (b > 0 ? a / b : null);
+  const ratio = (a: number | null, b: number | null) => (a !== null && b !== null && b > 0 ? a / b : null);
 
   return {
     range, days,
     orders: o,
-    costs: { cogs: it.cogs_delivered, packaging: it.packaging, carrier: o.carrier_cost, returns: o.return_cost, confirmation: o.confirmation_cost, lostGoods, ads: ad.spend, fixed, total: operating + ad.spend + fixed },
+    costs: { cogs: it.cogs_delivered, packaging: it.packaging, carrier: o.carrier_cost, returns: o.return_cost, confirmation: o.confirmation_cost, lostGoods, ads: spend, fixed, total: totalCost },
     unitsDelivered: it.units_delivered,
     profit: { gross: grossProfit, net: netProfit, perDelivered: ratio(netProfit, o.delivered), margin: ratio(netProfit, o.delivered_revenue) },
     rates: {
@@ -118,29 +124,28 @@ export async function getDashboardStats(range: Range) {
       cancellation: ratio(o.cancelled, o.received)
     },
     unitCosts: {
-      cpl: ratio(ad.spend, o.received),
-      cpaConfirmed: ratio(ad.spend, o.confirmed),
-      costPerDelivered: ratio(operating + ad.spend + fixed, o.delivered),
-      roas: ratio(o.delivered_revenue, ad.spend)
+      cpl: ratio(spend, o.received),
+      cpaConfirmed: ratio(spend, o.confirmed),
+      costPerDelivered: ratio(totalCost, o.delivered),
+      roas: ratio(o.delivered_revenue, spend)
     },
-    ads: { ...ad, ctr: ratio(ad.clicks, ad.impressions), cpm: ratio(ad.spend * 1000, ad.impressions), pixelConversion: ratio(ad.pixel_purchases, ad.lpv || ad.clicks), pixelCpa: ratio(ad.spend, ad.pixel_purchases) },
+    ads: { ...ad, spend, ctr: ratio(ad.clicks, ad.impressions), cpm: ratio(spend === null ? null : spend * 1000, ad.impressions), pixelConversion: ratio(ad.pixel_purchases, ad.lpv || ad.clicks), pixelCpa: ratio(spend, ad.pixel_purchases) },
     traffic: tr
   };
 }
 
 export async function getDailySeries(range: Range) {
-  return rows<{ day: string; orders: number; confirmed: number; delivered: number; revenue: number; visitors: number; spend: number }>(sql`
+  return rows<{ day: string; orders: number; confirmed: number; delivered: number; revenue: number; visitors: number }>(sql`
     with days as (select generate_series(${range.from}::date, ${range.to}::date, interval '1 day')::date as day),
     o as (select (created_at at time zone ${TZ})::date as day, count(*)::int as orders,
             count(*) filter (where confirmed_at is not null and status <> 'cancelled')::int as confirmed,
             count(*) filter (where status = 'delivered')::int as delivered,
             coalesce(sum(total) filter (where status = 'delivered'), 0)::float as revenue
           from orders where ${inRange("created_at", range)} group by 1),
-    v as (select (created_at at time zone ${TZ})::date as day, count(distinct visitor_id)::int as visitors from events where type = 'page_view' and ${inRange("created_at", range)} group by 1),
-    a as (select date as day, sum(amount)::float as spend from ad_spend where date between ${range.from}::date and ${range.to}::date group by 1)
+    v as (select (created_at at time zone ${TZ})::date as day, count(distinct visitor_id)::int as visitors from events where type = 'page_view' and ${inRange("created_at", range)} group by 1)
     select to_char(days.day, 'YYYY-MM-DD') as day, coalesce(o.orders, 0) as orders, coalesce(o.confirmed, 0) as confirmed, coalesce(o.delivered, 0) as delivered,
-      coalesce(o.revenue, 0) as revenue, coalesce(v.visitors, 0) as visitors, coalesce(a.spend, 0) as spend
-    from days left join o using (day) left join v using (day) left join a using (day) order by days.day`);
+      coalesce(o.revenue, 0) as revenue, coalesce(v.visitors, 0) as visitors
+    from days left join o using (day) left join v using (day) order by days.day`);
 }
 
 export async function getBreakdowns(range: Range) {
@@ -211,12 +216,14 @@ export async function getObservedRates() {
       count(*) filter (where status = 'delivered')::int as delivered,
       count(*) filter (where status = 'returned')::int as returned
     from orders where created_at > now() - interval '90 days'`);
-  const [ad] = await rows(sql`select coalesce(sum(amount), 0) as spend from ad_spend where date > (now() - interval '90 days')::date`);
+  const [ad] = await rows(sql`select ${spendByCurrency} from ad_spend where date > (now() - interval '90 days')::date`);
+  const config = await getSettings();
+  const spend = adSpendTnd(num(ad.meta_usd), num(ad.manual_tnd), config.meta.usdToTnd);
   const received = num(row.received), confirmed = num(row.confirmed), delivered = num(row.delivered), returned = num(row.returned);
   return {
     received,
     confirmationRate: received >= 10 ? confirmed / received : null,
     deliveryRate: delivered + returned >= 10 ? delivered / (delivered + returned) : null,
-    cpl: received >= 10 && num(ad.spend) > 0 ? num(ad.spend) / received : null
+    cpl: received >= 10 && spend !== null && spend > 0 ? spend / received : null
   };
 }

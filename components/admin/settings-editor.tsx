@@ -113,6 +113,9 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
         <span />
         <Text name="announcement" label="Bandeau d'annonce (français)" value={s.store.announcement} placeholder="Livraison gratuite ce week-end !" span />
         <Text name="announcementAr" label="Bandeau d'annonce (arabe, pages de vente)" value={s.store.announcementAr} dir="rtl" span />
+        <Text name="registrationRef" label="Référence officielle d’enregistrement du produit" value={s.store.registrationRef} span />
+        <a className="adm-btn" href="/admin/reviews">Gérer les avis et les photos</a>
+        <Toggle name="callbackEnabled" label="Proposer le rappel pour les commandes incomplètes" checked={s.store.callbackEnabled} />
         <Toggle name="ordersEnabled" label="Commandes en ligne ouvertes" checked={s.store.ordersEnabled} hint="Décochez pour fermer temporairement les commandes (rupture, congés)." />
         <SaveBar group="store" />
       </div>
@@ -161,6 +164,7 @@ export function SettingsEditor({ initial, initialTab, blacklist, env }: { initia
         <div className="adm-form-grid">
           <Text name="adAccountId" label="ID du compte publicitaire" value={s.meta.adAccountId} placeholder="act_1234567890" hint="Gestionnaire de publicités → en haut à gauche" />
           <span />
+          <Text name="usdToTnd" label="Taux de conversion Meta (DT pour 1 USD)" value={s.meta.usdToTnd} type="number" hint="Taux de facturation appliqué à la période affichée. À 0, les résultats qui nécessitent une conversion restent indisponibles." span />
           <Secret name="marketingToken" label="Token Marketing API (lecture des stats)" value={s.meta.marketingToken} hint="Business Manager → Utilisateurs système → Générer un token avec la permission ads_read." />
           <div className="adm-row adm-span-2">
             <button className="adm-btn adm-btn-primary" disabled={!!saving}>{saving === "meta" && <Loader2 size={16} className="animate-spin" />}Enregistrer</button>

@@ -5,6 +5,9 @@ export const money = (value: number | null | undefined) => {
   return `${new Intl.NumberFormat("fr-TN", { numberingSystem: "latn", maximumFractionDigits: max }).format(value)} DT`;
 };
 
+export const usd = (value: number | null | undefined) =>
+  value == null ? "—" : `${new Intl.NumberFormat("fr-TN", { maximumFractionDigits: 3 }).format(value)} USD`;
+
 export const percent = (value: number | null | undefined) => (value === null || value === undefined ? "—" : `${(value * 100).toFixed(value < 0.1 ? 1 : 0)} %`);
 
 export const shortDate = (value: string | Date) => new Intl.DateTimeFormat("fr-TN", { timeZone: "Africa/Tunis", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(value));

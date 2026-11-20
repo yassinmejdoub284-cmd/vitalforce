@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- miniatures des pubs servies par le CDN Meta */
 import type { AdsAnalysis } from "@/lib/ads-analysis";
-import { count, money, percent } from "@/lib/format";
+import { count, usd, percent } from "@/lib/format";
 
 type Campaign = AdsAnalysis["campaigns"][number];
 type Metrics = Campaign["metrics"];
@@ -18,15 +18,15 @@ function Flags({ flags }: { flags: { level: string; label: string }[] }) {
 function cells(metrics: Metrics, derived: Derived, real: RealCounts, kind: string, reach?: number | null) {
   const sales = kind === "ventes" || kind === "inconnu";
   return [
-    money(metrics.spend),
+    usd(metrics.spend),
     count(metrics.impressions),
     count(reach ?? metrics.reach),
-    money(derived.cpm),
+    usd(derived.cpm),
     percent(derived.ctrLink),
-    sales ? `${count(metrics.landingPageViews)} vues · ${count(metrics.initiateCheckout)} début` : `${count(metrics.postEngagement)} eng. · ${money(derived.costPerEngagement)}`,
-    sales ? `${count(metrics.purchases)} · ${money(derived.pixelCpa)}` : `${count(metrics.messages)} msg · ${count(metrics.pageLikes)} j'aime`,
-    `${count(real.orders)} · ${money(derived.realCostPerOrder)}`,
-    `${count(real.delivered)} · ${money(derived.realCostPerDelivered)}`,
+    sales ? `${count(metrics.landingPageViews)} vues · ${count(metrics.initiateCheckout)} début` : `${count(metrics.postEngagement)} eng. · ${usd(derived.costPerEngagement)}`,
+    sales ? `${count(metrics.purchases)} · ${usd(derived.pixelCpa)}` : `${count(metrics.messages)} msg · ${count(metrics.pageLikes)} j'aime`,
+    `${count(real.orders)} · ${usd(derived.realCostPerOrder)}`,
+    `${count(real.delivered)} · ${usd(derived.realCostPerDelivered)}`,
     derived.realRoas ?? "—",
     metrics.videoPlays3s > 0 ? `${percent(derived.hookRate)} / ${percent(derived.holdRate)}` : "—"
   ];
@@ -46,14 +46,14 @@ export function AdsAnalysisView({ analysis }: { analysis: AdsAnalysis }) {
             <span className="adm-row" style={{ gap: 6 }}>
               <span className="adm-badge adm-badge-muted">{kindLabel[campaign.kind] ?? campaign.kind}</span>
               {campaign.details?.effective_status ? <span className="adm-badge adm-badge-muted">{String(campaign.details.effective_status)}</span> : null}
-              <span className="adm-badge">{money(campaign.metrics.spend)}</span>
+              <span className="adm-badge">{usd(campaign.metrics.spend)}</span>
             </span>
           </div>
           <p className="adm-hint" style={{ margin: "6px 0" }}>
-            {count(campaign.metrics.impressions)} impressions · CPM {money(campaign.derived.cpm)} · CTR lien {percent(campaign.derived.ctrLink)} ·{" "}
+            {count(campaign.metrics.impressions)} impressions · CPM {usd(campaign.derived.cpm)} · CTR lien {percent(campaign.derived.ctrLink)} ·{" "}
             {campaign.kind === "ventes" || campaign.kind === "inconnu"
-              ? <>{count(campaign.real.orders)} commandes réelles ({money(campaign.derived.realCostPerOrder)} / commande) · {count(campaign.real.delivered)} livrées · ROAS réel {campaign.derived.realRoas ?? "—"}</>
-              : <>{count(campaign.metrics.postEngagement)} engagements ({money(campaign.derived.costPerEngagement)}) · {count(campaign.metrics.messages)} messages · {count(campaign.metrics.pageLikes)} j&apos;aime page</>}
+              ? <>{count(campaign.real.orders)} commandes réelles ({usd(campaign.derived.realCostPerOrder)} / commande) · {count(campaign.real.delivered)} livrées · ROAS réel {campaign.derived.realRoas ?? "—"}</>
+              : <>{count(campaign.metrics.postEngagement)} engagements ({usd(campaign.derived.costPerEngagement)}) · {count(campaign.metrics.messages)} messages · {count(campaign.metrics.pageLikes)} j&apos;aime page</>}
             {" "}· {ads.length} pub(s)
           </p>
           <Flags flags={campaign.flags} />

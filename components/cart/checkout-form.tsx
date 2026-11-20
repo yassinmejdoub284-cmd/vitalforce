@@ -10,17 +10,21 @@ import { Button } from "@/components/ui/button";
 import { deliveryFeeFor } from "@/lib/pricing";
 import { formatTnd } from "@/lib/utils";
 
-export function CheckoutForm({ checkoutAvailable }: { checkoutAvailable: boolean }) {
+export function CheckoutForm({ checkoutAvailable, catalog }: { checkoutAvailable: boolean; catalog: { id: string; price: number; template?: string }[] }) {
   const router = useRouter();
-  const { items, clear } = useCart();
+  const { items: savedItems, clear } = useCart();
+  const items = savedItems.map(item => {
+    const product = catalog.find(p => p.id === item.productId);
+    return { ...item, price: product?.price ?? item.price, template: product?.template, available: Boolean(product) };
+  });
   const { store, delivery } = useStoreSettings();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const started = useRef(false);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const deliveryFee = deliveryFeeFor(subtotal, delivery);
+  const deliveryFee = deliveryFeeFor(subtotal, delivery, items.reduce((sum, item) => sum + (item.template === "vital-force" ? item.quantity : 0), 0));
   const total = subtotal + deliveryFee;
-  const canOrder = checkoutAvailable && store.ordersEnabled;
+  const canOrder = checkoutAvailable && store.ordersEnabled && items.every(item => item.available);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,7 +48,7 @@ export function CheckoutForm({ checkoutAvailable }: { checkoutAvailable: boolean
         {!canOrder && <p role="status" className="mt-4 border-l-4 border-gold-500 bg-gold-100/40 p-4 text-sm">La commande en ligne est temporairement indisponible. Appelez-nous au {store.phone} pour commander.</p>}
         <p className="mt-2 flex items-center gap-2 text-forest-900/65"><HandCoins size={18} /> Paiement à la livraison partout en Tunisie. Nous vous appelons pour confirmer.</p>
         <fieldset disabled={!canOrder} className="mt-8 disabled:opacity-55">
-          <CustomerFields lang="fr" showNote className="product-fields grid gap-4 md:grid-cols-2" inputClassName="w-full rounded-2xl border border-forest-900/15 bg-white px-4 py-3" />
+          <CustomerFields lang="fr" callbackItems={canOrder ? items.map(({ productId, quantity }) => ({ productId, quantity })) : undefined} showNote className="product-fields grid gap-4 md:grid-cols-2" inputClassName="w-full rounded-2xl border border-forest-900/15 bg-white px-4 py-3" />
         </fieldset>
         {error && <p role="alert" className="mt-4 rounded-2xl bg-red-50 p-4 text-sm font-semibold text-red-700">{error}</p>}
       </section>

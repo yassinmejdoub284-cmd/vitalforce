@@ -2,7 +2,7 @@ import "server-only";
 import { and, eq, gt, inArray, isNotNull, isNull, ne, or, sql } from "drizzle-orm";
 import { z } from "zod";
 import { db, type Tx } from "@/lib/db";
-import { blacklist, orderEvents, orderItems, orders, products, type OrderRow, type OrderStatus } from "@/lib/db/schema";
+import { blacklist, callbackDrafts, orderEvents, orderItems, orders, products, type OrderRow, type OrderStatus } from "@/lib/db/schema";
 import { addJetpackOrder, JetpackError, statusFromCarrier, trackJetpackOrders } from "@/lib/jetpack";
 import { sendCapiPurchase } from "@/lib/meta-server";
 import { deliveryFeeFor, roundMoney } from "@/lib/pricing";
@@ -29,6 +29,7 @@ export const orderInputSchema = z.object({
   note: z.string().trim().max(500).optional().transform((value) => value || null),
   items: z.array(z.object({ productId: z.string().min(1).max(64), quantity: z.coerce.number().int().min(1).max(20) })).min(1).max(10),
   source: z.enum(["site", "landing", "admin"]).default("site"),
+  draftId: z.uuid().optional(),
   landingAngle: z.string().trim().max(60).optional(),
   utm: z.record(z.string(), z.string().max(150)).optional(),
   visitorId: z.string().max(64).optional(),
@@ -73,6 +74,12 @@ export async function createOrder(rawInput: unknown, context: OrderContext = {})
   for (const item of input.items) quantities.set(item.productId, (quantities.get(item.productId) ?? 0) + item.quantity);
 
   const order = await db.transaction(async (tx) => {
+    if (input.draftId) {
+      await tx.insert(callbackDrafts).values({ id: input.draftId }).onConflictDoNothing();
+      const [draft] = await tx.select({ orderId: callbackDrafts.orderId }).from(callbackDrafts)
+        .where(eq(callbackDrafts.id, input.draftId)).for("update");
+      if (draft.orderId) throw new OrderError("Cette commande a déjà été enregistrée.", 409);
+    }
     const rows = await tx.select().from(products).where(and(inArray(products.id, [...quantities.keys()]), eq(products.active, true)));
     if (rows.length !== quantities.size) throw new OrderError("Un produit n'est plus disponible. Actualisez la page.", 409);
     for (const product of rows) {
@@ -80,7 +87,8 @@ export async function createOrder(rawInput: unknown, context: OrderContext = {})
     }
     const lines = rows.map((product) => ({ product, quantity: quantities.get(product.id)! }));
     const subtotal = roundMoney(lines.reduce((sum, line) => sum + line.product.price * line.quantity, 0));
-    const deliveryFee = deliveryFeeFor(subtotal, config.delivery);
+    const jarCount = lines.reduce((sum, { product, quantity }) => sum + (product.template === "vital-force" ? quantity : 0), 0);
+    const deliveryFee = deliveryFeeFor(subtotal, config.delivery, jarCount);
     const total = roundMoney(subtotal + deliveryFee);
 
     const [created] = await tx.insert(orders).values({
@@ -119,6 +127,10 @@ export async function createOrder(rawInput: unknown, context: OrderContext = {})
       packagingCost: product.packagingCost,
       quantity
     })));
+    if (input.draftId) {
+      const closed = { orderId: created.id, closedAt: new Date(), phone: null, customerName: null, city: null, governorate: null, address: null, items: null, angle: null };
+      await tx.update(callbackDrafts).set(closed).where(eq(callbackDrafts.id, input.draftId));
+    }
     await logEvent(tx, created.id, "created", input.source === "admin" ? "Commande saisie dans l'admin" : `Commande reçue (${input.landingAngle ? `page ${input.landingAngle}` : "boutique"})`, context.actor ?? "client");
     return { ...created, number, items: lines.map(({ product, quantity }) => ({ productId: product.id, name: product.name, quantity, unitPrice: product.price })) };
   });

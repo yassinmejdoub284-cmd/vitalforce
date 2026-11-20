@@ -6,6 +6,7 @@ import { LandingOrder } from "./landing-order";
 import { DiscountBadge } from "@/components/commerce/discount-badge";
 import { arabicIngredientNames, ingredientReferences, type LandingPage } from "@/lib/landing-pages";
 import { vitalForceIngredients, type Product } from "@/lib/product-data";
+import type { getReviews } from "@/lib/reviews";
 import type { PublicSettings } from "@/lib/settings";
 import { deliveryFeeFor } from "@/lib/pricing";
 import { PhotoBrandMark } from "@/components/commerce/photo-brand-mark";
@@ -20,8 +21,8 @@ const ingredientFacts = [
   "يحتوي على البيبيرين."
 ];
 
-export function CampaignLanding({ page, products, settings, ordersLive = true }: { page: LandingPage; products: Product[]; settings: PublicSettings; ordersLive?: boolean }) {
-  const main = products[0];
+export function CampaignLanding({ page, products, settings, reviews, ordersLive = true }: { page: LandingPage; products: Product[]; settings: PublicSettings; reviews: Awaited<ReturnType<typeof getReviews>>; ordersLive?: boolean }) {
+  const main = products.find(product => product.stock > 0) ?? products[0];
   const deliveryFee = main ? deliveryFeeFor(main.price, settings.delivery) : settings.delivery.fee;
   const dt = (value: number) => `${new Intl.NumberFormat("fr-TN", { numberingSystem: "latn", maximumFractionDigits: 3 }).format(value)} د.ت`;
   const deliveryText = deliveryFee === 0 ? "التوصيل مجاني" : `التوصيل ${dt(deliveryFee)}`;
@@ -33,7 +34,7 @@ export function CampaignLanding({ page, products, settings, ordersLive = true }:
     [page.question, page.answer],
     ["شنوّة الفرق بين النكهات؟", "نفس المزيج بثلاث نكهات: برتقال، ليمون ونعناع. راجع ملصق كل نكهة للتفاصيل."],
     ["وين نلقى معلومات المنتج الكاملة؟", `افتح «شوف الملصق الكامل» في ${page.informational ? "قسم معلومات المنتج" : "قسم الطلب"}: تلقى التركيبة، تعليمات المنتج واحتياطات الاستعمال لكل نكهة.`],
-    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية، عمّر اسمك ورقمك وعنوانك واضغط «أكّد طلبي». الفريق يتّصل بيك باش يأكّد العنوان والتوصيل بـ7 د.ت. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
+    ...(!page.informational ? [["كيفاش يتمّ الطلب؟", "اختار النكهة والكمية، عمّر اسمك ورقمك وعنوانك وابْعث طلبك. تلقى المجموع بالتوصيل قبل ما تبعث، والفريق يتّصل بيك باش يأكّد. فتح واتساب وحده لا يؤكّد الطلب."]] : [])
   ];
   return <main className="lp-page lp-visual-page lp-campaign-conversion" style={{ "--lp-accent": page.color } as React.CSSProperties}>
     <div className="lp-announcement">{page.informational ? "روتين نباتي للحياة اليومية" : <>{contact.announcementAr || <>توصيل في تونس <span>•</span> الدفع عند الاستلام بعد تأكيد الطلب</>}</>}</div>
@@ -56,13 +57,28 @@ export function CampaignLanding({ page, products, settings, ordersLive = true }:
           {main && <div className="lp-hero-promotion">{main.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(main.compareAtPrice)}</del>}<DiscountBadge percent={main.discountPercent} lang="ar" /></div>}
           {main && <div className="lp-hero-offer"><strong dir="ltr">{formatOfferPrice(main.price)}</strong><span>400 غ · {deliveryText}<br />{flavorList}</span></div>}
         </>}
+        {!page.informational && main && <div className="lp-offer-details">
+          <p><strong>التوصيل علينا من زوز عبوات</strong></p>
+          <p>VITAL FORCE مسجّل لدى وزارة الصحة التونسية{contact.registrationRef && <> · مرجع التسجيل <bdi>{contact.registrationRef}</bdi></>}</p>
+          {page.slug === "sport" && main.netWeight === "400 g" && <p>عبوة 400 غ فيها 40 حصّة بحساب 10 غ للحصّة.</p>}
+        </div>}
         <div className="lp-value-strip"><strong>7 مكوّنات نباتية</strong><span>400 غ · ثلاث نكهات · {page.slug === "sport" ? "لحظة عناية ضمن روتينك الرياضي" : "لحظة عناية ضمن روتينك اليومي"}</span></div>
         <p className="lp-visual-evidence">{page.benefitCaption ?? "7 مكوّنات نباتية، بثلاث نكهات لروتينك اليومي."}</p>
         <a href={target} className="lp-primary">{cta}<ArrowDownLeft size={20} /></a>
         <p className="lp-micro"><ShieldCheck size={15} />{page.informational ? "مكوّنات واضحة · لحظة عناية يومية" : `الدفع عند الاستلام · ${main ? dt(main.price + deliveryFee) : ""} بالتوصيل لعبوة واحدة`}</p>
       </div>
     </section>
-    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} للطلب`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {!page.informational && <div className="lp-proof lp-shell"><div><Leaf /><span><strong>7 مكوّنات</strong>تركيبة نباتية واضحة</span></div><div><Truck /><span><strong>توصيل في تونس</strong>{deliveryFee === 0 ? "مجاني" : `${dt(deliveryFee)} لعبوة · مجاني من زوز`}</span></div><div><ShieldCheck /><span><strong>الدفع عند الاستلام</strong>بعد التأكيد مع الفريق</span></div></div>}
+    {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} products={products} ordersLive={ordersLive} />}
+    {!page.informational && (reviews.length > 0 || contact.whatsapp) && <section className="lp-reviews lp-shell" aria-labelledby="lp-reviews-title">
+      <h2 id="lp-reviews-title">آراء الحرفاء</h2>
+      <div className="lp-review-list">{reviews.map(review => <figure key={review.id}>
+        {review.photoId && <a href={`/api/media/${review.photoId}`} target="_blank" rel="noopener noreferrer"><Image unoptimized src={`/api/media/${review.photoId}`} alt={review.name ? `رأي ${review.name}` : "تصويرة من رأي حريف"} width={420} height={300} /></a>}
+        {review.body && <blockquote dir="auto">{review.body}</blockquote>}
+        {review.name && <figcaption dir="auto">{review.name}</figcaption>}
+      </figure>)}</div>
+      {contact.whatsapp && <a className="lp-text-link" href={`https://wa.me/${contact.whatsapp.replace(/\D/g, "")}?text=${encodeURIComponent("السلام، جرّبت VITAL FORCE ونحب نشارك رأيي.")}`}>جرّبت VITAL FORCE؟ شاركنا رأيك على واتساب</a>}
+    </section>}
     {page.benefits && <section className="lp-angle-benefits lp-shell" aria-labelledby="angle-benefits-title">
       <p className="lp-kicker">من المكوّن، لفهم روتينك</p><h2 id="angle-benefits-title">{page.benefitsTitle ?? "شنوّة علاقة المكوّنات بالطاقة، التحمّل والاستشفاء؟"}</h2>
       <p className="lp-angle-benefits-intro">{page.benefitsIntro ?? "أبحاث على مستحضرات محدّدة من المكوّنات: اكتشف الجوانب اللي تهمّ الرياضي في كل واحد منها."}</p>
@@ -87,7 +103,6 @@ export function CampaignLanding({ page, products, settings, ordersLive = true }:
         <details className="lp-full-formula"><summary>شوف التركيبة الكاملة</summary><p>{arabicIngredientNames.join(" · ")}</p></details>
       </div>
     </section>
-    {!page.informational && <LandingOrder angle={page.slug} angleName={page.name} products={products} ordersLive={ordersLive} />}
     {page.informational && <section className="lp-product-labels lp-shell" id="product-info" aria-labelledby="product-labels-title">
       <p className="lp-kicker">معلومات المنتج</p><h2 id="product-labels-title">اكتشف الملصق الكامل لكل نكهة.</h2>
       {products.filter(product => product.template === "vital-force").map(product => <details key={product.id} className="lp-label"><summary>شوف الملصق الكامل · {product.flavor === "Orange" ? "برتقال" : product.flavor === "Citron" ? "ليمون" : product.flavor === "Menthe" ? "نعناع" : product.name}</summary><Image src={product.image} alt={`الملصق الكامل لـVITAL FORCE — ${product.flavor}`} width={1200} height={400} sizes="(max-width: 800px) 100vw, 80vw" /></details>)}

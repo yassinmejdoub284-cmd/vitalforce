@@ -1,14 +1,15 @@
 import { CheckoutForm } from "@/components/cart/checkout-form";
-import { hasDatabase } from "@/lib/db";
+import { getCatalog } from "@/lib/catalog";
 
 export const metadata = {
   title: "Commander"
 };
 
-export default function CheckoutPage() {
+export default async function CheckoutPage() {
+  const { products, live } = await getCatalog();
   return (
     <main className="container-shell py-14">
-      <CheckoutForm checkoutAvailable={hasDatabase()} />
+      <CheckoutForm checkoutAvailable={live} catalog={products.map(({ id, price, template }) => ({ id, price, template }))} />
     </main>
   );
 }

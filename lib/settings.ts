@@ -25,6 +25,8 @@ export const settingsSchemas = {
     tiktok: optionalText,
     announcement: optionalText,
     announcementAr: optionalText,
+    registrationRef: optionalText,
+    callbackEnabled: z.boolean().default(true),
     ordersEnabled: z.boolean().default(true)
   }),
   delivery: z.object({
@@ -56,6 +58,7 @@ export const settingsSchemas = {
     /** "order" = Purchase envoyé à la commande, "confirmed" = seulement après confirmation téléphonique. */
     purchaseOn: z.enum(["order", "confirmed"]).default("order"),
     adAccountId: z.string().trim().regex(/^(act_)?\d{0,24}$/, "ID compte pub: chiffres uniquement").default(""),
+    usdToTnd: amount.default(0),
     marketingToken: optionalText
   }),
   jetpack: z.object({

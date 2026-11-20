@@ -1,5 +1,6 @@
 import { asc, between, desc, eq } from "drizzle-orm";
 import { Suspense } from "react";
+import { usd } from "@/lib/format";
 import { AdsAnalysisView } from "@/components/admin/ads-analysis";
 import { AdSpendManager, CopyText, ProfitCalculator } from "@/components/admin/marketing";
 import { buildAdsAnalysis } from "@/lib/ads-analysis";
@@ -27,10 +28,12 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
   const urlParams = "utm_source=facebook&utm_medium=paid&utm_campaign={{campaign.name}}&utm_term={{adset.name}}&utm_content={{ad.name}}&campaign_id={{campaign.id}}&adset_id={{adset.id}}&ad_id={{ad.id}}";
   const { ads, orders: o, unitCosts, rates } = stats;
   const metaConnected = Boolean(config.meta.adAccountId && config.meta.marketingToken);
-  const campaigns = Object.values(spendRows.reduce<Record<string, { campaign: string; spend: number; clicks: number; lpv: number; purchases: number }>>((acc, row) => {
-    const item = acc[row.campaign] ?? { campaign: row.campaign, spend: 0, clicks: 0, lpv: 0, purchases: 0 };
+  const campaigns = Object.values(spendRows.reduce<Record<string, { campaign: string; currency: string; spend: number; clicks: number; lpv: number; purchases: number }>>((acc, row) => {
+    const currency = row.source === "meta-api" ? "USD" : "TND";
+    const key = JSON.stringify([row.campaign, currency]);
+    const item = acc[key] ?? { campaign: row.campaign, currency, spend: 0, clicks: 0, lpv: 0, purchases: 0 };
     item.spend += row.amount; item.clicks += row.clicks ?? 0; item.lpv += row.landingPageViews ?? 0; item.purchases += row.pixelPurchases ?? 0;
-    acc[row.campaign] = item;
+    acc[key] = item;
     return acc;
   }, {})).sort((a, b) => b.spend - a.spend);
 
@@ -38,6 +41,7 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
     <PageHeader title="Marketing & rentabilité" subtitle="Meta Ads, pixel, coût réel par commande en tenant compte des retours" />
     <Suspense><RangePicker preset={range.preset} from={range.from} to={range.to} /></Suspense>
 
+    {ads.meta_usd > 0 && <p className="adm-hint">Dépense Meta importée : {usd(ads.meta_usd)}. {config.meta.usdToTnd ? `Conversion à ${config.meta.usdToTnd} DT par USD.` : <a href="/admin/settings?tab=meta">Renseigner le taux USD en dinars pour calculer le profit.</a>}</p>}
     <h2 className="adm-section-title">Selon Meta (pixel)</h2>
     <div className="adm-kpis">
       <Kpi label="Dépenses" value={money(ads.spend)} hint={metaConnected ? "Synchronisé avec Meta Ads" : "Saisie manuelle"} />
@@ -53,16 +57,16 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
     <div className="adm-kpis">
       <Kpi label="Commandes reçues" value={count(o.received)} hint={`Coût pub / commande ${money(unitCosts.cpl)}`} />
       <Kpi label="Confirmées" value={count(o.confirmed)} hint={`Coût pub / confirmée ${money(unitCosts.cpaConfirmed)}`} />
-      <Kpi label="Livrées" value={count(o.delivered)} hint={`Coût pub / livrée ${money(o.delivered ? ads.spend / o.delivered : null)}`} />
+      <Kpi label="Livrées" value={count(o.delivered)} hint={`Coût pub / livrée ${money(o.delivered && ads.spend !== null ? ads.spend / o.delivered : null)}`} />
       <Kpi label="Coût total par livrée" value={money(unitCosts.costPerDelivered)} hint="Pub + produit + Jetpack + retours + appels" />
       <Kpi label="ROAS réel" value={unitCosts.roas ? unitCosts.roas.toFixed(2) : "—"} hint="CA livré / pub" tone={unitCosts.roas !== null && unitCosts.roas < 2 ? "bad" : "good"} />
-      <Kpi label="Profit net" value={money(stats.profit.net)} tone={stats.profit.net >= 0 ? "good" : "bad"} />
+      <Kpi label="Profit net" value={money(stats.profit.net)} tone={stats.profit.net === null ? undefined : stats.profit.net >= 0 ? "good" : "bad"} />
       <Kpi label="Écart Meta / réel" value={ads.pixel_purchases ? `${o.received - ads.pixel_purchases >= 0 ? "+" : ""}${o.received - ads.pixel_purchases}` : "—"} hint="Commandes réelles − achats pixel" />
     </div>
 
     <div className="adm-grid adm-grid-2 adm-section">
       <ProfitCalculator defaults={{
-        price: mainProduct?.price ?? 163,
+        price: mainProduct?.price ?? 133,
         cost: mainProduct?.costPrice ?? 0,
         packaging: mainProduct?.packagingCost ?? 0,
         deliveryFee: config.delivery.included ? 0 : config.delivery.fee,
@@ -98,7 +102,7 @@ export default async function MarketingPage({ searchParams }: { searchParams: Pr
     <section className="adm-card adm-section">
       <h2>Campagnes (dépenses par jour)</h2>
       <SimpleTable head={["Campagne", "Dépense", "Clics", "Vues page", "Achats pixel", "Coût / achat"]}
-        rows={campaigns.map((row) => [row.campaign, money(row.spend), count(row.clicks), count(row.lpv), count(row.purchases), money(row.purchases ? row.spend / row.purchases : null)])}
+        rows={campaigns.map((row) => [row.campaign, (row.currency === "USD" ? usd : money)(row.spend), count(row.clicks), count(row.lpv), count(row.purchases), (row.currency === "USD" ? usd : money)(row.purchases ? row.spend / row.purchases : null)])}
         empty="Aucune dépense sur la période. Synchronisez Meta Ads ou saisissez vos dépenses." />
     </section>
 

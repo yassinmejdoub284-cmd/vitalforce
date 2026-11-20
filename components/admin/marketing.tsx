@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, RefreshCw, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { api } from "./client-api";
-import { money, percent } from "@/lib/format";
+import { money, usd, percent } from "@/lib/format";
 import { todayLocal } from "./dates";
 
 type Defaults = { price: number; cost: number; packaging: number; deliveryFee: number; carrierCost: number; returnCost: number; confirmationCost: number; confirmationRate: number; deliveryRate: number; cpl: number; unitsPerOrder: number };
@@ -23,7 +23,7 @@ export function ProfitCalculator({ defaults, observed }: { defaults: Defaults; o
   const delivered = confirmed * (v.deliveryRate / 100);
   const returned = confirmed - delivered;
   const units = v.unitsPerOrder || 1;
-  const revenue = delivered * (v.price * units + v.deliveryFee);
+  const revenue = delivered * (v.price * units + (units >= 2 ? 0 : v.deliveryFee));
   const costs = {
     ads: leads * v.cpl,
     calls: leads * v.confirmationCost,
@@ -99,7 +99,7 @@ export function AdSpendManager({ rows, metaConnected }: { rows: SpendRow[]; meta
 
   return <section className="adm-card">
     <div className="adm-card-head"><h2>Dépenses publicitaires</h2>
-      {metaConnected && <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => run("sync", () => api("/api/admin/ads/sync", { body: { days: 30 } }), (result: { rows: number; ads: number; spend: number; warning?: string }) => `Meta Ads: ${result.rows} ligne(s) par pub importée(s), ${result.ads} pub(s), ${money(result.spend)} sur 30 jours.${result.warning ? ` Attention: ${result.warning}` : ""}`)}>
+      {metaConnected && <button type="button" className="adm-btn adm-btn-sm adm-btn-gold" disabled={!!busy} onClick={() => run("sync", () => api("/api/admin/ads/sync", { body: { days: 30 } }), (result: { rows: number; ads: number; spend: number; warning?: string }) => `Meta Ads: ${result.rows} ligne(s) par pub importée(s), ${result.ads} pub(s), ${usd(result.spend)} sur 30 jours.${result.warning ? ` Attention: ${result.warning}` : ""}`)}>
         {busy === "sync" ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}Synchroniser Meta Ads
       </button>}
     </div>
@@ -120,7 +120,7 @@ export function AdSpendManager({ rows, metaConnected }: { rows: SpendRow[]; meta
     <div style={{ marginTop: 14, maxHeight: 320, overflow: "auto" }}>
       {rows.length === 0 ? <p className="adm-empty">Aucune dépense sur la période.</p> : rows.map((row) => <div key={row.id} className="adm-cost-row">
         <span>{row.date.split("-").reverse().join("/")} · {row.campaign}<small className="adm-muted"> · {row.platform}{row.source === "meta-api" ? " (API)" : ""}</small></span>
-        <span className="adm-row" style={{ gap: 6, flexWrap: "nowrap" }}>{money(row.amount)}{row.source === "manual" && <button type="button" className="adm-btn adm-btn-sm" aria-label="Supprimer" onClick={() => window.confirm("Supprimer cette dépense ?") && run(`del-${row.id}`, () => api(`/api/admin/ads?id=${row.id}`, { method: "DELETE" }), () => "Supprimée.")}><Trash2 size={13} /></button>}</span>
+        <span className="adm-row" style={{ gap: 6, flexWrap: "nowrap" }}>{row.source === "meta-api" ? usd(row.amount) : money(row.amount)}{row.source === "manual" && <button type="button" className="adm-btn adm-btn-sm" aria-label="Supprimer" onClick={() => window.confirm("Supprimer cette dépense ?") && run(`del-${row.id}`, () => api(`/api/admin/ads?id=${row.id}`, { method: "DELETE" }), () => "Supprimée.")}><Trash2 size={13} /></button>}</span>
       </div>)}
     </div>
   </section>;

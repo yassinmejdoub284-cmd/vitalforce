@@ -1,5 +1,8 @@
 "use client";
 
+import { CallbackOption } from "./callback-option";
+import type { DraftItem } from "@/lib/db/schema";
+import { useStoreSettings } from "@/components/store-settings";
 import { trackMetaEvent } from "@/lib/meta";
 import { governorates, normalizeTunisianPhone } from "@/lib/tunisia";
 import { orderContext, track } from "@/lib/visitor";
@@ -12,7 +15,8 @@ const labels = {
 };
 
 /** Champs client communs aux formulaires de commande (boutique en français, pages de vente en arabe). */
-export function CustomerFields({ lang, className, inputClassName, showNote = false }: { lang: Lang; className?: string; inputClassName?: string; showNote?: boolean }) {
+export function CustomerFields({ lang, className, inputClassName, showNote = false, showEmail = true, callbackItems, angle }: { lang: Lang; className?: string; inputClassName?: string; showNote?: boolean; showEmail?: boolean; callbackItems?: DraftItem[]; angle?: string }) {
+  const { store } = useStoreSettings();
   const t = labels[lang];
   const input = inputClassName ?? "";
   return <div className={className}>
@@ -21,13 +25,14 @@ export function CustomerFields({ lang, className, inputClassName, showNote = fal
       onInvalid={(event) => event.currentTarget.setCustomValidity(t.phoneError)}
       onInput={(event) => event.currentTarget.setCustomValidity("")}
       onBlur={(event) => { const value = event.currentTarget.value; event.currentTarget.setCustomValidity(value && !normalizeTunisianPhone(value) ? t.phoneError : ""); }} /></label>
+    {store.callbackEnabled && store.ordersEnabled && Boolean(callbackItems?.length) && <CallbackOption lang={lang} angle={angle} items={callbackItems!} />}
     <label>{t.governorate}<select className={input} name="governorate" required defaultValue="">
       <option value="" disabled>{t.choose}</option>
       {governorates.map((item) => <option key={item.value} value={item.value}>{lang === "ar" ? `${item.ar} · ${item.value}` : item.value}</option>)}
     </select></label>
     <label>{t.city}<input className={input} name="city" required minLength={2} maxLength={80} autoComplete="address-level2" /></label>
     <label data-wide="true">{t.address}<input className={input} name="address" required minLength={8} maxLength={250} autoComplete="street-address" placeholder={t.addressHint} /></label>
-    <label>{t.email} <small>{t.optional}</small><input className={input} name="email" type="email" autoComplete="email" dir="ltr" /></label>
+    {showEmail && <label>{t.email} <small>{t.optional}</small><input className={input} name="email" type="email" autoComplete="email" dir="ltr" /></label>}
     {showNote && <label data-wide="true">{t.note} <small>{t.optional}</small><input className={input} name="note" maxLength={500} /></label>}
     <input name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: "absolute", width: 1, height: 1, overflow: "hidden", clipPath: "inset(50%)", opacity: 0, pointerEvents: "none" }} />
   </div>;
@@ -41,7 +46,7 @@ export async function submitOrder(form: HTMLFormElement, items: { productId: str
   const phone = normalizeTunisianPhone(String(data.get("phone") ?? ""));
   if (!phone) throw new Error(labels[options.lang].phoneError);
   const payload = {
-    customerName: data.get("customerName"), phone, email: data.get("email") ?? "", governorate: data.get("governorate"), city: data.get("city"), address: data.get("address"),
+    draftId: data.get("draftId") || undefined, customerName: data.get("customerName"), phone, email: data.get("email") ?? "", governorate: data.get("governorate"), city: data.get("city"), address: data.get("address"),
     note: data.get("note") ?? undefined, website: data.get("website") ?? "", items, source: options.angle ? "landing" : "site", ...orderContext(options.angle)
   };
   let response: Response;

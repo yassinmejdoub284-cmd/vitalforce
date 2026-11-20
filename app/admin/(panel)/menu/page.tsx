@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ExternalLink, Megaphone, Package, Radio, Settings, ShoppingBag } from "lucide-react";
+import { MessageSquare, ExternalLink, Megaphone, Package, Radio, Settings, ShoppingBag } from "lucide-react";
 import { LogoutButton } from "@/components/admin/logout-button";
 import { PushToggle } from "@/components/admin/push-toggle";
 import { PageHeader } from "@/components/admin/shell";
@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/admin/shell";
 export const metadata = { title: "Menu" };
 
 const links = [
+  { href: "/admin/reviews", label: "Avis clients", short: "Avis", icon: MessageSquare },
   { href: "/admin/products", label: "Produits & stock", icon: Package },
   { href: "/admin/settings", label: "Gestion du site (prix livraison, contact, pixel, Jetpack…)", icon: Settings },
   { href: "/admin/marketing", label: "Marketing & rentabilité", icon: Megaphone },

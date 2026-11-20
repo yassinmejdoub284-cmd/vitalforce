@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ExternalLink, Home, LogOut, Megaphone, Menu, Package, Radio, Settings, ShoppingBag } from "lucide-react";
+import { MessageSquare, ExternalLink, Home, LogOut, Megaphone, Menu, Package, Radio, Settings, ShoppingBag } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { api } from "./client-api";
 import { PushToggle, registerAdminWorker } from "./push-toggle";
@@ -19,6 +19,7 @@ const nav = [
   { href: "/admin/live", label: "Visiteurs live", short: "Live", icon: Radio },
   { href: "/admin/marketing", label: "Marketing & rentabilité", short: "Marketing", icon: Megaphone },
   { href: "/admin/products", label: "Produits & stock", short: "Produits", icon: Package },
+  { href: "/admin/reviews", label: "Avis clients", short: "Avis", icon: MessageSquare },
   { href: "/admin/settings", label: "Gestion du site", short: "Réglages", icon: Settings }
 ];
 

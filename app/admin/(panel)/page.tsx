@@ -16,7 +16,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
   const range = rangeFromPreset(params.preset, params.from, params.to);
   const [stats, series, breakdowns, live, config] = await Promise.all([getDashboardStats(range), getDailySeries(range), getBreakdowns(range), getLiveSummary(), getSettings()]);
   const { orders: o, costs, profit, rates, unitCosts, ads, traffic } = stats;
-  const setupMissing = [!config.jetpack.addToken && "token Jetpack", !config.meta.pixelId && "pixel Meta", !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && "notifications push"].filter(Boolean);
+  const setupMissing = [ads.meta_usd > 0 && !config.meta.usdToTnd && "taux USD → DT (Meta)", !config.jetpack.addToken && "token Jetpack", !config.meta.pixelId && "pixel Meta", !process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && "notifications push"].filter(Boolean);
 
   return <>
     <PageHeader title="Tableau de bord" subtitle={`Du ${range.from.split("-").reverse().join("/")} au ${range.to.split("-").reverse().join("/")} · heure de Tunis`} />
@@ -50,7 +50,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
       <Kpi label="Encaissé (payé par Jetpack)" value={money(o.collected)} tone="good" />
       <Kpi label="Livré, pas encore payé" value={money(o.awaiting_payment)} hint="À réclamer à Jetpack" />
       <Kpi label="Dépenses publicité" value={money(costs.ads)} hint={ads.api_rows ? "Meta Ads synchronisé" : <Link href="/admin/marketing">Saisir / synchroniser →</Link>} />
-      <Kpi label="Profit net" value={money(profit.net)} hint={`Marge ${percent(profit.margin)}`} tone={profit.net >= 0 ? "good" : "bad"} />
+      <Kpi label="Profit net" value={money(profit.net)} hint={`Marge ${percent(profit.margin)}`} tone={profit.net === null ? undefined : profit.net >= 0 ? "good" : "bad"} />
       <Kpi label="Profit par commande livrée" value={money(profit.perDelivered)} tone={profit.perDelivered !== null && profit.perDelivered < 0 ? "bad" : undefined} />
       <Kpi label="Coût réel par commande livrée" value={money(unitCosts.costPerDelivered)} hint="Tous coûts, retours inclus" />
       <Kpi label="Coût pub par commande" value={money(unitCosts.cpl)} hint={`Par confirmée: ${money(unitCosts.cpaConfirmed)} · ROAS ${unitCosts.roas ? unitCosts.roas.toFixed(1) : "—"}`} />
@@ -68,7 +68,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Se
             ["− Frais Jetpack retours", -costs.returns, `${o.returned} retour(s)`],
             ["− Confirmation téléphonique", -costs.confirmation],
             ...(costs.lostGoods ? [["− Marchandise perdue (retours)", -costs.lostGoods] as [string, number]] : []),
-            ["− Publicité", -costs.ads],
+            ["− Publicité", costs.ads === null ? null : -costs.ads],
             ...(costs.fixed ? [["− Charges fixes", -costs.fixed, `${stats.days} j`] as [string, number, string]] : [])
           ]}
           total={["Profit net", profit.net]}

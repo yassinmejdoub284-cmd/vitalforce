@@ -306,3 +306,28 @@ export const media = pgTable("media", {
 export type ProductRow = typeof products.$inferSelect;
 export type OrderRow = typeof orders.$inferSelect;
 export type OrderItemRow = typeof orderItems.$inferSelect;
+
+export const customerReviews = pgTable("customer_reviews", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().default(""),
+  body: text("body").notNull().default(""),
+  photoId: text("photo_id").references(() => media.id),
+  createdAt: createdAt()
+});
+
+export type DraftItem = { productId: string; quantity: number };
+
+export const callbackDrafts = pgTable("callback_drafts", {
+  id: text("id").primaryKey(),
+  revision: integer("revision").notNull().default(0),
+  phone: text("phone"),
+  customerName: text("customer_name"),
+  governorate: text("governorate"),
+  city: text("city"),
+  address: text("address"),
+  items: jsonb("items").$type<DraftItem[]>(),
+  angle: text("angle"),
+  closedAt: timestamp("closed_at", { withTimezone: true }),
+  orderId: integer("order_id").references(() => orders.id),
+  updatedAt: updatedAt()
+}, table => [index("callback_drafts_open_idx").on(table.closedAt, table.updatedAt)]);

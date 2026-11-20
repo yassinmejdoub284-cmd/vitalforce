@@ -45,7 +45,7 @@ export function LandingOrder({ angle, angleName, products, ordersLive = true }: 
 
   if (!selected) return null;
   const subtotal = selected.price * quantity;
-  const deliveryFee = deliveryFeeFor(subtotal, delivery);
+  const deliveryFee = deliveryFeeFor(subtotal, delivery, quantity);
   const total = subtotal + deliveryFee;
   const maxQuantity = Math.max(1, Math.min(10, selected.stock));
 
@@ -57,15 +57,14 @@ export function LandingOrder({ angle, angleName, products, ordersLive = true }: 
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (loading) return;
+    if (loading || selected.stock < 1 || !store.ordersEnabled) return;
     if (!ordersLive) {
       // Base de données pas encore configurée: la commande part sur WhatsApp, comme avant.
       const data = new FormData(event.currentTarget);
       const details = [["الاسم", "customerName"], ["الهاتف", "phone"], ["الولاية", "governorate"], ["المدينة", "city"], ["العنوان", "address"]]
         .map(([label, key]) => `${label}: ${String(data.get(key) ?? "").trim()}`);
-      trackMetaEvent("InitiateCheckout", { content_ids: [selected.id], content_type: "product", currency: "TND", value: total, num_items: quantity, landing_angle: angle });
+      start();
       window.location.assign(whatsappHref(store.whatsapp || "21627200603", `${whatsappText}
-المجموع: ${money(total)}
 ${details.join("\n")}`));
       return;
     }
@@ -82,7 +81,7 @@ ${details.join("\n")}`));
     }
   }
 
-  const whatsappText = `السلام عليكم، نحب نطلب VITAL FORCE\nالنكهة: ${flavorName(selected)}\nالكمية: ${quantity}\nصفحة: ${angle}`;
+  const whatsappText = `السلام عليكم، نحب نطلب VITAL FORCE\nالنكهة: ${flavorName(selected)}\nالكمية: ${quantity}\nالمجموع بالتوصيل: ${money(total)}\nصفحة: ${angle}`;
 
   if (placed) return <section className="lp-order-section" id="order"><div className="lp-shell">
     <div className="lp-order-form" role="status" style={{ textAlign: "center" }}>
@@ -102,14 +101,15 @@ ${details.join("\n")}`));
       <p className="lp-order-promotion">{selected.compareAtPrice && <del className="offer-original-price" dir="ltr">{formatOfferPrice(selected.compareAtPrice)}</del>}<DiscountBadge percent={selected.discountPercent} lang="ar" /> <span>{formatOfferPrice(selected.price)}{selected.discountPercent ? " بعد التخفيض" : ""} / عبوة</span></p>
       {products.length > 1 && <fieldset><legend>1. اختار النكهة</legend><div className="lp-flavor-buttons">{products.map(product => <button key={product.id} type="button" disabled={product.stock < 1} aria-pressed={product.id === selected.id} onClick={() => { setSelected(product); setQuantity(1); }}><span className={`lp-flavor-dot lp-flavor-${product.flavor.toLowerCase()}`} />{flavorName(product)}{product.stock < 1 ? " (نفذ)" : ""}{product.id === selected.id && <Check size={14} />}</button>)}</div></fieldset>}
       <fieldset><legend>{products.length > 1 ? "2." : "1."} حدّد الكمية</legend><div className="lp-quantity-row"><div className="lp-quantity"><button type="button" disabled={quantity <= 1} onClick={() => setQuantity(value => value - 1)} aria-label="نقص الكمية"><Minus size={17} /></button><output aria-live="polite">{quantity}</output><button type="button" disabled={quantity >= maxQuantity} onClick={() => setQuantity(value => value + 1)} aria-label="زيد الكمية"><Plus size={17} /></button></div><span>{money(selected.price)} / عبوة</span></div></fieldset>
+      {maxQuantity >= 2 && <p className="lp-bundle-note">{quantity >= 2 ? "التوصيل متاعك مجاني" : <button className="lp-text-link" type="button" onClick={() => setQuantity(2)}>ناخو زوز بـ{money(2 * selected.price)} والتوصيل مجاني</button>}</p>}
       <fieldset><legend>{products.length > 1 ? "3." : "2."} معلومات التوصيل</legend>
-        <CustomerFields lang="ar" className="lp-fields lp-fields-order" />
+        <CustomerFields lang="ar" angle={angle} callbackItems={ordersLive ? [{ productId: selected.id, quantity }] : undefined} showEmail={false} className="lp-fields lp-fields-order" />
       </fieldset>
       <div className="lp-order-total"><span>مجموع المنتجات</span><strong>{money(subtotal)}</strong></div><div className="lp-shipping-row"><span>التوصيل</span><strong>{deliveryFee === 0 ? "مجاني" : money(deliveryFee)}</strong></div>
       <div className="lp-final-total" aria-live="polite"><span>المجموع عند الاستلام</span><strong>{money(total)}</strong></div>
-      <p className="lp-delivery-note">{delivery.included ? "التوصيل مجاني لكل تونس." : delivery.freeThreshold > 0 ? `التوصيل ${money(delivery.fee)}، ومجاني من ${money(delivery.freeThreshold)}.` : `التوصيل ${money(delivery.fee)} للطلب.`} {delivery.etaAr}.</p>
+      <p className="lp-delivery-note">التوصيل مجاني من زوز عبوات. {delivery.etaAr}.</p>
       {error && <p className="lp-order-status" role="alert" style={{ background: "#fdecea", borderColor: "#b42318" }}>{error}</p>}
-      <button type="submit" className="lp-whatsapp" disabled={loading || !store.ordersEnabled}>{loading ? <Loader2 size={21} className="animate-spin" /> : <ShoppingBag size={21} />} {!store.ordersEnabled ? "الطلبات مسكّرة مؤقتاً" : ordersLive ? "أكّد طلبي" : "نكمّل طلبي على واتساب"}</button>
+      <button type="submit" className="lp-whatsapp" disabled={loading || selected.stock < 1 || !store.ordersEnabled}>{loading ? <Loader2 size={21} className="animate-spin" /> : <ShoppingBag size={21} />} {!store.ordersEnabled ? "الطلبات مسكّرة مؤقتاً" : ordersLive ? "ابعث طلبي للتأكيد" : "نكمّل طلبي على واتساب"}</button>
       <p className="lp-order-next">{ordersLive ? "بعد ما تبعث الطلب، فريقنا يتّصل بيك باش يأكّد. ما تدفع كان كي يوصلك الطلب." : "تفتح رسالة جاهزة على واتساب، تبعثها، وفريقنا يأكّد معاك. الدفع عند الاستلام."}</p>
       {store.whatsapp && <p className="lp-order-privacy">تحب تطلب بالواتساب؟ <a href={whatsappHref(store.whatsapp, whatsappText)} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "underline" }}>ابعثلنا رسالة</a></p>}
     </form>

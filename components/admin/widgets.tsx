@@ -24,7 +24,7 @@ export function Funnel({ steps }: { steps: { label: string; value: number }[] })
   </div>;
 }
 
-type Day = { day: string; orders: number; delivered: number; visitors: number; spend: number; revenue: number };
+type Day = { day: string; orders: number; delivered: number; visitors: number; revenue: number };
 
 /** Graphique jour par jour: commandes (barres), livrées (barres foncées), visiteurs (ligne). */
 export function DailyChart({ data }: { data: Day[] }) {
@@ -57,10 +57,10 @@ export function DailyChart({ data }: { data: Day[] }) {
   </figure>;
 }
 
-export function CostRows({ rows, total }: { rows: [string, number, string?][]; total: [string, number] }) {
+export function CostRows({ rows, total }: { rows: [string, number | null, string?][]; total: [string, number | null] }) {
   return <div>
     {rows.map(([label, value, hint]) => <div key={label} className="adm-cost-row"><span>{label}{hint && <small className="adm-muted"> · {hint}</small>}</span><span>{money(value)}</span></div>)}
-    <div className="adm-cost-row is-total"><span>{total[0]}</span><span style={{ color: total[1] >= 0 ? "var(--adm-green)" : "var(--adm-red)" }}>{money(total[1])}</span></div>
+    <div className="adm-cost-row is-total"><span>{total[0]}</span><span style={{ color: total[1] === null ? undefined : total[1] >= 0 ? "var(--adm-green)" : "var(--adm-red)" }}>{money(total[1])}</span></div>
   </div>;
 }
 

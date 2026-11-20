@@ -1,10 +1,10 @@
 import Link from "next/link";
-import { inArray, sql } from "drizzle-orm";
+import { count, isNull, inArray, sql } from "drizzle-orm";
 import { Plus } from "lucide-react";
 import { OrdersBoard, type BoardOrder } from "@/components/admin/orders-board";
 import { PageHeader } from "@/components/admin/shell";
 import { db } from "@/lib/db";
-import { blacklist, orderStatuses } from "@/lib/db/schema";
+import { blacklist, callbackDrafts, orderStatuses } from "@/lib/db/schema";
 import { ArchiveAllCancelled } from "@/components/admin/orders-board";
 import { CONFIRMED_ALL, listOrders, statusCounts, type OrderFilters } from "@/lib/order-queries";
 import { customerHistory } from "@/lib/orders";
@@ -19,7 +19,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
   const params = await searchParams;
   const archivedView = params.archived === "yes";
   const filters: OrderFilters = { status: params.status, q: params.q, from: params.from, to: params.to, governorate: params.governorate, paid: params.paid, returning: params.returning, archived: archivedView ? "yes" : undefined, page: Number(params.page) || 1 };
-  const [{ orders, total, page, pages }, counts, config] = await Promise.all([listOrders(filters), statusCounts(filters), getSettings()]);
+  const [{ orders, total, page, pages }, counts, config, [callbacks]] = await Promise.all([listOrders(filters), statusCounts(filters), getSettings(), db.select({ pending: count() }).from(callbackDrafts).where(isNull(callbackDrafts.closedAt))]);
   const phones = orders.map((order) => order.phone);
   const ids = orders.map((order) => order.id);
   const [history, blocked, duplicates] = await Promise.all([
@@ -54,6 +54,7 @@ export default async function OrdersPage({ searchParams }: { searchParams: Promi
       {tabs.map(([status, label]) => <Link key={status || "all"} href={link({ status: status || undefined, archived: undefined })} className="adm-tab" aria-current={!archivedView && (params.status ?? "") === status ? "page" : undefined}>
         {label}<b>{status ? counts[status as keyof typeof counts] : all}</b>
       </Link>)}
+      <Link href="/admin/orders/callbacks" className="adm-tab">À rappeler · incomplètes<b>{callbacks.pending}</b></Link>
       <Link href={link({ status: undefined, archived: "yes" })} className="adm-tab" aria-current={archivedView ? "page" : undefined}>🗄 Archivées<b>{counts.archived}</b></Link>
     </nav>
     {params.status === CONFIRMED_ALL && !archivedView && <p className="adm-hint" style={{ marginBottom: 10 }}>Toutes les commandes confirmées par téléphone: à expédier, chez Jetpack, livrées et retournées.</p>}

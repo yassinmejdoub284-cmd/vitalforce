@@ -47,7 +47,9 @@ function addReal(target: Real, row: Real) {
 export type Flag = { level: "good" | "warn" | "bad"; label: string };
 
 /** Indicateurs calculés: CTR, CPC, CPM, taux de la page, coût par commande réelle, ROAS réel... */
-function derive(totals: Totals, real: Real, frequency: number | null, breakEvenCpl: number | null, kind = "ventes") {
+function derive(totals: Totals, real: Real, frequency: number | null, breakEvenCpl: number | null, kind: string, usdToTnd: number) {
+  const spendTnd = totals.spend * usdToTnd;
+  const breakEvenUsd = usdToTnd && breakEvenCpl !== null ? breakEvenCpl / usdToTnd : null;
   const d = {
     engagementRate: ratio(totals.postEngagement, totals.impressions),
     costPerEngagement: round(totals.postEngagement ? totals.spend / totals.postEngagement : null),
@@ -74,7 +76,7 @@ function derive(totals: Totals, real: Real, frequency: number | null, breakEvenC
     realConversionRate: ratio(real.orders, totals.landingPageViews || totals.linkClicks),
     confirmationRate: ratio(real.confirmed, real.confirmed + real.cancelled),
     deliveryRate: ratio(real.delivered, real.delivered + real.returned),
-    realRoas: round(totals.spend ? real.revenueDelivered / totals.spend : null, 2)
+    realRoas: round(spendTnd ? real.revenueDelivered / spendTnd : null, 2)
   };
   const flags: Flag[] = [];
   if (totals.spend > 0 && kind !== "ventes" && kind !== "inconnu") {
@@ -84,9 +86,9 @@ function derive(totals: Totals, real: Real, frequency: number | null, breakEvenC
     if (totals.videoPlays3s > 0 && totals.impressions >= 1000 && d.hookRate !== null && d.hookRate < 0.2) flags.push({ level: "warn", label: "Vidéo: accroche faible (hook < 20 %)" });
     if (real.orders > 0) flags.push({ level: "good", label: `A aussi généré ${real.orders} commande(s)` });
   } else if (totals.spend > 0) {
-    if (breakEvenCpl && real.orders >= 5 && d.realCostPerOrder !== null && d.realCostPerOrder <= breakEvenCpl * 0.7) flags.push({ level: "good", label: "Gagnante: coût par commande bien sous le seuil rentable" });
-    if (breakEvenCpl && real.orders > 0 && d.realCostPerOrder !== null && d.realCostPerOrder > breakEvenCpl) flags.push({ level: "bad", label: "Au-dessus du coût pub max rentable" });
-    if (breakEvenCpl && real.orders === 0 && totals.spend >= breakEvenCpl * 2) flags.push({ level: "bad", label: "Dépense sans commande réelle" });
+    if (breakEvenUsd && real.orders >= 5 && d.realCostPerOrder !== null && d.realCostPerOrder <= breakEvenUsd * 0.7) flags.push({ level: "good", label: "Gagnante: coût par commande bien sous le seuil rentable" });
+    if (breakEvenUsd && real.orders > 0 && d.realCostPerOrder !== null && d.realCostPerOrder > breakEvenUsd) flags.push({ level: "bad", label: "Au-dessus du coût pub max rentable" });
+    if (breakEvenUsd && real.orders === 0 && totals.spend >= breakEvenUsd * 2) flags.push({ level: "bad", label: "Dépense sans commande réelle" });
     if (d.frequency !== null && d.frequency > 3) flags.push({ level: "warn", label: "Fatigue: fréquence > 3" });
     if (totals.impressions >= 1000 && d.ctrLink !== null && d.ctrLink < 0.008) flags.push({ level: "warn", label: "Créa peu cliquée (CTR lien < 0,8 %)" });
     if (totals.linkClicks >= 50 && d.landingRate !== null && d.landingRate < 0.6) flags.push({ level: "warn", label: "Beaucoup de clics perdus avant la page (page lente ?)" });
@@ -133,7 +135,7 @@ export async function buildAdsAnalysis(range: Range) {
   const deliveryRate = observed.deliveryRate ?? stats.rates.delivery ?? 0.75;
   const marginPerDelivered = price + fee - unitCost - config.delivery.carrierCost;
   const lossPerReturn = config.delivery.returnCost + (mainProduct?.packagingCost ?? 0);
-  const breakEvenCpl = price ? round(confirmationRate * (deliveryRate * marginPerDelivered - (1 - deliveryRate) * lossPerReturn) - config.costs.confirmationCost, 2) : null;
+  const breakEvenCpl = price && mainProduct && mainProduct.costPrice > 0 ? round(confirmationRate * (deliveryRate * marginPerDelivered - (1 - deliveryRate) * lossPerReturn) - config.costs.confirmationCost, 2) : null;
 
   // Arbre campagne → ensemble de pubs → pub.
   type Daily = { date: string; spend: number; impressions: number; reach: number; linkClicks: number; landingPageViews: number; purchases: number; postEngagement: number; messages: number; thruplays: number };
@@ -160,9 +162,10 @@ export async function buildAdsAnalysis(range: Range) {
 
   // Rattachement des commandes réelles: ad_id, sinon nom de la pub (utm_content), sinon campagne (campaign_id / utm_campaign).
   const adByName = new Map<string, string[]>();
-  const campaignByName = new Map<string, string>();
+  const campaignByName = new Map<string, string | undefined>();
   for (const campaign of campaignsMap.values()) {
-    campaignByName.set(norm(campaign.name), campaign.id);
+    const name = norm(campaign.name);
+    campaignByName.set(name, campaignByName.has(name) ? undefined : campaign.id);
     for (const adset of campaign.adsets.values()) for (const ad of adset.ads.values()) adByName.set(norm(ad.name), [...(adByName.get(norm(ad.name)) ?? []), `${campaign.id}|${adset.id}|${ad.id}`]);
   }
   const adPath = new Map<string, string>();
@@ -178,7 +181,11 @@ export async function buildAdsAnalysis(range: Range) {
     if (!path && utm.utm_content) {
       const candidates = adByName.get(norm(utm.utm_content)) ?? [];
       const campaignId = utm.campaign_id || campaignByName.get(norm(utm.utm_campaign));
-      path = candidates.find((candidate) => !campaignId || candidate.startsWith(`${campaignId}|`)) ?? (candidates.length === 1 ? candidates[0] : undefined);
+      const matches = candidates.filter((candidate) => {
+        const [campaign, adset] = candidate.split("|");
+        return (!campaignId || campaign === campaignId) && (!utm.adset_id || adset === utm.adset_id);
+      });
+      if (matches.length === 1) path = matches[0];
     }
     if (path) { byAd.set(path, [...(byAd.get(path) ?? []), order]); continue; }
     const campaignId = (utm.campaign_id && campaignsMap.has(utm.campaign_id) ? utm.campaign_id : undefined) ?? campaignByName.get(norm(utm.utm_campaign));
@@ -197,7 +204,7 @@ export async function buildAdsAnalysis(range: Range) {
         const info = infoById.get(ad.id);
         const real = realOf(byAd.get(`${campaign.id}|${adset.id}|${ad.id}`) ?? []);
         addReal(adsetReal, real);
-        const { derived, flags } = derive(ad.totals, real, info?.periodSince === range.from && info?.periodUntil === range.to ? info.periodFrequency ?? null : null, breakEvenCpl, kind);
+        const { derived, flags } = derive(ad.totals, real, info?.periodSince === range.from && info?.periodUntil === range.to ? info.periodFrequency ?? null : null, breakEvenCpl, kind, config.meta.usdToTnd);
         return {
           id: ad.id, name: ad.name, status: info?.effectiveStatus ?? null, createdTime: info?.createdTime?.toISOString() ?? null,
           periodReach: info?.periodSince === range.from && info?.periodUntil === range.to ? info.periodReach : null,
@@ -207,14 +214,14 @@ export async function buildAdsAnalysis(range: Range) {
           metrics: roundTotals(ad.totals), real: roundReal(real), derived, flags, daily: ad.daily
         };
       }).sort((a, b) => b.metrics.spend - a.metrics.spend);
-      const { derived, flags } = derive(adset.totals, adsetReal, null, breakEvenCpl, kind);
+      const { derived, flags } = derive(adset.totals, adsetReal, null, breakEvenCpl, kind, config.meta.usdToTnd);
       const details = pickFields(objectById.get(adset.id), ["status", "effective_status", "optimization_goal", "billing_event", "bid_strategy", "daily_budget", "lifetime_budget", "start_time", "end_time", "destination_type", "promoted_object", "targeting"]);
       return { id: adset.id, name: adset.name, optimizationGoal: adset.optimizationGoal, details, metrics: roundTotals(adset.totals), allActions: adset.actions, real: roundReal(adsetReal), derived, flags, ads };
     }).sort((a, b) => b.metrics.spend - a.metrics.spend);
     const total = emptyReal();
     addReal(total, campaignReal);
     for (const adset of adsets) addReal(total, adset.real);
-    const { derived, flags } = derive(campaign.totals, total, null, breakEvenCpl, kind);
+    const { derived, flags } = derive(campaign.totals, total, null, breakEvenCpl, kind, config.meta.usdToTnd);
     const details = pickFields(campaignData, ["status", "effective_status", "buying_type", "daily_budget", "lifetime_budget", "budget_remaining", "bid_strategy", "special_ad_categories", "start_time", "stop_time", "created_time"]);
     return { id: campaign.id, name: campaign.name, objective, kind, details, allActions: campaign.actions, metrics: roundTotals(campaign.totals), real: roundReal(total), ordersMatchedToCampaignOnly: campaignReal.orders, derived, flags, adsets };
   }).sort((a, b) => b.metrics.spend - a.metrics.spend);
@@ -226,7 +233,7 @@ export async function buildAdsAnalysis(range: Range) {
 
   return {
     generatedAt: new Date().toISOString(),
-    period: { from: range.from, to: range.to, days: stats.days, timezone: TZ, currency: "TND" },
+    period: { from: range.from, to: range.to, days: stats.days, timezone: TZ, currency: "TND", metaCurrency: "USD", usdToTnd: config.meta.usdToTnd || null },
     business: {
       product: mainProduct ? { name: mainProduct.name, price, unitCost, compareAtPrice: mainProduct.compareAtPrice } : null,
       delivery: { feePaidByCustomer: fee, includedInPrice: config.delivery.included, carrierCostPerDelivered: config.delivery.carrierCost, carrierCostPerReturn: config.delivery.returnCost, selfDeliveryCost: config.delivery.selfCost },
@@ -236,7 +243,7 @@ export async function buildAdsAnalysis(range: Range) {
       purchaseEventSentOn: config.meta.purchaseOn
     },
     totals: {
-      meta: roundTotals(allTotals), realAttributed: roundReal(allReal), ...derive(allTotals, allReal, null, breakEvenCpl),
+      meta: roundTotals(allTotals), realAttributed: roundReal(allReal), ...derive(allTotals, allReal, null, breakEvenCpl, "mixte", config.meta.usdToTnd),
       byKind: Object.entries(campaigns.reduce<Record<string, { campaigns: number; spend: number; impressions: number; reach: number; orders: number }>>((acc, campaign) => {
         const item = acc[campaign.kind] ?? { campaigns: 0, spend: 0, impressions: 0, reach: 0, orders: 0 };
         item.campaigns += 1; item.spend += campaign.metrics.spend; item.impressions += campaign.metrics.impressions; item.reach += campaign.metrics.reach; item.orders += campaign.real.orders;
@@ -251,14 +258,14 @@ export async function buildAdsAnalysis(range: Range) {
     unattributedMetaOrders: roundReal(realOf(unattributed)),
     campaigns,
     definitions: {
-      spend: "Dépense Meta (TND)", linkClicks: "Clics sur le lien", landingPageViews: "Vues de la page de destination (pixel chargé)",
+      spend: "Dépense Meta et coûts par résultat en USD", linkClicks: "Clics sur le lien", landingPageViews: "Vues de la page de destination (pixel chargé)",
       purchases: "Achats comptés par le pixel/API Conversions", purchaseValue: "Valeur des achats pixel",
       videoPlays3s: "Lectures vidéo de 3 s", thruplays: "Lectures de 15 s ou complètes",
       ctrLink: "linkClicks / impressions", cpc: "spend / linkClicks", cpm: "spend × 1000 / impressions", frequency: "impressions / portée (période)",
       landingRate: "landingPageViews / linkClicks", checkoutRate: "initiateCheckout / landingPageViews", pixelConversionRate: "purchases / landingPageViews",
       hookRate: "lectures 3 s / impressions", holdRate: "thruplays / lectures 3 s",
       real: "Commandes réelles enregistrées sur le site, rattachées à la pub par ad_id ou utm_content (nom de la pub), sinon à la campagne par utm_campaign",
-      realCostPerOrder: "spend / commandes reçues", realCostPerDelivered: "spend / commandes livrées", realRoas: "CA livré / spend",
+      realCostPerOrder: "spend / commandes reçues", realCostPerDelivered: "spend / commandes livrées", realRoas: "CA livré en DT / dépense Meta convertie en DT",
       breakEvenAdCostPerOrder: "Coût pub maximum par commande reçue pour un profit nul, avec les taux de confirmation et de livraison observés",
       flags: "Signaux automatiques (règles simples), à confirmer par l'analyse",
       kind: "Type de campagne déduit de l'objectif Meta: ventes (jugée sur les commandes), engagement / notoriété / trafic / messages (pour chauffer la page, jugées sur leurs propres indicateurs)",
@@ -266,7 +273,7 @@ export async function buildAdsAnalysis(range: Range) {
       engagementRate: "postEngagement / impressions", costPerEngagement: "spend / postEngagement", costPerMessage: "spend / messages", costPerThruplay: "spend / thruplays",
       allActions: "Toutes les actions brutes renvoyées par Meta (type d'action → nombre) sur la période",
       reach: "Portée: au niveau pub, periodReach = portée réelle sur la période; les sommes de portée aux niveaux supérieurs additionnent des jours et surestiment la portée unique",
-      details: "Paramètres Meta: statut, budget (TND), enchère, dates, objectif d'optimisation, ciblage"
+      details: "Paramètres Meta: statut, budget (USD), enchère, dates, objectif d'optimisation, ciblage"
     }
   };
 }

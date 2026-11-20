@@ -22,9 +22,9 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
   const [error, setError] = useState("");
   const started = useRef(false);
   const subtotal = product.price * quantity;
-  const fee = deliveryFeeFor(subtotal, delivery);
+  const fee = deliveryFeeFor(subtotal, delivery, product.template === "vital-force" ? quantity : 0);
   const total = subtotal + fee;
-  const whatsAppMessage = `Bonjour VITAL FORCE, je souhaite commander ${quantity} × ${product.name} à ${product.price} DT.`;
+  const whatsAppMessage = `Bonjour VITAL FORCE, je souhaite commander ${quantity} × ${product.name} à ${product.price} DT. Total à la livraison : ${formatTnd(total)}.`;
   const canOrder = checkoutAvailable && store.ordersEnabled;
 
   function selectFlavor(variant: Product) {
@@ -78,7 +78,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
         <h1>{product.name}</h1>
         <p className="product-lead">{product.shortDescription}</p>
       </>}
-      <div className="product-rating-line"><span><Check size={14}/> {product.stock > 0 ? "Disponible" : "Rupture de stock"}</span><i/> <span>Livraison en Tunisie</span></div>
+      <div className="product-rating-line"><span><Check size={14}/> {product.stock > 0 ? "Disponible" : "Rupture de stock"}</span><i/> <span>{product.template === "vital-force" ? "Livraison offerte dès 2 pots" : "Livraison en Tunisie"}</span></div>
       <div className="product-price-line">{product.compareAtPrice && <del dir="ltr">{formatOfferPrice(product.compareAtPrice)}</del>}<strong dir="ltr">{formatOfferPrice(product.price)}</strong><DiscountBadge percent={product.discountPercent} /><small>{product.discountPercent ? "Prix après réduction" : "Prix"}{product.netWeight ? ` · ${product.netWeight}` : ""}</small></div>
 
       {variants.length > 1 && <fieldset className="product-option-group">
@@ -102,7 +102,7 @@ export function ProductPurchase({ initialProduct, variants, checkoutAvailable }:
 
       <fieldset disabled={!canOrder} className={`product-customer-fields ${canOrder ? "" : "hidden"}`}>
         <legend className="text-lg font-bold">Vos coordonnées</legend>
-        <CustomerFields lang="fr" showNote className="product-fields mt-4 grid gap-3 sm:grid-cols-2" inputClassName="min-h-11 w-full border border-forest-900/15 bg-white px-3" />
+        <CustomerFields lang="fr" callbackItems={canOrder ? [{ productId: product.id, quantity }] : undefined} showNote className="product-fields mt-4 grid gap-3 sm:grid-cols-2" inputClassName="min-h-11 w-full border border-forest-900/15 bg-white px-3" />
         <p className="mt-4 flex items-center gap-2 text-sm"><HandCoins size={18} /> Paiement à la livraison · nous vous appelons pour confirmer</p>
       </fieldset>
 
